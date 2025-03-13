@@ -10,6 +10,7 @@ export async function signUp(email: string, password: string) {
   });
 
   if (error) {
+    console.error('Signup error:', error);
     throw error;
   }
 
@@ -23,6 +24,7 @@ export async function signIn(email: string, password: string) {
   });
 
   if (error) {
+    console.error('Sign in error:', error);
     throw error;
   }
 
@@ -32,6 +34,7 @@ export async function signIn(email: string, password: string) {
 export async function signOut() {
   const { error } = await supabase.auth.signOut();
   if (error) {
+    console.error('Sign out error:', error);
     throw error;
   }
 }
@@ -42,6 +45,7 @@ export async function resetPassword(email: string) {
   });
 
   if (error) {
+    console.error('Reset password error:', error);
     throw error;
   }
 }
@@ -52,6 +56,7 @@ export async function updatePassword(password: string) {
   });
 
   if (error) {
+    console.error('Update password error:', error);
     throw error;
   }
 }
@@ -59,6 +64,7 @@ export async function updatePassword(password: string) {
 export async function getSession() {
   const { data: { session }, error } = await supabase.auth.getSession();
   if (error) {
+    console.error('Get session error:', error);
     throw error;
   }
   return session;
@@ -67,6 +73,7 @@ export async function getSession() {
 export async function getUser() {
   const { data: { user }, error } = await supabase.auth.getUser();
   if (error) {
+    console.error('Get user error:', error);
     throw error;
   }
   return user;

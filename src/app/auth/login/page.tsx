@@ -26,10 +26,18 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      await signIn(email, password);
+      const result = await signIn(email, password);
+      if (!result.user) {
+        setError('Failed to sign in. Please check your credentials.');
+        return;
+      }
+      // Force a router refresh to trigger the middleware
+      router.refresh();
+      // Redirect to home page
       router.push('/');
     } catch (error) {
-      setError(error instanceof Error ? error.message : 'An unexpected error occurred');
+      console.error('Login error:', error);
+      setError(error instanceof Error ? error.message : 'Failed to sign in. Please check your credentials.');
     } finally {
       setLoading(false);
     }
@@ -49,14 +57,26 @@ export default function LoginPage() {
             </Link>
           </p>
         </div>
+
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+          {error && (
+            <div className="rounded-md bg-red-50 p-4">
+              <div className="flex">
+                <div className="ml-3">
+                  <h3 className="text-sm font-medium text-red-800">Error</h3>
+                  <div className="mt-2 text-sm text-red-700">{error}</div>
+                </div>
+              </div>
+            </div>
+          )}
+
           <div className="rounded-md shadow-sm -space-y-px">
             <div>
-              <label htmlFor="email-address" className="sr-only">
+              <label htmlFor="email" className="sr-only">
                 Email address
               </label>
               <input
-                id="email-address"
+                id="email"
                 name="email"
                 type="email"
                 autoComplete="email"
@@ -65,6 +85,7 @@ export default function LoginPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-gray-500 focus:border-gray-500 focus:z-10 sm:text-sm"
                 placeholder="Email address"
+                disabled={loading}
               />
             </div>
             <div>
@@ -81,19 +102,18 @@ export default function LoginPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-gray-500 focus:border-gray-500 focus:z-10 sm:text-sm"
                 placeholder="Password"
+                disabled={loading}
               />
             </div>
           </div>
 
-          {error && (
-            <div className="rounded-md bg-red-50 p-4">
-              <div className="flex">
-                <div className="ml-3">
-                  <h3 className="text-sm font-medium text-red-800">{error}</h3>
-                </div>
-              </div>
+          <div className="flex items-center justify-between">
+            <div className="text-sm">
+              <Link href="/auth/reset-password" className="font-medium text-gray-800 hover:text-gray-700">
+                Forgot your password?
+              </Link>
             </div>
-          )}
+          </div>
 
           <div>
             <button
@@ -105,15 +125,6 @@ export default function LoginPage() {
             >
               {loading ? 'Signing in...' : 'Sign in'}
             </button>
-          </div>
-
-          <div className="text-center">
-            <Link
-              href="/auth/reset-password"
-              className="text-sm text-gray-600 hover:text-gray-500"
-            >
-              Forgot your password?
-            </Link>
           </div>
         </form>
       </div>

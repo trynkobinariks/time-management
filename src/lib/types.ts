@@ -4,44 +4,48 @@ export enum ProjectType {
   EXTERNAL = 'EXTERNAL',
 }
 
-export interface Project {
+export interface BaseModel {
   id: string;
-  user_id: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Profile extends BaseModel {
+  id: string; // UUID, references auth.users(id)
+  email: string;
+}
+
+export interface Project extends BaseModel {
+  user_id: string; // UUID, references auth.users(id)
   name: string;
-  description?: string;
-  weekly_hours_allocation: number;
-  color?: string;
+  description: string | null;
+  weekly_hours_allocation: number; // NUMERIC(5,2)
+  color: string | null;
   project_type: ProjectType;
-  created_at: string;
-  updated_at: string;
 }
 
-export interface TimeEntry {
-  id: string;
-  user_id: string;
-  project_id: string;
-  date: string;
-  hours: number;
-  created_at: string;
-  updated_at: string;
+export interface TimeEntry extends BaseModel {
+  user_id: string; // UUID, references auth.users(id)
+  project_id: string; // UUID, references projects(id)
+  date: string; // DATE in YYYY-MM-DD format
+  hours: number; // NUMERIC(5,2)
 }
 
-export interface DailyLimit {
-  id: string;
-  user_id: string;
-  date: string;
-  max_hours: number;
-  created_at: string;
-  updated_at: string;
+export interface DailyLimit extends BaseModel {
+  user_id: string; // UUID, references auth.users(id)
+  date: string; // DATE in YYYY-MM-DD format
+  max_hours: number; // NUMERIC(5,2)
 }
 
-export interface WeeklyLimit {
-  id: string;
-  user_id: string;
-  week_start_date: string;
-  max_hours: number;
-  created_at: string;
-  updated_at: string;
+export interface WeeklyLimit extends BaseModel {
+  user_id: string; // UUID, references auth.users(id)
+  week_start_date: string; // DATE in YYYY-MM-DD format
+  max_hours: number; // NUMERIC(5,2)
+}
+
+export interface UserSettings extends BaseModel {
+  user_id: string; // UUID, references auth.users(id)
+  internal_hours_limit: number; // NUMERIC(5,2)
 }
 
 // Helper type for project with time entries
@@ -69,18 +73,4 @@ export interface WeeklySummary {
   remainingHours: number;
   dailySummaries: DailySummary[];
   projectSummaries: ProjectWithTimeEntries[];
-}
-
-export interface UserSettings {
-  user_id: string;
-  internal_hours_limit: number;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface Profile {
-  id: string;
-  email: string;
-  created_at: string;
-  updated_at: string;
 } 

@@ -88,9 +88,9 @@ export default function ProjectForm({ project, onSuccess, onCancel }: ProjectFor
     if (validateForm()) {
       const projectData = {
         name: formData.name.trim(),
-        description: formData.description.trim(),
+        description: formData.description.trim() || null,
         weekly_hours_allocation: parseFloat(formData.weekly_hours_allocation),
-        color: formData.color,
+        color: formData.color || null,
         project_type: formData.project_type as ProjectType,
       };
       

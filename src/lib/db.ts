@@ -13,14 +13,37 @@ export async function getProfile(userId: string) {
 }
 
 export async function getUserSettings(userId: string) {
-  const { data, error } = await supabase
+  // First try to get existing settings
+  const { data: existingSettings, error: selectError } = await supabase
     .from('user_settings')
     .select('*')
     .eq('user_id', userId)
     .single();
 
-  if (error) throw error;
-  return data;
+  // If settings exist, return them
+  if (existingSettings) {
+    return existingSettings;
+  }
+
+  // If no settings exist (and it's not another type of error), create default settings
+  if (selectError?.code === 'PGRST116') {
+    const defaultSettings = {
+      user_id: userId,
+      internal_hours_limit: 20
+    };
+
+    const { data: newSettings, error: insertError } = await supabase
+      .from('user_settings')
+      .insert([defaultSettings])
+      .select()
+      .single();
+
+    if (insertError) throw insertError;
+    return newSettings;
+  }
+
+  // If it was a different error, throw it
+  if (selectError) throw selectError;
 }
 
 export async function updateUserSettings(userId: string, settings: { internal_hours_limit: number }) {

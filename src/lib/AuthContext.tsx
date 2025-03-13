@@ -102,6 +102,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
 
       if (data.user) {
+        // Update the user state immediately
+        setUser({
+          id: data.user.id,
+          email: data.user.email || undefined,
+          created_at: data.user.created_at,
+        });
+        
+        // Force a router refresh to trigger the middleware
+        router.refresh();
+        
         return {
           user: {
             id: data.user.id,

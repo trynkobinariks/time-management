@@ -17,7 +17,11 @@ export default function SignUpPage() {
     setLoading(true);
 
     try {
-      await signUp(email, password);
+      const result = await signUp(email, password);
+      if (!result.user) {
+        setError('Failed to create account. Please try again.');
+        return;
+      }
       setSuccess(true);
     } catch (error) {
       setError(error instanceof Error ? error.message : 'An unexpected error occurred');
@@ -34,10 +38,18 @@ export default function SignUpPage() {
             <h2 className="mt-6 text-center text-3xl font-medium text-gray-900">
               Check your email
             </h2>
-            <p className="mt-2 text-center text-sm text-gray-600">
-              We&apos;ve sent you an email with a link to verify your account.
-              Please check your inbox and click the link to continue.
-            </p>
+            <div className="mt-4 text-center text-sm text-gray-600 space-y-4">
+              <p>
+                We&apos;ve sent you an email with a link to verify your account.
+                Please check your inbox (and spam folder) and click the link to continue.
+              </p>
+              <p className="font-medium">
+                After verifying your email, you&apos;ll be automatically redirected to the dashboard.
+              </p>
+              <p className="text-xs">
+                If you don&apos;t see the email, please wait a few minutes and check your spam folder.
+              </p>
+            </div>
           </div>
           <div className="text-center">
             <Link href="/auth/login" className="font-medium text-gray-800 hover:text-gray-700">
