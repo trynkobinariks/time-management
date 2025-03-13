@@ -1,36 +1,77 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Project Hours Tracker
+
+A modern web application built with Next.js and Tailwind CSS to help you track the hours you work on various projects, both daily and weekly. The goal is to provide a clear and intuitive view of the hours worked and the remaining available hours for each project, making it easier to manage your workload effectively.
+
+## Features
+
+- **Project Management**: Add and manage multiple projects easily.
+- **Hours Tracking**: Log the hours you work on each project every day, view total hours worked per project over the week, and instantly see remaining available hours.
+- **Customizable Time Limits**: Set maximum working hours per day or for the entire week, and easily adjust limits based on your personal or project needs.
+- **Full-Time Equivalent (FTE) Allocation**: Divide a full-time workload (e.g., 40 hours per week) across different projects, ensuring a balanced distribution of your time.
+- **User Experience**: An intuitive dashboard that displays all projects and their corresponding hours with a clean, modern design.
+
+## Tech Stack
+
+- [Next.js](https://nextjs.org/) - React framework for building the application
+- [TypeScript](https://www.typescriptlang.org/) - For type safety and better developer experience
+- [Tailwind CSS](https://tailwindcss.com/) - For styling the application
+- [React Context API](https://reactjs.org/docs/context.html) - For state management
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- Node.js 18.x or later
+- npm or yarn
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Installation
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/yourusername/project-hours-tracker.git
+   cd project-hours-tracker
+   ```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+2. Install dependencies:
+   ```bash
+   npm install
+   # or
+   yarn install
+   ```
 
-## Learn More
+3. Run the development server:
+   ```bash
+   npm run dev
+   # or
+   yarn dev
+   ```
 
-To learn more about Next.js, take a look at the following resources:
+4. Open [http://localhost:3000](http://localhost:3000) with your browser to see the application.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Usage
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. **Dashboard**: The main page shows your weekly summary, daily hours chart, and project cards.
+2. **Projects**: Manage your projects, including adding new ones, editing existing ones, and setting weekly hour allocations.
+3. **Settings**: Configure your daily and weekly hour limits.
 
-## Deploy on Vercel
+## Project Structure
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- `src/app`: Contains the Next.js pages and routes
+- `src/components`: Reusable React components
+- `src/lib`: Utility functions, types, and context providers
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Future Enhancements
+
+- User authentication and multi-user support
+- Data persistence with a database
+- Export reports as CSV or PDF
+- Mobile app version
+- Email notifications for approaching time limits
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Acknowledgments
+
+- Inspired by the need for better time management tools for freelancers and professionals working on multiple projects.
