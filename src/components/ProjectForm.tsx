@@ -3,7 +3,23 @@
 import React, { useState } from 'react';
 import { useProjectContext } from '@/lib/ProjectContext';
 import { Project } from '@/lib/types';
-import { generateRandomColor } from '@/lib/utils';
+
+// Project color palette - modern, accessible colors
+const PROJECT_COLORS = [
+  '#4F46E5', // Indigo
+  '#0EA5E9', // Sky blue
+  '#10B981', // Emerald
+  '#F59E0B', // Amber
+  '#EF4444', // Red
+  '#8B5CF6', // Violet
+  '#EC4899', // Pink
+  '#6366F1', // Indigo
+  '#14B8A6', // Teal
+  '#F97316', // Orange
+  '#84CC16', // Lime
+  '#A855F7', // Purple
+  '#06B6D4', // Cyan
+];
 
 interface ProjectFormProps {
   project?: Project;
@@ -18,7 +34,7 @@ export default function ProjectForm({ project, onSuccess, onCancel }: ProjectFor
     name: project?.name || '',
     description: project?.description || '',
     weeklyHoursAllocation: project?.weeklyHoursAllocation?.toString() || '',
-    color: project?.color || generateRandomColor(),
+    color: project?.color || PROJECT_COLORS[0],
   });
   
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -91,19 +107,6 @@ export default function ProjectForm({ project, onSuccess, onCancel }: ProjectFor
     }
   };
   
-  // Predefined colors for selection
-  const colorOptions = [
-    '#EF4444', // Red
-    '#F59E0B', // Amber
-    '#10B981', // Emerald
-    '#3B82F6', // Blue
-    '#8B5CF6', // Violet
-    '#EC4899', // Pink
-    '#6366F1', // Indigo
-    '#14B8A6', // Teal
-    '#F97316', // Orange
-  ];
-  
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
@@ -117,12 +120,12 @@ export default function ProjectForm({ project, onSuccess, onCancel }: ProjectFor
           value={formData.name}
           onChange={handleChange}
           className={`w-full rounded-md border ${
-            errors.name ? 'border-red-300' : 'border-gray-300'
-          } px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-500`}
+            errors.name ? 'border-gray-400' : 'border-gray-300'
+          } px-3 py-2 text-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-500`}
           placeholder="Enter project name"
         />
         {errors.name && (
-          <p className="mt-1 text-sm text-red-600">{errors.name}</p>
+          <p className="mt-1 text-sm text-gray-700">{errors.name}</p>
         )}
       </div>
       
@@ -136,7 +139,7 @@ export default function ProjectForm({ project, onSuccess, onCancel }: ProjectFor
           value={formData.description}
           onChange={handleChange}
           rows={3}
-          className="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-500"
+          className="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-500"
           placeholder="Describe the project"
         />
       </div>
@@ -155,12 +158,12 @@ export default function ProjectForm({ project, onSuccess, onCancel }: ProjectFor
           min="0.5"
           max="168"
           className={`w-full rounded-md border ${
-            errors.weeklyHoursAllocation ? 'border-red-300' : 'border-gray-300'
-          } px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-500`}
+            errors.weeklyHoursAllocation ? 'border-gray-400' : 'border-gray-300'
+          } px-3 py-2 text-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-500`}
           placeholder="0.0"
         />
         {errors.weeklyHoursAllocation && (
-          <p className="mt-1 text-sm text-red-600">{errors.weeklyHoursAllocation}</p>
+          <p className="mt-1 text-sm text-gray-700">{errors.weeklyHoursAllocation}</p>
         )}
         <p className="mt-1 text-xs text-gray-500">
           For example, 20 hours = 0.5 FTE (based on 40-hour work week)
@@ -172,12 +175,12 @@ export default function ProjectForm({ project, onSuccess, onCancel }: ProjectFor
           Project Color
         </label>
         <div className="flex flex-wrap gap-2">
-          {colorOptions.map(color => (
+          {PROJECT_COLORS.map(color => (
             <button
               key={color}
               type="button"
               onClick={() => handleColorChange(color)}
-              className={`w-8 h-8 rounded-full ${
+              className={`w-8 h-8 rounded-full cursor-pointer transition-all ${
                 formData.color === color ? 'ring-2 ring-offset-2 ring-gray-400' : ''
               }`}
               style={{ backgroundColor: color }}
@@ -192,14 +195,14 @@ export default function ProjectForm({ project, onSuccess, onCancel }: ProjectFor
           <button
             type="button"
             onClick={onCancel}
-            className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+            className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 cursor-pointer transition-colors"
           >
             Cancel
           </button>
         )}
         <button
           type="submit"
-          className="px-4 py-2 text-sm font-medium text-white bg-primary-600 rounded-md hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500"
+          className="px-4 py-2 text-sm font-medium text-white bg-gray-800 rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 cursor-pointer transition-colors"
         >
           {project ? 'Update Project' : 'Create Project'}
         </button>

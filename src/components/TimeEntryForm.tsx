@@ -2,26 +2,20 @@
 
 import React, { useState } from 'react';
 import { useProjectContext } from '@/lib/ProjectContext';
-import { formatDate } from '@/lib/utils';
+import { format } from 'date-fns';
 
 interface TimeEntryFormProps {
   projectId?: string;
-  date?: Date;
   onSuccess?: () => void;
   onCancel?: () => void;
 }
 
-export default function TimeEntryForm({ 
-  projectId, 
-  date = new Date(), 
-  onSuccess, 
-  onCancel 
-}: TimeEntryFormProps) {
+export default function TimeEntryForm({ projectId, onSuccess, onCancel }: TimeEntryFormProps) {
   const { projects, addTimeEntry } = useProjectContext();
   
   const [formData, setFormData] = useState({
     projectId: projectId || '',
-    date: formatDate(date),
+    date: format(new Date(), 'yyyy-MM-dd'),
     hours: '',
     notes: '',
   });
@@ -50,17 +44,17 @@ export default function TimeEntryForm({
     }
     
     if (!formData.date) {
-      newErrors.date = 'Please select a date';
+      newErrors.date = 'Date is required';
     }
     
     if (!formData.hours) {
-      newErrors.hours = 'Please enter hours';
+      newErrors.hours = 'Hours are required';
     } else {
       const hours = parseFloat(formData.hours);
       if (isNaN(hours) || hours <= 0) {
         newErrors.hours = 'Hours must be a positive number';
       } else if (hours > 24) {
-        newErrors.hours = 'Hours cannot exceed 24';
+        newErrors.hours = 'Hours cannot exceed 24 per day';
       }
     }
     
@@ -76,7 +70,7 @@ export default function TimeEntryForm({
         projectId: formData.projectId,
         date: new Date(formData.date),
         hours: parseFloat(formData.hours),
-        notes: formData.notes,
+        notes: formData.notes.trim(),
       });
       
       if (onSuccess) {
@@ -96,9 +90,10 @@ export default function TimeEntryForm({
           name="projectId"
           value={formData.projectId}
           onChange={handleChange}
+          disabled={!!projectId}
           className={`w-full rounded-md border ${
-            errors.projectId ? 'border-red-300' : 'border-gray-300'
-          } px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-500`}
+            errors.projectId ? 'border-gray-400' : 'border-gray-300'
+          } px-3 py-2 text-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-500 cursor-pointer`}
         >
           <option value="">Select a project</option>
           {projects.map(project => (
@@ -108,7 +103,7 @@ export default function TimeEntryForm({
           ))}
         </select>
         {errors.projectId && (
-          <p className="mt-1 text-sm text-red-600">{errors.projectId}</p>
+          <p className="mt-1 text-sm text-gray-700">{errors.projectId}</p>
         )}
       </div>
       
@@ -123,11 +118,11 @@ export default function TimeEntryForm({
           value={formData.date}
           onChange={handleChange}
           className={`w-full rounded-md border ${
-            errors.date ? 'border-red-300' : 'border-gray-300'
-          } px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-500`}
+            errors.date ? 'border-gray-400' : 'border-gray-300'
+          } px-3 py-2 text-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-500 cursor-pointer`}
         />
         {errors.date && (
-          <p className="mt-1 text-sm text-red-600">{errors.date}</p>
+          <p className="mt-1 text-sm text-gray-700">{errors.date}</p>
         )}
       </div>
       
@@ -145,12 +140,12 @@ export default function TimeEntryForm({
           min="0.25"
           max="24"
           className={`w-full rounded-md border ${
-            errors.hours ? 'border-red-300' : 'border-gray-300'
-          } px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-500`}
-          placeholder="0.00"
+            errors.hours ? 'border-gray-400' : 'border-gray-300'
+          } px-3 py-2 text-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-500`}
+          placeholder="0.0"
         />
         {errors.hours && (
-          <p className="mt-1 text-sm text-red-600">{errors.hours}</p>
+          <p className="mt-1 text-sm text-gray-700">{errors.hours}</p>
         )}
       </div>
       
@@ -164,26 +159,26 @@ export default function TimeEntryForm({
           value={formData.notes}
           onChange={handleChange}
           rows={3}
-          className="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-500"
+          className="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-500"
           placeholder="What did you work on?"
         />
       </div>
       
-      <div className="flex justify-end space-x-3 pt-2">
+      <div className="flex justify-end space-x-3 pt-4">
         {onCancel && (
           <button
             type="button"
             onClick={onCancel}
-            className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+            className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 cursor-pointer transition-colors"
           >
             Cancel
           </button>
         )}
         <button
           type="submit"
-          className="px-4 py-2 text-sm font-medium text-white bg-primary-600 rounded-md hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500"
+          className="px-4 py-2 text-sm font-medium text-white bg-gray-800 rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 cursor-pointer transition-colors"
         >
-          Save Entry
+          Save Time Entry
         </button>
       </div>
     </form>
