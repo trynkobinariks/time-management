@@ -1,68 +1,28 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { v4 as uuidv4 } from 'uuid';
-import { DailyLimit, Project, ProjectType, TimeEntry, WeeklyLimit, WeeklySummary } from './types';
-import { generateWeeklySummary, getWeekStartDate } from './utils';
-import { endOfWeek } from 'date-fns';
-
-// Local storage keys
-const STORAGE_KEYS = {
-  PROJECTS: 'hours-tracker-projects',
-  TIME_ENTRIES: 'hours-tracker-time-entries',
-  DAILY_LIMITS: 'hours-tracker-daily-limits',
-  WEEKLY_LIMITS: 'hours-tracker-weekly-limits',
-  INTERNAL_HOURS_LIMIT: 'hours-tracker-internal-hours-limit',
-};
-
-// Project color palette - modern, accessible colors
-const PROJECT_COLORS = [
-  '#4F46E5', // Indigo
-  '#0EA5E9', // Sky blue
-  '#10B981', // Emerald
-  '#F59E0B', // Amber
-  '#EF4444', // Red
-  '#8B5CF6', // Violet
-  '#EC4899', // Pink
-  '#6366F1', // Indigo
-  '#14B8A6', // Teal
-  '#F97316', // Orange
-  '#84CC16', // Lime
-  '#A855F7', // Purple
-  '#06B6D4', // Cyan
-];
-
-// Default internal hours allocation
-const DEFAULT_INTERNAL_HOURS = 20;
-
-// Function to get a color based on the project index
-function getProjectColor(index: number): string {
-  return PROJECT_COLORS[index % PROJECT_COLORS.length];
-}
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import { Project, TimeEntry } from './types';
+import { useAuth } from './AuthContext';
+import * as db from './db';
 
 interface ProjectContextType {
-  // Data
   projects: Project[];
   timeEntries: TimeEntry[];
-  dailyLimits: DailyLimit[];
-  weeklyLimits: WeeklyLimit[];
-  currentWeekSummary: WeeklySummary | null;
   selectedDate: Date;
   internalHoursLimit: number;
-  
-  // Actions
-  addProject: (project: Omit<Project, 'id' | 'createdAt' | 'updatedAt'>) => void;
-  updateProject: (project: Project) => void;
-  deleteProject: (projectId: string) => void;
-  addTimeEntry: (entry: Omit<TimeEntry, 'id' | 'createdAt' | 'updatedAt'>) => void;
-  updateTimeEntry: (entry: TimeEntry) => void;
-  deleteTimeEntry: (entryId: string) => void;
-  setDailyLimit: (date: Date, maxHours: number) => void;
-  setWeeklyLimit: (weekStartDate: Date, maxHours: number) => void;
+  dailyLimits: { date: Date; maxHours: number }[];
+  weeklyLimits: { weekStartDate: Date; maxHours: number }[];
+  addProject: (project: Omit<Project, 'id' | 'created_at' | 'updated_at' | 'user_id'>) => Promise<void>;
+  updateProject: (project: Project) => Promise<void>;
+  deleteProject: (projectId: string) => Promise<void>;
+  addTimeEntry: (entry: Omit<TimeEntry, 'id' | 'created_at' | 'updated_at' | 'user_id'>) => Promise<void>;
+  updateTimeEntry: (entry: TimeEntry) => Promise<void>;
+  deleteTimeEntry: (entryId: string) => Promise<void>;
   setSelectedDate: (date: Date) => void;
-  setInternalHoursLimit: (hours: number) => void;
+  setInternalHoursLimit: (limit: number) => Promise<void>;
   getInternalHoursUsed: (weekStartDate: Date) => number;
-  getRemainingInternalHours: (weekStartDate: Date) => number;
+  setDailyLimit: (date: Date, maxHours: number) => Promise<void>;
+  setWeeklyLimit: (weekStartDate: Date, maxHours: number) => Promise<void>;
 }
 
 const ProjectContext = createContext<ProjectContextType | undefined>(undefined);
@@ -76,344 +36,172 @@ export function useProjectContext() {
 }
 
 interface ProjectProviderProps {
-  children: ReactNode;
-}
-
-// Helper function to safely parse JSON from localStorage
-function getStoredData<T>(key: string, defaultValue: T): T {
-  if (typeof window === 'undefined') {
-    return defaultValue;
-  }
-  
-  try {
-    const storedData = localStorage.getItem(key);
-    if (!storedData) return defaultValue;
-    
-    const parsedData = JSON.parse(storedData);
-    
-    // Convert date strings back to Date objects
-    if (Array.isArray(parsedData)) {
-      return parsedData.map((item) => {
-        if (item.date) {
-          item.date = new Date(item.date);
-        }
-        if (item.weekStartDate) {
-          item.weekStartDate = new Date(item.weekStartDate);
-        }
-        if (item.createdAt) {
-          item.createdAt = new Date(item.createdAt);
-        }
-        if (item.updatedAt) {
-          item.updatedAt = new Date(item.updatedAt);
-        }
-        return item;
-      }) as T;
-    }
-    
-    return parsedData;
-  } catch (error) {
-    console.error(`Error loading data from localStorage (${key}):`, error);
-    return defaultValue;
-  }
+  children: React.ReactNode;
 }
 
 export function ProjectProvider({ children }: ProjectProviderProps) {
-  // State with localStorage persistence
-  const [projects, setProjects] = useState<Project[]>(() => 
-    getStoredData<Project[]>(STORAGE_KEYS.PROJECTS, [])
-  );
-  
-  const [timeEntries, setTimeEntries] = useState<TimeEntry[]>(() => 
-    getStoredData<TimeEntry[]>(STORAGE_KEYS.TIME_ENTRIES, [])
-  );
-  
-  const [dailyLimits, setDailyLimits] = useState<DailyLimit[]>(() => 
-    getStoredData<DailyLimit[]>(STORAGE_KEYS.DAILY_LIMITS, [])
-  );
-  
-  const [weeklyLimits, setWeeklyLimits] = useState<WeeklyLimit[]>(() => 
-    getStoredData<WeeklyLimit[]>(STORAGE_KEYS.WEEKLY_LIMITS, [])
-  );
-  
-  const [internalHoursLimit, setInternalHoursLimit] = useState<number>(() => {
-    if (typeof window === 'undefined') return DEFAULT_INTERNAL_HOURS;
-    
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [timeEntries, setTimeEntries] = useState<TimeEntry[]>([]);
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [internalHoursLimit, setInternalHoursLimit] = useState(20);
+  const [dailyLimits, setDailyLimits] = useState<{ date: Date; maxHours: number }[]>([]);
+  const [weeklyLimits, setWeeklyLimits] = useState<{ weekStartDate: Date; maxHours: number }[]>([]);
+  const { user } = useAuth();
+
+  // Load initial data
+  useEffect(() => {
+    if (!user) return;
+
+    const loadData = async () => {
+      try {
+        // Load user settings
+        const settings = await db.getUserSettings(user.id);
+        if (settings) {
+          setInternalHoursLimit(settings.internal_hours_limit);
+        }
+
+        // Load projects
+        const projectsData = await db.getProjects(user.id);
+        setProjects(projectsData);
+
+        // Load time entries for the current week
+        const startDate = new Date(selectedDate);
+        startDate.setDate(startDate.getDate() - startDate.getDay()); // Start of week
+        const endDate = new Date(startDate);
+        endDate.setDate(startDate.getDate() + 6); // End of week
+
+        const timeEntriesData = await db.getTimeEntries(user.id, startDate, endDate);
+        setTimeEntries(timeEntriesData);
+      } catch (error) {
+        console.error('Error loading data:', error);
+      }
+    };
+
+    loadData();
+  }, [user, selectedDate]);
+
+  const addProject = async (project: Omit<Project, 'id' | 'created_at' | 'updated_at' | 'user_id'>) => {
+    if (!user) return;
+
     try {
-      const storedLimit = localStorage.getItem(STORAGE_KEYS.INTERNAL_HOURS_LIMIT);
-      return storedLimit ? parseFloat(storedLimit) : DEFAULT_INTERNAL_HOURS;
+      const newProject = await db.createProject(user.id, project);
+      setProjects([...projects, newProject]);
     } catch (error) {
-      console.error('Error loading internal hours limit:', error);
-      return DEFAULT_INTERNAL_HOURS;
-    }
-  });
-  
-  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-  const [currentWeekSummary, setCurrentWeekSummary] = useState<WeeklySummary | null>(null);
-
-  // Initialize default limits if none exist
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    
-    const weekStart = getWeekStartDate(new Date());
-    const now = new Date();
-    
-    // Set default weekly limit of 40 hours if none exists
-    if (weeklyLimits.length === 0) {
-      const defaultWeeklyLimit: WeeklyLimit = {
-        id: uuidv4(),
-        weekStartDate: weekStart,
-        maxHours: 40,
-        createdAt: now,
-        updatedAt: now,
-      };
-      
-      setWeeklyLimits([defaultWeeklyLimit]);
-    }
-    
-    // Set default daily limit of 8 hours for today if none exists
-    if (dailyLimits.length === 0) {
-      const today = new Date(now);
-      today.setHours(0, 0, 0, 0);
-      
-      const defaultDailyLimit: DailyLimit = {
-        id: uuidv4(),
-        date: today,
-        maxHours: 8,
-        createdAt: now,
-        updatedAt: now,
-      };
-      
-      setDailyLimits([defaultDailyLimit]);
-    }
-  }, [dailyLimits.length, weeklyLimits.length]);
-
-  // Persist data to localStorage when it changes
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    localStorage.setItem(STORAGE_KEYS.PROJECTS, JSON.stringify(projects));
-  }, [projects]);
-  
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    localStorage.setItem(STORAGE_KEYS.TIME_ENTRIES, JSON.stringify(timeEntries));
-  }, [timeEntries]);
-  
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    localStorage.setItem(STORAGE_KEYS.DAILY_LIMITS, JSON.stringify(dailyLimits));
-  }, [dailyLimits]);
-  
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    localStorage.setItem(STORAGE_KEYS.WEEKLY_LIMITS, JSON.stringify(weeklyLimits));
-  }, [weeklyLimits]);
-  
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    localStorage.setItem(STORAGE_KEYS.INTERNAL_HOURS_LIMIT, internalHoursLimit.toString());
-  }, [internalHoursLimit]);
-
-  // Update weekly summary when data changes
-  useEffect(() => {
-    if (projects.length > 0 || timeEntries.length > 0) {
-      const weekStartDate = getWeekStartDate(selectedDate);
-      const weeklyLimit = weeklyLimits.find(
-        limit => limit.weekStartDate.toDateString() === weekStartDate.toDateString()
-      );
-      
-      const summary = generateWeeklySummary(
-        projects,
-        timeEntries,
-        weekStartDate,
-        weeklyLimit?.maxHours || 40
-      );
-      
-      setCurrentWeekSummary(summary);
-    } else if (projects.length === 0 && timeEntries.length === 0) {
-      // Create an empty summary when no data exists
-      const weekStartDate = getWeekStartDate(selectedDate);
-      const weeklyLimit = weeklyLimits.find(
-        limit => limit.weekStartDate.toDateString() === weekStartDate.toDateString()
-      );
-      
-      const summary = generateWeeklySummary(
-        [],
-        [],
-        weekStartDate,
-        weeklyLimit?.maxHours || 40
-      );
-      
-      setCurrentWeekSummary(summary);
-    }
-  }, [projects, timeEntries, dailyLimits, weeklyLimits, selectedDate]);
-
-  // Function to get internal hours used for a specific week
-  const getInternalHoursUsed = (weekStartDate: Date): number => {
-    const weekEnd = endOfWeek(weekStartDate, { weekStartsOn: 1 });
-    
-    // Get all internal projects
-    const internalProjectIds = projects
-      .filter(project => project.projectType === ProjectType.INTERNAL)
-      .map(project => project.id);
-    
-    // Filter time entries for internal projects in the specified week
-    const internalEntries = timeEntries.filter(entry => {
-      const entryDate = new Date(entry.date);
-      entryDate.setHours(0, 0, 0, 0);
-      return (
-        internalProjectIds.includes(entry.projectId) &&
-        entryDate >= weekStartDate &&
-        entryDate <= weekEnd
-      );
-    });
-    
-    // Calculate total hours worked on internal projects
-    return internalEntries.reduce((sum, entry) => sum + entry.hours, 0);
-  };
-  
-  // Function to get remaining internal hours for a specific week
-  const getRemainingInternalHours = (weekStartDate: Date): number => {
-    const hoursUsed = getInternalHoursUsed(weekStartDate);
-    return Math.max(0, internalHoursLimit - hoursUsed);
-  };
-
-  // Project actions
-  const addProject = (projectData: Omit<Project, 'id' | 'createdAt' | 'updatedAt'>) => {
-    const now = new Date();
-    const newProject: Project = {
-      ...projectData,
-      id: uuidv4(),
-      color: getProjectColor(projects.length),
-      createdAt: now,
-      updatedAt: now,
-    };
-    
-    setProjects(prev => [...prev, newProject]);
-  };
-
-  const updateProject = (updatedProject: Project) => {
-    setProjects(prev => 
-      prev.map(project => 
-        project.id === updatedProject.id 
-          ? { ...updatedProject, updatedAt: new Date() } 
-          : project
-      )
-    );
-  };
-
-  const deleteProject = (projectId: string) => {
-    setProjects(prev => prev.filter(project => project.id !== projectId));
-    // Also delete associated time entries
-    setTimeEntries(prev => prev.filter(entry => entry.projectId !== projectId));
-  };
-
-  // Time entry actions
-  const addTimeEntry = (entryData: Omit<TimeEntry, 'id' | 'createdAt' | 'updatedAt'>) => {
-    const now = new Date();
-    const newEntry: TimeEntry = {
-      ...entryData,
-      id: uuidv4(),
-      createdAt: now,
-      updatedAt: now,
-    };
-    
-    setTimeEntries(prev => [...prev, newEntry]);
-  };
-
-  const updateTimeEntry = (updatedEntry: TimeEntry) => {
-    setTimeEntries(prev => 
-      prev.map(entry => 
-        entry.id === updatedEntry.id 
-          ? { ...updatedEntry, updatedAt: new Date() } 
-          : entry
-      )
-    );
-  };
-
-  const deleteTimeEntry = (entryId: string) => {
-    setTimeEntries(prev => prev.filter(entry => entry.id !== entryId));
-  };
-
-  // Limit actions
-  const setDailyLimit = (date: Date, maxHours: number) => {
-    const existingLimitIndex = dailyLimits.findIndex(
-      limit => limit.date.toDateString() === date.toDateString()
-    );
-    
-    if (existingLimitIndex >= 0) {
-      // Update existing limit
-      const updatedLimits = [...dailyLimits];
-      updatedLimits[existingLimitIndex] = {
-        ...updatedLimits[existingLimitIndex],
-        maxHours,
-        updatedAt: new Date(),
-      };
-      setDailyLimits(updatedLimits);
-    } else {
-      // Create new limit
-      const now = new Date();
-      const newLimit: DailyLimit = {
-        id: uuidv4(),
-        date,
-        maxHours,
-        createdAt: now,
-        updatedAt: now,
-      };
-      setDailyLimits(prev => [...prev, newLimit]);
+      console.error('Error creating project:', error);
+      throw error;
     }
   };
 
-  const setWeeklyLimit = (weekStartDate: Date, maxHours: number) => {
-    const existingLimitIndex = weeklyLimits.findIndex(
-      limit => limit.weekStartDate.toDateString() === weekStartDate.toDateString()
-    );
-    
-    if (existingLimitIndex >= 0) {
-      // Update existing limit
-      const updatedLimits = [...weeklyLimits];
-      updatedLimits[existingLimitIndex] = {
-        ...updatedLimits[existingLimitIndex],
-        maxHours,
-        updatedAt: new Date(),
-      };
-      setWeeklyLimits(updatedLimits);
-    } else {
-      // Create new limit
-      const now = new Date();
-      const newLimit: WeeklyLimit = {
-        id: uuidv4(),
-        weekStartDate,
-        maxHours,
-        createdAt: now,
-        updatedAt: now,
-      };
-      setWeeklyLimits(prev => [...prev, newLimit]);
+  const updateProject = async (project: Project) => {
+    if (!user) return;
+
+    try {
+      const updatedProject = await db.updateProject(user.id, project.id, project);
+      setProjects(projects.map(p => p.id === project.id ? updatedProject : p));
+    } catch (error) {
+      console.error('Error updating project:', error);
+      throw error;
+    }
+  };
+
+  const deleteProject = async (projectId: string) => {
+    if (!user) return;
+
+    try {
+      await db.deleteProject(user.id, projectId);
+      setProjects(projects.filter(p => p.id !== projectId));
+      setTimeEntries(timeEntries.filter(t => t.project_id !== projectId));
+    } catch (error) {
+      console.error('Error deleting project:', error);
+      throw error;
+    }
+  };
+
+  const addTimeEntry = async (entry: Omit<TimeEntry, 'id' | 'created_at' | 'updated_at' | 'user_id'>) => {
+    if (!user) return;
+
+    try {
+      const newEntry = await db.createTimeEntry(user.id, entry);
+      setTimeEntries([...timeEntries, newEntry]);
+    } catch (error) {
+      console.error('Error creating time entry:', error);
+      throw error;
+    }
+  };
+
+  const updateTimeEntry = async (entry: TimeEntry) => {
+    if (!user) return;
+
+    try {
+      const updatedEntry = await db.updateTimeEntry(user.id, entry.id, entry);
+      setTimeEntries(timeEntries.map(t => t.id === entry.id ? updatedEntry : t));
+    } catch (error) {
+      console.error('Error updating time entry:', error);
+      throw error;
+    }
+  };
+
+  const deleteTimeEntry = async (entryId: string) => {
+    if (!user) return;
+
+    try {
+      await db.deleteTimeEntry(user.id, entryId);
+      setTimeEntries(timeEntries.filter(t => t.id !== entryId));
+    } catch (error) {
+      console.error('Error deleting time entry:', error);
+      throw error;
+    }
+  };
+
+  const updateInternalHoursLimit = async (limit: number) => {
+    if (!user) return;
+
+    try {
+      await db.updateUserSettings(user.id, { internal_hours_limit: limit });
+      setInternalHoursLimit(limit);
+    } catch (error) {
+      console.error('Error updating internal hours limit:', error);
+      throw error;
     }
   };
 
   const value = {
-    // Data
     projects,
     timeEntries,
-    dailyLimits,
-    weeklyLimits,
-    currentWeekSummary,
     selectedDate,
     internalHoursLimit,
-    
-    // Actions
+    dailyLimits,
+    weeklyLimits,
     addProject,
     updateProject,
     deleteProject,
     addTimeEntry,
     updateTimeEntry,
     deleteTimeEntry,
-    setDailyLimit,
-    setWeeklyLimit,
     setSelectedDate,
-    setInternalHoursLimit,
-    getInternalHoursUsed,
-    getRemainingInternalHours,
+    setInternalHoursLimit: updateInternalHoursLimit,
+    getInternalHoursUsed: (weekStartDate: Date) => {
+      const weekEnd = new Date(weekStartDate);
+      weekEnd.setDate(weekStartDate.getDate() + 6);
+      return timeEntries
+        .filter(entry => {
+          const entryDate = new Date(entry.date);
+          return entryDate >= weekStartDate && entryDate <= weekEnd;
+        })
+        .reduce((sum, entry) => sum + entry.hours, 0);
+    },
+    setDailyLimit: async (date: Date, maxHours: number) => {
+      if (!user) return;
+      await db.setDailyLimit(user.id, date, maxHours);
+      const newLimit = { date, maxHours };
+      setDailyLimits(prev => [...prev.filter(l => l.date.toDateString() !== date.toDateString()), newLimit]);
+    },
+    setWeeklyLimit: async (weekStartDate: Date, maxHours: number) => {
+      if (!user) return;
+      await db.setWeeklyLimit(user.id, weekStartDate, maxHours);
+      const newLimit = { weekStartDate, maxHours };
+      setWeeklyLimits(prev => [...prev.filter(l => l.weekStartDate.toDateString() !== weekStartDate.toDateString()), newLimit]);
+    },
   };
 
   return (

@@ -39,7 +39,7 @@ export default function ProjectCard({ project, onEditClick }: ProjectCardProps) 
       const entryDate = new Date(entry.date);
       entryDate.setHours(0, 0, 0, 0);
       return (
-        entry.projectId === project.id &&
+        entry.project_id === project.id &&
         entryDate >= weekStart &&
         entryDate <= weekEnd
       );
@@ -49,7 +49,7 @@ export default function ProjectCard({ project, onEditClick }: ProjectCardProps) 
     const totalHoursWorked = projectEntries.reduce((sum, entry) => sum + entry.hours, 0);
     
     // For internal projects, consider the shared hours pool
-    if (project.projectType === ProjectType.INTERNAL) {
+    if (project.project_type === ProjectType.INTERNAL) {
       const totalInternalHoursUsed = getInternalHoursUsed(weekStart);
       const remainingInternalHours = Math.max(0, internalHoursLimit - totalInternalHoursUsed);
       const isOvertime = totalInternalHoursUsed > internalHoursLimit;
@@ -65,7 +65,7 @@ export default function ProjectCard({ project, onEditClick }: ProjectCardProps) 
       };
     } else {
       // For external projects, use project-specific allocation
-      const remainingHours = project.weeklyHoursAllocation - totalHoursWorked;
+      const remainingHours = project.weekly_hours_allocation - totalHoursWorked;
       const isOvertime = remainingHours < 0;
       const overtimeHours = isOvertime ? Math.abs(remainingHours) : 0;
       
@@ -79,7 +79,7 @@ export default function ProjectCard({ project, onEditClick }: ProjectCardProps) 
   }, [project, timeEntries, internalHoursLimit, getInternalHoursUsed]);
   
   const percentComplete = useMemo(() => {
-    if (project.projectType === ProjectType.INTERNAL && 'totalPoolHours' in projectStats) {
+    if (project.project_type === ProjectType.INTERNAL && 'totalPoolHours' in projectStats) {
       return Math.min(
         100,
         Math.round((projectStats.totalPoolHours / projectStats.maxPoolHours) * 100)
@@ -87,7 +87,7 @@ export default function ProjectCard({ project, onEditClick }: ProjectCardProps) 
     }
     return Math.min(
       100,
-      Math.round((projectStats.totalHoursWorked / project.weeklyHoursAllocation) * 100)
+      Math.round((projectStats.totalHoursWorked / project.weekly_hours_allocation) * 100)
     );
   }, [project, projectStats]);
   
@@ -106,14 +106,14 @@ export default function ProjectCard({ project, onEditClick }: ProjectCardProps) 
             <div>
               <h3 className="text-base font-medium text-gray-800">{project.name}</h3>
               <span className="text-xs text-gray-500">
-                {project.projectType === ProjectType.INTERNAL ? 'Internal' : 'External'} Project
+                {project.project_type === ProjectType.INTERNAL ? 'Internal' : 'External'} Project
               </span>
             </div>
           </div>
           <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">
-            {project.projectType === ProjectType.INTERNAL 
+            {project.project_type === ProjectType.INTERNAL 
               ? `${internalHoursLimit} hrs shared`
-              : `${project.weeklyHoursAllocation} hrs/week`
+              : `${project.weekly_hours_allocation} hrs/week`
             }
           </span>
         </div>
@@ -126,9 +126,9 @@ export default function ProjectCard({ project, onEditClick }: ProjectCardProps) 
           <div className="flex justify-between text-sm mb-1">
             <span className="font-medium text-gray-700">Progress</span>
             <span className={`${projectStats.isOvertime ? 'text-red-600 font-medium' : 'text-gray-600'}`}>
-              {project.projectType === ProjectType.INTERNAL && 'totalPoolHours' in projectStats
+              {project.project_type === ProjectType.INTERNAL && 'totalPoolHours' in projectStats
                 ? `${projectStats.totalPoolHours.toFixed(1)} / ${projectStats.maxPoolHours} hrs (shared)`
-                : `${projectStats.totalHoursWorked.toFixed(1)} / ${project.weeklyHoursAllocation} hrs`
+                : `${projectStats.totalHoursWorked.toFixed(1)} / ${project.weekly_hours_allocation} hrs`
               }
             </span>
           </div>
@@ -148,7 +148,7 @@ export default function ProjectCard({ project, onEditClick }: ProjectCardProps) 
             <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
             </svg>
-            {project.projectType === ProjectType.INTERNAL && 'totalPoolHours' in projectStats
+            {project.project_type === ProjectType.INTERNAL && 'totalPoolHours' in projectStats
               ? `Overtime: Internal projects exceeded by ${projectStats.overtimeHours.toFixed(1)} hours`
               : `Overtime: ${projectStats.overtimeHours.toFixed(1)} hours over allocation`
             }
@@ -159,7 +159,7 @@ export default function ProjectCard({ project, onEditClick }: ProjectCardProps) 
           <div>
             {projectStats.isOvertime ? (
               <span className="text-xs font-medium text-red-600">
-                {project.projectType === ProjectType.INTERNAL 
+                {project.project_type === ProjectType.INTERNAL 
                   ? 'Internal hours exceeded'
                   : 'Exceeded allocation'
                 }
@@ -167,7 +167,7 @@ export default function ProjectCard({ project, onEditClick }: ProjectCardProps) 
             ) : (
               <>
                 <span className="text-xs font-medium text-gray-600">
-                  {project.projectType === ProjectType.INTERNAL ? 'Shared remaining:' : 'Remaining:'}
+                  {project.project_type === ProjectType.INTERNAL ? 'Shared remaining:' : 'Remaining:'}
                 </span>
                 <span className="ml-1 text-xs text-gray-700">{projectStats.remainingHours.toFixed(1)} hrs</span>
               </>

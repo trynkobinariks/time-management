@@ -3,53 +3,61 @@
 import React, { useMemo } from 'react';
 import { useProjectContext } from '@/lib/ProjectContext';
 import { ProjectType } from '@/lib/types';
-import { startOfWeek } from 'date-fns';
+import { startOfWeek, endOfWeek } from 'date-fns';
 
-export default function HeaderStats() {
-  const { projects, timeEntries, internalHoursLimit, weeklyLimits } = useProjectContext();
+interface HeaderStatsProps {
+  selectedWeekStart: Date;
+}
+
+export default function HeaderStats({ selectedWeekStart }: HeaderStatsProps) {
+  const { projects, timeEntries, internalHoursLimit } = useProjectContext();
   
   const stats = useMemo(() => {
-    const now = new Date();
-    now.setHours(0, 0, 0, 0);
-    const weekStart = startOfWeek(now, { weekStartsOn: 1 });
+    const weekStart = startOfWeek(selectedWeekStart, { weekStartsOn: 1 });
+    const weekEnd = endOfWeek(weekStart, { weekStartsOn: 1 });
     
-    // Filter entries for current week
+    // Filter entries for selected week
     const weekEntries = timeEntries.filter(entry => {
       const entryDate = new Date(entry.date);
       entryDate.setHours(0, 0, 0, 0);
-      return entryDate >= weekStart;
+      return entryDate >= weekStart && entryDate <= weekEnd;
     });
     
     // Calculate internal projects stats
-    const internalProjects = projects.filter(p => p.projectType === ProjectType.INTERNAL);
+    const internalProjects = projects.filter(p => p.project_type === ProjectType.INTERNAL);
     const internalEntries = weekEntries.filter(entry => 
-      internalProjects.some(p => p.id === entry.projectId)
+      internalProjects.some(p => p.id === entry.project_id)
     );
     const internalHoursUsed = internalEntries.reduce((sum, entry) => sum + entry.hours, 0);
     const internalHoursLeft = Math.max(0, internalHoursLimit - internalHoursUsed);
     
     // Calculate external projects stats
-    const externalProjects = projects.filter(p => p.projectType === ProjectType.EXTERNAL);
+    const externalProjects = projects.filter(p => p.project_type === ProjectType.EXTERNAL);
     const externalEntries = weekEntries.filter(entry => 
-      externalProjects.some(p => p.id === entry.projectId)
+      externalProjects.some(p => p.id === entry.project_id)
     );
-    const weeklyLimit = weeklyLimits[0]?.maxHours || 40;
+    const weeklyLimit = 40;
     const externalHoursUsed = externalEntries.reduce((sum, entry) => sum + entry.hours, 0);
     const externalHoursLeft = Math.max(0, weeklyLimit - externalHoursUsed);
     
+    // Calculate total hours
+    const totalHoursUsed = weekEntries.reduce((sum, entry) => sum + entry.hours, 0);
+    const totalHoursLeft = Math.max(0, 40 - totalHoursUsed);
+    const isOverTotal = totalHoursUsed > 40;
+    
     // Calculate per-project stats
     const projectStats = projects.map(project => {
-      const projectEntries = weekEntries.filter(entry => entry.projectId === project.id);
+      const projectEntries = weekEntries.filter(entry => entry.project_id === project.id);
       const hoursUsed = projectEntries.reduce((sum, entry) => sum + entry.hours, 0);
-      const hoursLimit = project.projectType === ProjectType.INTERNAL 
+      const hoursLimit = project.project_type === ProjectType.INTERNAL 
         ? internalHoursLimit 
-        : project.weeklyHoursAllocation;
+        : project.weekly_hours_allocation;
       const hoursLeft = Math.max(0, hoursLimit - hoursUsed);
       
       return {
         id: project.id,
         name: project.name,
-        type: project.projectType,
+        type: project.project_type,
         color: project.color,
         hoursUsed,
         hoursLeft,
@@ -68,13 +76,18 @@ export default function HeaderStats() {
         hoursLeft: externalHoursLeft,
         totalLimit: weeklyLimit
       },
+      total: {
+        hoursUsed: totalHoursUsed,
+        hoursLeft: totalHoursLeft,
+        isOverTotal
+      },
       projects: projectStats
     };
-  }, [projects, timeEntries, internalHoursLimit, weeklyLimits]);
+  }, [projects, timeEntries, internalHoursLimit, selectedWeekStart]);
   
   return (
     <div className="bg-white border border-gray-200 rounded-md p-4 mb-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
         <div className="space-y-2">
           <h3 className="text-sm font-medium text-gray-700">Internal Projects</h3>
           <div className="flex items-center justify-between">
@@ -86,7 +99,6 @@ export default function HeaderStats() {
               <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
               <span className="text-sm text-gray-600">Left: {stats.internal.hoursLeft.toFixed(1)}h</span>
             </div>
-            <span className="text-xs text-gray-500">of {stats.internal.totalLimit}h</span>
           </div>
           <div className="w-full bg-gray-100 rounded-full h-1.5">
             <div 
@@ -109,7 +121,6 @@ export default function HeaderStats() {
               <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
               <span className="text-sm text-gray-600">Left: {stats.external.hoursLeft.toFixed(1)}h</span>
             </div>
-            <span className="text-xs text-gray-500">of {stats.external.totalLimit}h</span>
           </div>
           <div className="w-full bg-gray-100 rounded-full h-1.5">
             <div 
@@ -119,6 +130,37 @@ export default function HeaderStats() {
               }}
             />
           </div>
+        </div>
+
+        <div className="space-y-2">
+          <h3 className="text-sm font-medium text-gray-700">Total Hours (Max 40)</h3>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <div className="w-2 h-2 bg-gray-800 rounded-full"></div>
+              <span className={`text-sm ${stats.total.isOverTotal ? 'text-red-600 font-medium' : 'text-gray-600'}`}>
+                Used: {stats.total.hoursUsed.toFixed(1)}h
+              </span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+              <span className="text-sm text-gray-600">Left: {stats.total.hoursLeft.toFixed(1)}h</span>
+            </div>
+          </div>
+          <div className="w-full bg-gray-100 rounded-full h-1.5">
+            <div 
+              className={`h-1.5 rounded-full transition-all duration-300 ${
+                stats.total.isOverTotal ? 'bg-red-500' : 'bg-gray-800'
+              }`}
+              style={{ 
+                width: `${Math.min(100, (stats.total.hoursUsed / 40) * 100)}%`
+              }}
+            />
+          </div>
+          {stats.total.isOverTotal && (
+            <p className="text-xs text-red-600 font-medium mt-1">
+              Exceeded maximum weekly hours by {(stats.total.hoursUsed - 40).toFixed(1)}h
+            </p>
+          )}
         </div>
       </div>
       

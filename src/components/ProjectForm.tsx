@@ -33,9 +33,9 @@ export default function ProjectForm({ project, onSuccess, onCancel }: ProjectFor
   const [formData, setFormData] = useState({
     name: project?.name || '',
     description: project?.description || '',
-    weeklyHoursAllocation: project?.weeklyHoursAllocation?.toString() || '',
+    weekly_hours_allocation: project?.weekly_hours_allocation?.toString() || '',
     color: project?.color || PROJECT_COLORS[0],
-    projectType: project?.projectType || ProjectType.EXTERNAL,
+    project_type: project?.project_type || ProjectType.EXTERNAL,
   });
   
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -65,16 +65,16 @@ export default function ProjectForm({ project, onSuccess, onCancel }: ProjectFor
       newErrors.name = 'Project name is required';
     }
     
-    if (!formData.weeklyHoursAllocation) {
-      newErrors.weeklyHoursAllocation = 'Weekly hours allocation is required';
+    if (!formData.weekly_hours_allocation) {
+      newErrors.weekly_hours_allocation = 'Weekly hours allocation is required';
     } else {
-      const hours = parseFloat(formData.weeklyHoursAllocation);
+      const hours = parseFloat(formData.weekly_hours_allocation);
       if (isNaN(hours) || hours <= 0) {
-        newErrors.weeklyHoursAllocation = 'Hours must be a positive number';
+        newErrors.weekly_hours_allocation = 'Hours must be a positive number';
       } else if (hours > 168) { // 24 * 7 = 168 hours in a week
-        newErrors.weeklyHoursAllocation = 'Hours cannot exceed 168 per week';
-      } else if (formData.projectType === ProjectType.INTERNAL && hours > internalHoursLimit) {
-        newErrors.weeklyHoursAllocation = `Internal projects cannot exceed the internal hours limit (${internalHoursLimit} hours)`;
+        newErrors.weekly_hours_allocation = 'Hours cannot exceed 168 per week';
+      } else if (formData.project_type === ProjectType.INTERNAL && hours > internalHoursLimit) {
+        newErrors.weekly_hours_allocation = `Internal projects cannot exceed the internal hours limit (${internalHoursLimit} hours)`;
       }
     }
     
@@ -89,9 +89,9 @@ export default function ProjectForm({ project, onSuccess, onCancel }: ProjectFor
       const projectData = {
         name: formData.name.trim(),
         description: formData.description.trim(),
-        weeklyHoursAllocation: parseFloat(formData.weeklyHoursAllocation),
+        weekly_hours_allocation: parseFloat(formData.weekly_hours_allocation),
         color: formData.color,
-        projectType: formData.projectType as ProjectType,
+        project_type: formData.project_type as ProjectType,
       };
       
       if (project) {
@@ -140,7 +140,7 @@ export default function ProjectForm({ project, onSuccess, onCancel }: ProjectFor
         <select
           id="projectType"
           name="projectType"
-          value={formData.projectType}
+          value={formData.project_type}
           onChange={handleChange}
           className="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-500 cursor-pointer"
         >
@@ -148,7 +148,7 @@ export default function ProjectForm({ project, onSuccess, onCancel }: ProjectFor
           <option value={ProjectType.INTERNAL}>Internal</option>
         </select>
         <p className="mt-1 text-xs text-gray-500">
-          {formData.projectType === ProjectType.INTERNAL 
+          {formData.project_type === ProjectType.INTERNAL 
             ? `Internal projects share a common pool of ${internalHoursLimit} hours per week`
             : 'External projects have individual hour allocations'}
         </p>
@@ -177,21 +177,21 @@ export default function ProjectForm({ project, onSuccess, onCancel }: ProjectFor
           type="number"
           id="weeklyHoursAllocation"
           name="weeklyHoursAllocation"
-          value={formData.weeklyHoursAllocation}
+          value={formData.weekly_hours_allocation}
           onChange={handleChange}
           step="0.5"
           min="0.5"
-          max={formData.projectType === ProjectType.INTERNAL ? internalHoursLimit : "168"}
+          max={formData.project_type === ProjectType.INTERNAL ? internalHoursLimit : "168"}
           className={`w-full rounded-md border ${
-            errors.weeklyHoursAllocation ? 'border-gray-400' : 'border-gray-300'
+            errors.weekly_hours_allocation ? 'border-gray-400' : 'border-gray-300'
           } px-3 py-2 text-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-500`}
           placeholder="0.0"
         />
-        {errors.weeklyHoursAllocation && (
-          <p className="mt-1 text-sm text-gray-700">{errors.weeklyHoursAllocation}</p>
+        {errors.weekly_hours_allocation && (
+          <p className="mt-1 text-sm text-gray-700">{errors.weekly_hours_allocation}</p>
         )}
         <p className="mt-1 text-xs text-gray-500">
-          {formData.projectType === ProjectType.INTERNAL 
+          {formData.project_type === ProjectType.INTERNAL 
             ? `Maximum ${internalHoursLimit} hours for internal projects`
             : 'For example, 20 hours = 0.5 FTE (based on 40-hour work week)'}
         </p>

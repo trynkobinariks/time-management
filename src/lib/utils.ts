@@ -48,9 +48,10 @@ export function calculateProjectHours(
   endDate?: Date
 ): number {
   const filteredEntries = timeEntries.filter(entry => {
-    if (entry.projectId !== project.id) return false;
-    if (startDate && entry.date < startDate) return false;
-    if (endDate && entry.date > endDate) return false;
+    if (entry.project_id !== project.id) return false;
+    const entryDate = new Date(entry.date);
+    if (startDate && entryDate < startDate) return false;
+    if (endDate && entryDate > endDate) return false;
     return true;
   });
   
@@ -62,7 +63,7 @@ export function calculateRemainingHours(
   project: Project,
   hoursWorked: number
 ): number {
-  return Math.max(0, project.weeklyHoursAllocation - hoursWorked);
+  return Math.max(0, project.weekly_hours_allocation - hoursWorked);
 }
 
 // Generate a weekly summary from projects and time entries
@@ -76,14 +77,15 @@ export function generateWeeklySummary(
   const weekDates = getWeekDates(weekStartDate);
   
   // Filter entries for the current week
-  const weekEntries = timeEntries.filter(entry => 
-    entry.date >= weekStartDate && entry.date <= weekEndDate
-  );
+  const weekEntries = timeEntries.filter(entry => {
+    const entryDate = new Date(entry.date);
+    return entryDate >= weekStartDate && entryDate <= weekEndDate;
+  });
   
   // Calculate daily summaries
   const dailySummaries: DailySummary[] = weekDates.map(date => {
     const dayEntries = weekEntries.filter(entry => 
-      formatDate(entry.date) === formatDate(date)
+      formatDate(new Date(entry.date)) === formatDate(date)
     );
     
     const totalHoursWorked = dayEntries.reduce((total, entry) => total + entry.hours, 0);
@@ -100,7 +102,7 @@ export function generateWeeklySummary(
   
   // Calculate project summaries
   const projectSummaries: ProjectWithTimeEntries[] = projects.map(project => {
-    const projectEntries = weekEntries.filter(entry => entry.projectId === project.id);
+    const projectEntries = weekEntries.filter(entry => entry.project_id === project.id);
     const totalHoursWorked = projectEntries.reduce((total, entry) => total + entry.hours, 0);
     
     return {

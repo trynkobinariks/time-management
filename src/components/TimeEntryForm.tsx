@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { useProjectContext } from '@/lib/ProjectContext';
-import { format } from 'date-fns';
+import { format, startOfWeek, endOfWeek } from 'date-fns';
 
 interface TimeEntryFormProps {
   projectId?: string;
@@ -11,10 +11,10 @@ interface TimeEntryFormProps {
 }
 
 export default function TimeEntryForm({ projectId, onSuccess, onCancel }: TimeEntryFormProps) {
-  const { projects, addTimeEntry } = useProjectContext();
+  const { projects, timeEntries, addTimeEntry } = useProjectContext();
   
   const [formData, setFormData] = useState({
-    projectId: projectId || '',
+    project_id: projectId || '',
     date: format(new Date(), 'yyyy-MM-dd'),
     hours: '',
     notes: '',
@@ -39,12 +39,30 @@ export default function TimeEntryForm({ projectId, onSuccess, onCancel }: TimeEn
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
     
-    if (!formData.projectId) {
-      newErrors.projectId = 'Please select a project';
+    if (!formData.project_id) {
+      newErrors.project_id = 'Please select a project';
     }
     
     if (!formData.date) {
       newErrors.date = 'Date is required';
+    } else {
+      // Check weekly hours limit
+      const entryDate = new Date(formData.date);
+      const weekStart = startOfWeek(entryDate, { weekStartsOn: 1 });
+      const weekEnd = endOfWeek(weekStart, { weekStartsOn: 1 });
+      
+      const weekEntries = timeEntries.filter(entry => {
+        const date = new Date(entry.date);
+        return date >= weekStart && date <= weekEnd;
+      });
+      
+      const weeklyHours = weekEntries.reduce((sum, entry) => sum + entry.hours, 0);
+      const newHours = parseFloat(formData.hours) || 0;
+      const totalHours = weeklyHours + newHours;
+      
+      if (totalHours > 40) {
+        newErrors.hours = `Adding ${newHours}h would exceed the 40h weekly limit (${weeklyHours.toFixed(1)}h used)`;
+      }
     }
     
     if (!formData.hours) {
@@ -67,10 +85,9 @@ export default function TimeEntryForm({ projectId, onSuccess, onCancel }: TimeEn
     
     if (validateForm()) {
       addTimeEntry({
-        projectId: formData.projectId,
-        date: new Date(formData.date),
-        hours: parseFloat(formData.hours),
-        notes: formData.notes.trim(),
+        project_id: formData.project_id,
+        date: formData.date,
+        hours: parseFloat(formData.hours)
       });
       
       if (onSuccess) {
@@ -82,17 +99,17 @@ export default function TimeEntryForm({ projectId, onSuccess, onCancel }: TimeEn
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <label htmlFor="projectId" className="block text-sm font-medium text-gray-700 mb-1">
+        <label htmlFor="project_id" className="block text-sm font-medium text-gray-700 mb-1">
           Project
         </label>
         <select
-          id="projectId"
-          name="projectId"
-          value={formData.projectId}
+          id="project_id"
+          name="project_id"
+          value={formData.project_id}
           onChange={handleChange}
           disabled={!!projectId}
           className={`w-full rounded-md border ${
-            errors.projectId ? 'border-gray-400' : 'border-gray-300'
+            errors.project_id ? 'border-gray-400' : 'border-gray-300'
           } px-3 py-2 text-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-500 cursor-pointer`}
         >
           <option value="">Select a project</option>
@@ -102,8 +119,8 @@ export default function TimeEntryForm({ projectId, onSuccess, onCancel }: TimeEn
             </option>
           ))}
         </select>
-        {errors.projectId && (
-          <p className="mt-1 text-sm text-gray-700">{errors.projectId}</p>
+        {errors.project_id && (
+          <p className="mt-1 text-sm text-gray-700">{errors.project_id}</p>
         )}
       </div>
       
@@ -147,21 +164,6 @@ export default function TimeEntryForm({ projectId, onSuccess, onCancel }: TimeEn
         {errors.hours && (
           <p className="mt-1 text-sm text-gray-700">{errors.hours}</p>
         )}
-      </div>
-      
-      <div>
-        <label htmlFor="notes" className="block text-sm font-medium text-gray-700 mb-1">
-          Notes (optional)
-        </label>
-        <textarea
-          id="notes"
-          name="notes"
-          value={formData.notes}
-          onChange={handleChange}
-          rows={3}
-          className="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-500"
-          placeholder="What did you work on?"
-        />
       </div>
       
       <div className="flex justify-end space-x-3 pt-4">

@@ -1,44 +1,47 @@
 // Project Types
 export enum ProjectType {
-  INTERNAL = 'internal',
-  EXTERNAL = 'external'
+  INTERNAL = 'INTERNAL',
+  EXTERNAL = 'EXTERNAL',
 }
 
 export interface Project {
   id: string;
+  user_id: string;
   name: string;
   description?: string;
+  weekly_hours_allocation: number;
   color?: string;
-  weeklyHoursAllocation: number; // FTE allocation in hours per week
-  projectType: ProjectType; // New field to categorize projects
-  createdAt: Date;
-  updatedAt: Date;
+  project_type: ProjectType;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface TimeEntry {
   id: string;
-  projectId: string;
-  date: Date;
+  user_id: string;
+  project_id: string;
+  date: string;
   hours: number;
-  notes?: string;
-  createdAt: Date;
-  updatedAt: Date;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface DailyLimit {
   id: string;
-  date: Date;
-  maxHours: number;
-  createdAt: Date;
-  updatedAt: Date;
+  user_id: string;
+  date: string;
+  max_hours: number;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface WeeklyLimit {
   id: string;
-  weekStartDate: Date;
-  maxHours: number;
-  createdAt: Date;
-  updatedAt: Date;
+  user_id: string;
+  week_start_date: string;
+  max_hours: number;
+  created_at: string;
+  updated_at: string;
 }
 
 // Helper type for project with time entries
@@ -66,4 +69,18 @@ export interface WeeklySummary {
   remainingHours: number;
   dailySummaries: DailySummary[];
   projectSummaries: ProjectWithTimeEntries[];
+}
+
+export interface UserSettings {
+  user_id: string;
+  internal_hours_limit: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Profile {
+  id: string;
+  email: string;
+  created_at: string;
+  updated_at: string;
 } 

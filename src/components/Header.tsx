@@ -3,9 +3,11 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useAuth } from '@/lib/AuthContext';
 
 export default function Header() {
   const pathname = usePathname();
+  const { user, signOut } = useAuth();
   
   const navItems = [
     { name: 'Dashboard', href: '/' },
@@ -37,6 +39,19 @@ export default function Header() {
               ))}
             </nav>
           </div>
+          {user && (
+            <div className="flex items-center">
+              <span className="text-sm text-gray-600 mr-4">
+                {user.email}
+              </span>
+              <button
+                onClick={() => signOut()}
+                className="text-sm font-medium text-gray-600 hover:text-gray-500"
+              >
+                Sign out
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </header>
