@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { useProjectContext } from '@/lib/ProjectContext';
-import { Project } from '@/lib/types';
+import { Project, ProjectType } from '@/lib/types';
 
 // Project color palette - modern, accessible colors
 const PROJECT_COLORS = [
@@ -28,18 +28,19 @@ interface ProjectFormProps {
 }
 
 export default function ProjectForm({ project, onSuccess, onCancel }: ProjectFormProps) {
-  const { addProject, updateProject } = useProjectContext();
+  const { addProject, updateProject, internalHoursLimit } = useProjectContext();
   
   const [formData, setFormData] = useState({
     name: project?.name || '',
     description: project?.description || '',
     weeklyHoursAllocation: project?.weeklyHoursAllocation?.toString() || '',
     color: project?.color || PROJECT_COLORS[0],
+    projectType: project?.projectType || ProjectType.EXTERNAL,
   });
   
   const [errors, setErrors] = useState<Record<string, string>>({});
   
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
     
@@ -72,6 +73,8 @@ export default function ProjectForm({ project, onSuccess, onCancel }: ProjectFor
         newErrors.weeklyHoursAllocation = 'Hours must be a positive number';
       } else if (hours > 168) { // 24 * 7 = 168 hours in a week
         newErrors.weeklyHoursAllocation = 'Hours cannot exceed 168 per week';
+      } else if (formData.projectType === ProjectType.INTERNAL && hours > internalHoursLimit) {
+        newErrors.weeklyHoursAllocation = `Internal projects cannot exceed the internal hours limit (${internalHoursLimit} hours)`;
       }
     }
     
@@ -88,6 +91,7 @@ export default function ProjectForm({ project, onSuccess, onCancel }: ProjectFor
         description: formData.description.trim(),
         weeklyHoursAllocation: parseFloat(formData.weeklyHoursAllocation),
         color: formData.color,
+        projectType: formData.projectType as ProjectType,
       };
       
       if (project) {
@@ -130,6 +134,27 @@ export default function ProjectForm({ project, onSuccess, onCancel }: ProjectFor
       </div>
       
       <div>
+        <label htmlFor="projectType" className="block text-sm font-medium text-gray-700 mb-1">
+          Project Type
+        </label>
+        <select
+          id="projectType"
+          name="projectType"
+          value={formData.projectType}
+          onChange={handleChange}
+          className="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-500 cursor-pointer"
+        >
+          <option value={ProjectType.EXTERNAL}>External</option>
+          <option value={ProjectType.INTERNAL}>Internal</option>
+        </select>
+        <p className="mt-1 text-xs text-gray-500">
+          {formData.projectType === ProjectType.INTERNAL 
+            ? `Internal projects share a common pool of ${internalHoursLimit} hours per week`
+            : 'External projects have individual hour allocations'}
+        </p>
+      </div>
+      
+      <div>
         <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
           Description (optional)
         </label>
@@ -156,7 +181,7 @@ export default function ProjectForm({ project, onSuccess, onCancel }: ProjectFor
           onChange={handleChange}
           step="0.5"
           min="0.5"
-          max="168"
+          max={formData.projectType === ProjectType.INTERNAL ? internalHoursLimit : "168"}
           className={`w-full rounded-md border ${
             errors.weeklyHoursAllocation ? 'border-gray-400' : 'border-gray-300'
           } px-3 py-2 text-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-500`}
@@ -166,7 +191,9 @@ export default function ProjectForm({ project, onSuccess, onCancel }: ProjectFor
           <p className="mt-1 text-sm text-gray-700">{errors.weeklyHoursAllocation}</p>
         )}
         <p className="mt-1 text-xs text-gray-500">
-          For example, 20 hours = 0.5 FTE (based on 40-hour work week)
+          {formData.projectType === ProjectType.INTERNAL 
+            ? `Maximum ${internalHoursLimit} hours for internal projects`
+            : 'For example, 20 hours = 0.5 FTE (based on 40-hour work week)'}
         </p>
       </div>
       

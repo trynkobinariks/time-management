@@ -6,6 +6,8 @@ import WeekSelector from '@/components/WeekSelector';
 import DailyHoursChart from '@/components/DailyHoursChart';
 import ProjectCard from '@/components/ProjectCard';
 import TimeEntryForm from '@/components/TimeEntryForm';
+import WeeklyLimitsSettings from '@/components/WeeklyLimitsSettings';
+import HeaderStats from '@/components/HeaderStats';
 import { startOfWeek, endOfWeek, addWeeks, format } from 'date-fns';
 
 export default function Dashboard() {
@@ -48,48 +50,59 @@ export default function Dashboard() {
         </div>
       </div>
       
-      <WeekSelector
-        currentWeekStart={currentWeekStart}
-        onPreviousWeek={handlePreviousWeek}
-        onNextWeek={handleNextWeek}
-        onCurrentWeek={handleCurrentWeek}
-      />
+      <HeaderStats />
       
-      <div className="mt-6">
-        <DailyHoursChart weekStartDate={currentWeekStart} />
-      </div>
-      
-      <div className="mt-8">
-        <h2 className="text-xl font-medium text-gray-800 mb-4">Your Projects</h2>
-        {projects.length === 0 ? (
-          <div className="text-center py-8 border border-gray-200 rounded-md bg-white">
-            <p className="text-gray-600 mb-4">You don&apos;t have any projects yet.</p>
-            <a 
-              href="/projects" 
-              className="px-4 py-2 text-sm font-medium text-white bg-gray-800 rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 cursor-pointer transition-colors"
-            >
-              Add Your First Project
-            </a>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2">
+          <WeekSelector
+            currentWeekStart={currentWeekStart}
+            onPreviousWeek={handlePreviousWeek}
+            onNextWeek={handleNextWeek}
+            onCurrentWeek={handleCurrentWeek}
+          />
+          
+          <div className="mt-6">
+            <DailyHoursChart weekStartDate={currentWeekStart} />
           </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {projects.slice(0, 3).map(project => (
-              <ProjectCard 
-                key={project.id} 
-                project={project}
-                onEditClick={() => window.location.href = '/projects'}
-              />
-            ))}
-            {projects.length > 3 && (
-              <a 
-                href="/projects" 
-                className="flex items-center justify-center p-4 border border-gray-200 rounded-md bg-white text-gray-700 hover:bg-gray-50 cursor-pointer transition-colors"
-              >
-                View All Projects
-              </a>
+          
+          <div className="mt-8">
+            <h2 className="text-xl font-medium text-gray-800 mb-4">Your Projects</h2>
+            {projects.length === 0 ? (
+              <div className="text-center py-8 border border-gray-200 rounded-md bg-white">
+                <p className="text-gray-600 mb-4">You don&apos;t have any projects yet.</p>
+                <a 
+                  href="/projects" 
+                  className="px-4 py-2 text-sm font-medium text-white bg-gray-800 rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 cursor-pointer transition-colors"
+                >
+                  Add Your First Project
+                </a>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {projects.slice(0, 4).map(project => (
+                  <ProjectCard 
+                    key={project.id} 
+                    project={project}
+                    onEditClick={() => window.location.href = '/projects'}
+                  />
+                ))}
+                {projects.length > 4 && (
+                  <a 
+                    href="/projects" 
+                    className="flex items-center justify-center p-4 border border-gray-200 rounded-md bg-white text-gray-700 hover:bg-gray-50 cursor-pointer transition-colors"
+                  >
+                    View All Projects
+                  </a>
+                )}
+              </div>
             )}
           </div>
-        )}
+        </div>
+        
+        <div className="space-y-6">
+          <WeeklyLimitsSettings />
+          {/* Add other sidebar components here */}
+        </div>
       </div>
       
       {showAddTimeEntry && (

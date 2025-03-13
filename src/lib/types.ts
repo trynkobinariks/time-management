@@ -1,9 +1,16 @@
+// Project Types
+export enum ProjectType {
+  INTERNAL = 'internal',
+  EXTERNAL = 'external'
+}
+
 export interface Project {
   id: string;
   name: string;
   description?: string;
   color?: string;
   weeklyHoursAllocation: number; // FTE allocation in hours per week
+  projectType: ProjectType; // New field to categorize projects
   createdAt: Date;
   updatedAt: Date;
 }

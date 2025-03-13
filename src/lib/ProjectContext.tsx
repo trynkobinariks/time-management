@@ -2,8 +2,9 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import { DailyLimit, Project, TimeEntry, WeeklyLimit, WeeklySummary } from './types';
+import { DailyLimit, Project, ProjectType, TimeEntry, WeeklyLimit, WeeklySummary } from './types';
 import { generateWeeklySummary, getWeekStartDate } from './utils';
+import { endOfWeek } from 'date-fns';
 
 // Local storage keys
 const STORAGE_KEYS = {
@@ -11,6 +12,7 @@ const STORAGE_KEYS = {
   TIME_ENTRIES: 'hours-tracker-time-entries',
   DAILY_LIMITS: 'hours-tracker-daily-limits',
   WEEKLY_LIMITS: 'hours-tracker-weekly-limits',
+  INTERNAL_HOURS_LIMIT: 'hours-tracker-internal-hours-limit',
 };
 
 // Project color palette - modern, accessible colors
@@ -30,6 +32,9 @@ const PROJECT_COLORS = [
   '#06B6D4', // Cyan
 ];
 
+// Default internal hours allocation
+const DEFAULT_INTERNAL_HOURS = 20;
+
 // Function to get a color based on the project index
 function getProjectColor(index: number): string {
   return PROJECT_COLORS[index % PROJECT_COLORS.length];
@@ -43,6 +48,7 @@ interface ProjectContextType {
   weeklyLimits: WeeklyLimit[];
   currentWeekSummary: WeeklySummary | null;
   selectedDate: Date;
+  internalHoursLimit: number;
   
   // Actions
   addProject: (project: Omit<Project, 'id' | 'createdAt' | 'updatedAt'>) => void;
@@ -54,6 +60,9 @@ interface ProjectContextType {
   setDailyLimit: (date: Date, maxHours: number) => void;
   setWeeklyLimit: (weekStartDate: Date, maxHours: number) => void;
   setSelectedDate: (date: Date) => void;
+  setInternalHoursLimit: (hours: number) => void;
+  getInternalHoursUsed: (weekStartDate: Date) => number;
+  getRemainingInternalHours: (weekStartDate: Date) => number;
 }
 
 const ProjectContext = createContext<ProjectContextType | undefined>(undefined);
@@ -126,6 +135,18 @@ export function ProjectProvider({ children }: ProjectProviderProps) {
     getStoredData<WeeklyLimit[]>(STORAGE_KEYS.WEEKLY_LIMITS, [])
   );
   
+  const [internalHoursLimit, setInternalHoursLimit] = useState<number>(() => {
+    if (typeof window === 'undefined') return DEFAULT_INTERNAL_HOURS;
+    
+    try {
+      const storedLimit = localStorage.getItem(STORAGE_KEYS.INTERNAL_HOURS_LIMIT);
+      return storedLimit ? parseFloat(storedLimit) : DEFAULT_INTERNAL_HOURS;
+    } catch (error) {
+      console.error('Error loading internal hours limit:', error);
+      return DEFAULT_INTERNAL_HOURS;
+    }
+  });
+  
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [currentWeekSummary, setCurrentWeekSummary] = useState<WeeklySummary | null>(null);
 
@@ -186,6 +207,11 @@ export function ProjectProvider({ children }: ProjectProviderProps) {
     if (typeof window === 'undefined') return;
     localStorage.setItem(STORAGE_KEYS.WEEKLY_LIMITS, JSON.stringify(weeklyLimits));
   }, [weeklyLimits]);
+  
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    localStorage.setItem(STORAGE_KEYS.INTERNAL_HOURS_LIMIT, internalHoursLimit.toString());
+  }, [internalHoursLimit]);
 
   // Update weekly summary when data changes
   useEffect(() => {
@@ -220,6 +246,36 @@ export function ProjectProvider({ children }: ProjectProviderProps) {
       setCurrentWeekSummary(summary);
     }
   }, [projects, timeEntries, dailyLimits, weeklyLimits, selectedDate]);
+
+  // Function to get internal hours used for a specific week
+  const getInternalHoursUsed = (weekStartDate: Date): number => {
+    const weekEnd = endOfWeek(weekStartDate, { weekStartsOn: 1 });
+    
+    // Get all internal projects
+    const internalProjectIds = projects
+      .filter(project => project.projectType === ProjectType.INTERNAL)
+      .map(project => project.id);
+    
+    // Filter time entries for internal projects in the specified week
+    const internalEntries = timeEntries.filter(entry => {
+      const entryDate = new Date(entry.date);
+      entryDate.setHours(0, 0, 0, 0);
+      return (
+        internalProjectIds.includes(entry.projectId) &&
+        entryDate >= weekStartDate &&
+        entryDate <= weekEnd
+      );
+    });
+    
+    // Calculate total hours worked on internal projects
+    return internalEntries.reduce((sum, entry) => sum + entry.hours, 0);
+  };
+  
+  // Function to get remaining internal hours for a specific week
+  const getRemainingInternalHours = (weekStartDate: Date): number => {
+    const hoursUsed = getInternalHoursUsed(weekStartDate);
+    return Math.max(0, internalHoursLimit - hoursUsed);
+  };
 
   // Project actions
   const addProject = (projectData: Omit<Project, 'id' | 'createdAt' | 'updatedAt'>) => {
@@ -343,6 +399,7 @@ export function ProjectProvider({ children }: ProjectProviderProps) {
     weeklyLimits,
     currentWeekSummary,
     selectedDate,
+    internalHoursLimit,
     
     // Actions
     addProject,
@@ -354,6 +411,9 @@ export function ProjectProvider({ children }: ProjectProviderProps) {
     setDailyLimit,
     setWeeklyLimit,
     setSelectedDate,
+    setInternalHoursLimit,
+    getInternalHoursUsed,
+    getRemainingInternalHours,
   };
 
   return (
