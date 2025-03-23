@@ -60,7 +60,7 @@ function LoginContent() {
   };
 
   return (
-    <div className="min-h-[calc(100vh-53px)] flex items-center justify-center bg-gray-50 px-4 sm:px-6 lg:px-8 ">
+    <div className="min-h-[calc(100vh-53px-env(safe-area-inset-top))] flex items-center justify-center bg-gray-50 px-4 sm:px-6 lg:px-8 pb-env(safe-area-inset-bottom)">
       <div className="max-w-md w-full space-y-8">
         <div>
           <h2 className="mt-6 text-center text-3xl font-medium text-gray-900">
@@ -150,7 +150,7 @@ function LoginContent() {
 
 export default function LoginPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
+    <Suspense fallback={<div className="min-h-[calc(100vh-env(safe-area-inset-top))] flex items-center justify-center">Loading...</div>}>
       <LoginContent />
     </Suspense>
   );

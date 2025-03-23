@@ -50,8 +50,8 @@ function AuthCallbackContent() {
   }, [router, searchParams]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="max-w-md w-full space-y-8 p-6">
+    <div className="min-h-[calc(100vh-env(safe-area-inset-top))] flex items-center justify-center bg-gray-50 pb-env(safe-area-inset-bottom)">
+      <div className="p-4 max-w-md w-full space-y-8">
         <div>
           <h2 className="mt-6 text-center text-3xl font-medium text-gray-900">
             Verifying your email...
@@ -67,8 +67,8 @@ function AuthCallbackContent() {
 
 export default function AuthCallbackPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="max-w-md w-full space-y-8 p-6">
+    <Suspense fallback={<div className="min-h-[calc(100vh-env(safe-area-inset-top))] flex items-center justify-center bg-gray-50 pb-env(safe-area-inset-bottom)">
+      <div className="p-4 max-w-md w-full">
         <div>
           <h2 className="mt-6 text-center text-3xl font-medium text-gray-900">
             Loading...
