@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useProjectContext } from '@/lib/ProjectContext';
+import { useWelcomeContext } from '@/lib/WelcomeContext';
 import WeekSelector from '@/components/WeekSelector';
 import DailyHoursChart from '@/components/DailyHoursChart';
 import ProjectCard from '@/components/ProjectCard';
@@ -12,6 +13,7 @@ import { startOfWeek, endOfWeek, addWeeks, format } from 'date-fns';
 
 export default function Dashboard() {
   const { projects } = useProjectContext();
+  const { setShowWelcomePopup } = useWelcomeContext();
   const [currentWeekStart, setCurrentWeekStart] = useState(() => 
     startOfWeek(new Date(), { weekStartsOn: 1 }) // Week starts on Monday
   );
@@ -30,6 +32,27 @@ export default function Dashboard() {
   };
   
   const currentWeekEnd = endOfWeek(currentWeekStart, { weekStartsOn: 1 });
+  
+  // Check for login flag when dashboard loads
+  useEffect(() => {
+    try {
+      // Check both sessionStorage and localStorage for login flags
+      const justLoggedIn = sessionStorage.getItem('justLoggedIn') === 'true';
+      const welcomeTimestamp = localStorage.getItem('showWelcome');
+      
+      if (justLoggedIn || welcomeTimestamp) {
+        // Clear flags
+        sessionStorage.removeItem('justLoggedIn');
+        if (welcomeTimestamp) localStorage.removeItem('showWelcome');
+        
+        // Show welcome popup
+        setShowWelcomePopup(true);
+        console.log('Dashboard triggered welcome popup');
+      }
+    } catch (error) {
+      console.error('Error checking login status:', error);
+    }
+  }, [setShowWelcomePopup]);
   
   return (
     <div className="container mx-auto px-4 py-8">
