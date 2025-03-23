@@ -30,29 +30,24 @@ export default function AuthCallbackPage() {
           throw new Error('No session returned from code exchange');
         }
 
+        // Set up auth state change listener
+        const {
+          data: { subscription },
+        } = supabase.auth.onAuthStateChange((event, session) => {
+          if (event === 'SIGNED_IN' && session) {
+            // Cleanup subscription
+            subscription.unsubscribe();
+            // Redirect only after we confirm the auth state is updated
+            window.location.href = next;
+          }
+        });
+
         // Set the session in Supabase's internal storage
         await supabase.auth.setSession({
           access_token: data.session.access_token,
           refresh_token: data.session.refresh_token,
         });
 
-        // Double check the session is set
-        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-        
-        if (sessionError || !session) {
-          throw new Error('Failed to retrieve session after code exchange');
-        }
-
-        // Give a small delay to ensure cookies are set
-        await new Promise(resolve => setTimeout(resolve, 1000));
-
-        // Use router.push first to update Next.js router state
-        router.push(next);
-        
-        // Then force a full page refresh to ensure everything is in sync
-        setTimeout(() => {
-          window.location.href = next;
-        }, 100);
       } catch (error) {
         console.error('Auth callback error:', error);
         const errorMessage = error instanceof Error ? error.message : 'Failed to verify email';
@@ -61,6 +56,11 @@ export default function AuthCallbackPage() {
     };
 
     handleCallback();
+
+    // Cleanup function
+    return () => {
+      // Any cleanup if needed
+    };
   }, [router, searchParams]);
 
   return (

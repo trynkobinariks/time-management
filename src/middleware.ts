@@ -44,7 +44,7 @@ export async function middleware(req: NextRequest) {
   );
 
   const { data: { user } } = await supabase.auth.getUser();
-
+  console.log('User:', user);
   // Define auth pages that should be accessible without a session
   const PUBLIC_ROUTES = ['/auth/login', '/auth/signup', '/auth/reset-password'];
   const isAuthPage = req.nextUrl.pathname.startsWith('/auth/');
@@ -56,7 +56,7 @@ export async function middleware(req: NextRequest) {
   }
 
   // If there's no user and trying to access a protected route
-  if (!user && !isPublicRoute) {
+  if (!isPublicRoute) {
     const redirectUrl = new URL('/auth/login', req.url);
     // Preserve the original URL as a "next" parameter
     redirectUrl.searchParams.set('next', req.nextUrl.pathname);
