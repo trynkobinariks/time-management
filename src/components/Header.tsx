@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { createBrowserClient } from '@supabase/ssr';
 import type { User } from '@supabase/supabase-js';
+import Logo from './Logo';
 
 export default function Header() {
   const pathname = usePathname();
@@ -48,9 +49,12 @@ export default function Header() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex items-center">
-            <h1 className="text-xl font-bold text-gray-800">
-              Hours Tracker
-            </h1>
+            <Link href="/" className="flex items-center">
+              <Logo size="md" className="mr-2" />
+              <span className="text-xl font-bold text-gray-800 hidden sm:inline">
+                Hours Tracker
+              </span>
+            </Link>
             {/* Desktop navigation */}
             <nav className="ml-8 hidden md:flex space-x-4">
               {navItems.map((item) => (

@@ -3,6 +3,20 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { updatePassword } from '@/lib/auth';
+import Logo from '@/components/Logo';
+
+// Background component for auth pages
+function AuthBackground() {
+  return (
+    <>
+      <div className="auth-triangle auth-triangle-1"></div>
+      <div className="auth-triangle auth-triangle-2"></div>
+      <div className="auth-triangle auth-triangle-3"></div>
+      <div className="auth-triangle auth-triangle-4"></div>
+      <div className="auth-triangle auth-triangle-5"></div>
+    </>
+  );
+}
 
 export default function UpdatePasswordPage() {
   const [password, setPassword] = useState('');
@@ -38,10 +52,12 @@ export default function UpdatePasswordPage() {
   };
 
   return (
-    <div className="min-h-[calc(100vh-env(safe-area-inset-top))] flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8 pb-env(safe-area-inset-bottom)">
-      <div className="max-w-md w-full space-y-8">
-        <div>
-          <h2 className="mt-6 text-center text-3xl font-medium text-gray-900">
+    <div className="min-h-[calc(100vh-env(safe-area-inset-top))] flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8 pb-env(safe-area-inset-bottom) auth-background">
+      <AuthBackground />
+      <div className="max-w-md w-full space-y-6 auth-card">
+        <div className="flex flex-col items-center">
+          <Logo size="lg" className="mb-4" />
+          <h2 className="text-center text-3xl font-medium text-gray-900">
             Update your password
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
@@ -62,7 +78,7 @@ export default function UpdatePasswordPage() {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-gray-500 focus:border-gray-500 focus:z-10 sm:text-sm"
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md"
                 placeholder="New password"
               />
             </div>
@@ -78,7 +94,7 @@ export default function UpdatePasswordPage() {
                 required
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-gray-500 focus:border-gray-500 focus:z-10 sm:text-sm"
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md"
                 placeholder="Confirm new password"
               />
             </div>
@@ -100,7 +116,7 @@ export default function UpdatePasswordPage() {
               disabled={loading}
               className={`group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white ${
                 loading ? 'bg-gray-400' : 'bg-gray-800 hover:bg-gray-700'
-              } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500`}
+              }`}
             >
               {loading ? 'Updating password...' : 'Update password'}
             </button>
