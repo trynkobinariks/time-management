@@ -2,8 +2,8 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { Project, TimeEntry } from './types';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
-import type { User } from '@supabase/auth-helpers-nextjs';
+import { createBrowserClient } from '@supabase/ssr';
+import type { User } from '@supabase/supabase-js';
 import * as db from './db';
 
 interface ProjectContextType {
@@ -48,7 +48,10 @@ export function ProjectProvider({ children }: ProjectProviderProps) {
   const [dailyLimits, setDailyLimits] = useState<{ date: Date; maxHours: number }[]>([]);
   const [weeklyLimits, setWeeklyLimits] = useState<{ weekStartDate: Date; maxHours: number }[]>([]);
   const [user, setUser] = useState<User | null>(null);
-  const supabase = createClientComponentClient();
+  const supabase = createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL || '',
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
+  );
 
   // Get and subscribe to auth state
   useEffect(() => {

@@ -31,10 +31,9 @@ export default function LoginPage() {
         setError('Failed to sign in. Please check your credentials.');
         return;
       }
-      
+
       // Get the next path from search params or default to home
       const nextPath = searchParams.get('next') || '/';
-      
       // Force a router refresh to update auth state
       router.refresh();
       

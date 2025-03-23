@@ -1,4 +1,4 @@
-import { createServerClient, type CookieOptions } from "@supabase/ssr";
+import { createServerClient } from "@supabase/ssr";
 import { type NextRequest, NextResponse } from "next/server";
 
 export async function middleware(req: NextRequest) {
@@ -25,26 +25,50 @@ export async function middleware(req: NextRequest) {
     SUPABASE_ANON_KEY,
     {
       cookies: {
-        getAll() {
-          return req.cookies.getAll();
+        get(name) {
+          return req.cookies.get(name)?.value;
         },
-        setAll(cookiesToSet: { name: string; value: string; options?: CookieOptions }[]) {
-          for (const { name, value } of cookiesToSet) {
-            req.cookies.set(name, value);
-          }
-          response = NextResponse.next({
-            request: req,
+        set(name, value, options) {
+          req.cookies.set({
+            name,
+            value,
+            ...options,
           });
-          for (const { name, value, options } of cookiesToSet) {
-            response.cookies.set(name, value, options);
-          }
+          response = NextResponse.next({
+            request: {
+              headers: req.headers,
+            },
+          });
+          response.cookies.set({
+            name,
+            value,
+            ...options,
+          });
+        },
+        remove(name, options) {
+          req.cookies.set({
+            name,
+            value: '',
+            ...options,
+          });
+          response = NextResponse.next({
+            request: {
+              headers: req.headers,
+            },
+          });
+          response.cookies.set({
+            name,
+            value: '',
+            ...options,
+          });
         },
       },
     }
   );
 
-  const { data: { user } } = await supabase.auth.getUser();
-  console.log('User:', user);
+  const { data: { session } } = await supabase.auth.getSession();
+  const user = session?.user;
+
   // Define auth pages that should be accessible without a session
   const PUBLIC_ROUTES = ['/auth/login', '/auth/signup', '/auth/reset-password'];
   const isAuthPage = req.nextUrl.pathname.startsWith('/auth/');
@@ -56,7 +80,7 @@ export async function middleware(req: NextRequest) {
   }
 
   // If there's no user and trying to access a protected route
-  if (!user && !isPublicRoute) {
+  if (!user && !isAuthPage && !isPublicRoute) {
     const redirectUrl = new URL('/auth/login', req.url);
     // Preserve the original URL as a "next" parameter
     redirectUrl.searchParams.set('next', req.nextUrl.pathname);
