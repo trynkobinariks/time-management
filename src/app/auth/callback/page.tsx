@@ -3,6 +3,20 @@
 import { useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
+import Logo from '@/components/Logo';
+
+// Background component for auth pages
+function AuthBackground() {
+  return (
+    <>
+      <div className="auth-triangle auth-triangle-1"></div>
+      <div className="auth-triangle auth-triangle-2"></div>
+      <div className="auth-triangle auth-triangle-3"></div>
+      <div className="auth-triangle auth-triangle-4"></div>
+      <div className="auth-triangle auth-triangle-5"></div>
+    </>
+  );
+}
 
 function AuthCallbackContent() {
   const router = useRouter();
@@ -50,10 +64,12 @@ function AuthCallbackContent() {
   }, [router, searchParams]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="max-w-md w-full space-y-8 p-6">
-        <div>
-          <h2 className="mt-6 text-center text-3xl font-medium text-gray-900">
+    <div className="min-h-[calc(100vh-env(safe-area-inset-top))] flex items-center justify-center bg-gray-50 pb-env(safe-area-inset-bottom) auth-background">
+      <AuthBackground />
+      <div className="p-4 max-w-md w-full auth-card">
+        <div className="flex flex-col items-center">
+          <Logo size="lg" className="mb-4" />
+          <h2 className="text-center text-3xl font-medium text-gray-900">
             Verifying your email...
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
@@ -67,15 +83,19 @@ function AuthCallbackContent() {
 
 export default function AuthCallbackPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="max-w-md w-full space-y-8 p-6">
-        <div>
-          <h2 className="mt-6 text-center text-3xl font-medium text-gray-900">
-            Loading...
-          </h2>
+    <Suspense fallback={
+      <div className="min-h-[calc(100vh-env(safe-area-inset-top))] flex items-center justify-center bg-gray-50 pb-env(safe-area-inset-bottom) auth-background">
+        <AuthBackground />
+        <div className="p-4 max-w-md w-full auth-card">
+          <div className="flex flex-col items-center">
+            <Logo size="lg" className="mb-4" />
+            <h2 className="text-center text-3xl font-medium text-gray-900">
+              Loading...
+            </h2>
+          </div>
         </div>
       </div>
-    </div>}>
+    }>
       <AuthCallbackContent />
     </Suspense>
   );
