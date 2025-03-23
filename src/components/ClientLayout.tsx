@@ -13,7 +13,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
       {!isAuthPage && <Header />}
       {!isAuthPage && <WelcomeManager />}
       <main className={`flex-grow ${!isAuthPage ? 'py-6 pt-20' : ''}`}>
-        <div className={`${!isAuthPage ? 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8' : ''}`}>
+        <div className={`${!isAuthPage ? 'max-w-7xl mx-auto px-0 sm:px-6 lg:px-8' : ''}`}>
           {children}
         </div>
       </main>
