@@ -29,7 +29,7 @@ interface ProjectFormProps {
 
 export default function ProjectForm({ project, onSuccess, onCancel }: ProjectFormProps) {
   const { addProject, updateProject, internalHoursLimit } = useProjectContext();
-  
+
   const [formData, setFormData] = useState({
     name: project?.name || '',
     description: project?.description || '',
@@ -37,13 +37,13 @@ export default function ProjectForm({ project, onSuccess, onCancel }: ProjectFor
     color: project?.color || PROJECT_COLORS[0],
     project_type: project?.project_type || ProjectType.EXTERNAL,
   });
-  
+
   const [errors, setErrors] = useState<Record<string, string>>({});
-  
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-    
+
     // Clear error when field is edited
     if (errors[name]) {
       setErrors(prev => {
@@ -53,18 +53,18 @@ export default function ProjectForm({ project, onSuccess, onCancel }: ProjectFor
       });
     }
   };
-  
+
   const handleColorChange = (color: string) => {
     setFormData(prev => ({ ...prev, color }));
   };
-  
+
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
-    
+
     if (!formData.name.trim()) {
       newErrors.name = 'Project name is required';
     }
-    
+
     if (!formData.weekly_hours_allocation) {
       newErrors.weekly_hours_allocation = 'Weekly hours allocation is required';
     } else {
@@ -77,14 +77,14 @@ export default function ProjectForm({ project, onSuccess, onCancel }: ProjectFor
         newErrors.weekly_hours_allocation = `Internal projects cannot exceed the internal hours limit (${internalHoursLimit} hours)`;
       }
     }
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-  
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (validateForm()) {
       const projectData = {
         name: formData.name.trim(),
@@ -93,7 +93,7 @@ export default function ProjectForm({ project, onSuccess, onCancel }: ProjectFor
         color: formData.color || null,
         project_type: formData.project_type as ProjectType,
       };
-      
+
       if (project) {
         // Update existing project
         updateProject({
@@ -104,13 +104,13 @@ export default function ProjectForm({ project, onSuccess, onCancel }: ProjectFor
         // Add new project
         addProject(projectData);
       }
-      
+
       if (onSuccess) {
         onSuccess();
       }
     }
   };
-  
+
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
@@ -123,23 +123,22 @@ export default function ProjectForm({ project, onSuccess, onCancel }: ProjectFor
           name="name"
           value={formData.name}
           onChange={handleChange}
-          className={`w-full rounded-md border ${
-            errors.name ? 'border-gray-400' : 'border-gray-300'
-          } px-3 py-2 text-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-500`}
+          className={`w-full rounded-md border ${errors.name ? 'border-gray-400' : 'border-gray-300'
+            } px-3 py-2 text-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-500`}
           placeholder="Enter project name"
         />
         {errors.name && (
           <p className="mt-1 text-sm text-gray-700">{errors.name}</p>
         )}
       </div>
-      
+
       <div>
-        <label htmlFor="projectType" className="block text-sm font-medium text-gray-700 mb-1">
+        <label htmlFor="project_type" className="block text-sm font-medium text-gray-700 mb-1">
           Project Type
         </label>
         <select
-          id="projectType"
-          name="projectType"
+          id="project_type"
+          name="project_type"
           value={formData.project_type}
           onChange={handleChange}
           className="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-500 cursor-pointer"
@@ -148,12 +147,12 @@ export default function ProjectForm({ project, onSuccess, onCancel }: ProjectFor
           <option value={ProjectType.INTERNAL}>Internal</option>
         </select>
         <p className="mt-1 text-xs text-gray-500">
-          {formData.project_type === ProjectType.INTERNAL 
+          {formData.project_type === ProjectType.INTERNAL
             ? `Internal projects share a common pool of ${internalHoursLimit} hours per week`
             : 'External projects have individual hour allocations'}
         </p>
       </div>
-      
+
       <div>
         <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
           Description (optional)
@@ -168,35 +167,34 @@ export default function ProjectForm({ project, onSuccess, onCancel }: ProjectFor
           placeholder="Describe the project"
         />
       </div>
-      
+
       <div>
-        <label htmlFor="weeklyHoursAllocation" className="block text-sm font-medium text-gray-700 mb-1">
+        <label htmlFor="weekly_hours_allocation" className="block text-sm font-medium text-gray-700 mb-1">
           Weekly Hours Allocation
         </label>
         <input
           type="number"
-          id="weeklyHoursAllocation"
-          name="weeklyHoursAllocation"
+          id="weekly_hours_allocation"
+          name="weekly_hours_allocation"
           value={formData.weekly_hours_allocation}
           onChange={handleChange}
           step="0.5"
           min="0.5"
           max={formData.project_type === ProjectType.INTERNAL ? internalHoursLimit : "168"}
-          className={`w-full rounded-md border ${
-            errors.weekly_hours_allocation ? 'border-gray-400' : 'border-gray-300'
-          } px-3 py-2 text-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-500`}
+          className={`w-full rounded-md border ${errors.weekly_hours_allocation ? 'border-gray-400' : 'border-gray-300'
+            } px-3 py-2 text-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-500`}
           placeholder="0.0"
         />
         {errors.weekly_hours_allocation && (
           <p className="mt-1 text-sm text-gray-700">{errors.weekly_hours_allocation}</p>
         )}
         <p className="mt-1 text-xs text-gray-500">
-          {formData.project_type === ProjectType.INTERNAL 
+          {formData.project_type === ProjectType.INTERNAL
             ? `Maximum ${internalHoursLimit} hours for internal projects`
             : 'For example, 20 hours = 0.5 FTE (based on 40-hour work week)'}
         </p>
       </div>
-      
+
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">
           Project Color
@@ -207,16 +205,15 @@ export default function ProjectForm({ project, onSuccess, onCancel }: ProjectFor
               key={color}
               type="button"
               onClick={() => handleColorChange(color)}
-              className={`w-8 h-8 rounded-full cursor-pointer transition-all ${
-                formData.color === color ? 'ring-2 ring-offset-2 ring-gray-400' : ''
-              }`}
+              className={`w-8 h-8 rounded-full cursor-pointer transition-all ${formData.color === color ? 'ring-2 ring-offset-2 ring-gray-400' : ''
+                }`}
               style={{ backgroundColor: color }}
               aria-label={`Select color ${color}`}
             />
           ))}
         </div>
       </div>
-      
+
       <div className="flex justify-end space-x-3 pt-4">
         {onCancel && (
           <button
