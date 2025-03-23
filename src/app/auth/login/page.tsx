@@ -32,6 +32,18 @@ function LoginContent() {
         return;
       }
 
+      // Ensure we set the flag in session storage
+      try {
+        // Setting a session storage flag with a timestamp to make it unique
+        sessionStorage.removeItem('justLoggedIn');
+        sessionStorage.setItem('justLoggedIn', 'true');
+        // Also set a local storage backup in case session storage doesn't persist
+        localStorage.setItem('showWelcome', Date.now().toString());
+        console.log('Set login flags in storage');
+      } catch (err) {
+        console.error('Failed to set storage:', err);
+      }
+
       // Get the next path from search params or default to home
       const nextPath = searchParams.get('next') || '/';
       // Force a router refresh to update auth state
@@ -48,7 +60,7 @@ function LoginContent() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-[calc(100vh-53px)] flex items-center justify-center bg-gray-50 px-4 sm:px-6 lg:px-8 ">
       <div className="max-w-md w-full space-y-8">
         <div>
           <h2 className="mt-6 text-center text-3xl font-medium text-gray-900">
