@@ -18,17 +18,29 @@ export async function signUp(email: string, password: string) {
 }
 
 export async function signIn(email: string, password: string) {
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email,
-    password,
-  });
+  try {
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
 
-  if (error) {
-    console.error('Sign in error:', error);
-    throw error;
+    if (error) {
+      console.error('Sign in error:', error);
+      throw error;
+    }
+
+    return data;
+  } catch (err) {
+    console.error('Sign in exception:', err);
+    // Enhanced error handling with more specific messages
+    if (err instanceof Error) {
+      if (err.message === 'Failed to fetch') {
+        console.error('Network error connecting to Supabase. Check your internet connection and Supabase URL.');
+        throw new Error('Network error connecting to authentication service. Please check your internet connection and try again.');
+      }
+    }
+    throw err;
   }
-
-  return data;
 }
 
 export async function signOut() {

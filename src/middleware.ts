@@ -56,7 +56,7 @@ export async function middleware(req: NextRequest) {
   }
 
   // If there's no user and trying to access a protected route
-  if (!isPublicRoute) {
+  if (!user && !isPublicRoute) {
     const redirectUrl = new URL('/auth/login', req.url);
     // Preserve the original URL as a "next" parameter
     redirectUrl.searchParams.set('next', req.nextUrl.pathname);

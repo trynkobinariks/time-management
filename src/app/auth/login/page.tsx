@@ -31,10 +31,15 @@ export default function LoginPage() {
         setError('Failed to sign in. Please check your credentials.');
         return;
       }
-      // Force a router refresh to trigger the middleware
+      
+      // Get the next path from search params or default to home
+      const nextPath = searchParams.get('next') || '/';
+      
+      // Force a router refresh to update auth state
       router.refresh();
-      // Redirect to home page
-      router.push('/');
+      
+      // Use replace instead of push to avoid back button issues
+      router.replace(nextPath);
     } catch (error) {
       console.error('Login error:', error);
       setError(error instanceof Error ? error.message : 'Failed to sign in. Please check your credentials.');
