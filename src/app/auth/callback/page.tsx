@@ -30,23 +30,9 @@ function AuthCallbackContent() {
           throw new Error('No session returned from code exchange');
         }
 
-        // Set up auth state change listener
-        const {
-          data: { subscription },
-        } = supabase.auth.onAuthStateChange((event, session) => {
-          if (event === 'SIGNED_IN' && session) {
-            // Cleanup subscription
-            subscription.unsubscribe();
-            // Redirect only after we confirm the auth state is updated
-            window.location.href = next;
-          }
-        });
-
-        // Set the session in Supabase's internal storage
-        await supabase.auth.setSession({
-          access_token: data.session.access_token,
-          refresh_token: data.session.refresh_token,
-        });
+        // Once the session is established, redirect to the destination
+        // No need to manually set the session as exchangeCodeForSession already does that
+        router.push(next);
 
       } catch (error) {
         console.error('Auth callback error:', error);
