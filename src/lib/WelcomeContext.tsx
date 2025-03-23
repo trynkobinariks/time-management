@@ -49,10 +49,23 @@ export function WelcomeProvider({ children }: WelcomeProviderProps) {
         }
       } catch (error) {
         console.error('Error checking storage:', error);
+      } finally {
+        setIsInitialized(true);
       }
-      setIsInitialized(true);
     }
   }, [isInitialized]);
+
+  // If the popup is closed, ensure it stays closed
+  useEffect(() => {
+    if (!showWelcomePopup && isInitialized) {
+      try {
+        sessionStorage.removeItem('justLoggedIn');
+        localStorage.removeItem('showWelcome');
+      } catch (error) {
+        console.error('Error clearing storage flags:', error);
+      }
+    }
+  }, [showWelcomePopup, isInitialized]);
 
   const contextValue = {
     showWelcomePopup,

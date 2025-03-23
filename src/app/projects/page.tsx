@@ -32,26 +32,32 @@ export default function ProjectsPage() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8 relative">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-medium text-gray-800">Projects</h1>
         <button
           onClick={handleAddClick}
-          className="px-4 py-2 text-sm font-medium text-white bg-gray-800 rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 cursor-pointer transition-colors"
+          onTouchEnd={(e) => {
+            e.preventDefault();
+            handleAddClick();
+          }}
+          className="px-4 py-2 text-sm font-medium text-white bg-gray-800 rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 cursor-pointer transition-colors active:bg-gray-600 touch-action-manipulation relative"
+          aria-label="Add Project"
+          role="button"
         >
           Add Project
         </button>
       </div>
 
       {showAddForm && (
-        <div className="mb-8 p-4 border border-gray-200 rounded-md bg-white">
+        <div className="mb-8 p-4 border border-gray-200 rounded-md bg-white relative z-20">
           <h2 className="text-xl font-medium text-gray-800 mb-4">Add New Project</h2>
           <ProjectForm onSuccess={handleFormSuccess} onCancel={handleFormCancel} />
         </div>
       )}
 
       {editingProject && (
-        <div className="mb-8 p-4 border border-gray-200 rounded-md bg-white">
+        <div className="mb-8 p-4 border border-gray-200 rounded-md bg-white relative z-20">
           <h2 className="text-xl font-medium text-gray-800 mb-4">Edit Project</h2>
           <ProjectForm
             project={editingProject}
@@ -66,7 +72,13 @@ export default function ProjectsPage() {
           <p className="text-gray-600 mb-4">No projects yet. Add your first project to get started.</p>
           <button
             onClick={handleAddClick}
-            className="px-4 py-2 text-sm font-medium text-white bg-gray-800 rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 cursor-pointer transition-colors"
+            onTouchEnd={(e) => {
+              e.preventDefault();
+              handleAddClick();
+            }}
+            className="px-4 py-2 text-sm font-medium text-white bg-gray-800 rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 cursor-pointer transition-colors active:bg-gray-600 touch-action-manipulation z-20 relative"
+            aria-label="Add Project"
+            role="button"
           >
             Add Project
           </button>
