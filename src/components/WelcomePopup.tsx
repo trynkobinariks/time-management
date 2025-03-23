@@ -6,8 +6,8 @@ interface WelcomePopupProps {
 
 export default function WelcomePopup({ onClose }: WelcomePopupProps) {
   return (
-    <div className="fixed inset-0 flex items-center justify-center z-50" style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
-      <div className="bg-white rounded-md shadow-lg p-6 max-w-md w-full">
+    <div className="fixed inset-0 flex items-center justify-center z-50 pointer-events-auto" style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
+      <div className="welcome-popup-content bg-white rounded-md shadow-lg p-6 max-w-md w-full">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-medium text-gray-800">
             Welcome to Time Management

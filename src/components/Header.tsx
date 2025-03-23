@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { createBrowserClient } from '@supabase/ssr';
 import type { User } from '@supabase/supabase-js';
+import Logo from './Logo';
 
 export default function Header() {
   const pathname = usePathname();
@@ -48,9 +49,12 @@ export default function Header() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex items-center">
-            <h1 className="text-xl font-bold text-gray-800">
-              Hours Tracker
-            </h1>
+            <Link href="/" className="flex items-center">
+              <Logo size="md" className="mr-2" />
+              <span className="text-xl font-bold text-gray-800 hidden sm:inline">
+                Hours Tracker
+              </span>
+            </Link>
             {/* Desktop navigation */}
             <nav className="ml-8 hidden md:flex space-x-4">
               {navItems.map((item) => (
@@ -138,7 +142,7 @@ export default function Header() {
       
       {/* Mobile navigation menu */}
       <div className={`md:hidden fixed inset-y-0 right-0 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out z-20 ${
-        isMenuOpen ? 'translate-x-0' : 'translate-x-full'
+        isMenuOpen ? 'translate-x-0 pointer-events-auto' : 'translate-x-full pointer-events-none'
       }`}>
         <div className="h-full flex flex-col pt-16 pb-3 px-3 border-l border-gray-200">
           <button
@@ -190,7 +194,7 @@ export default function Header() {
       {/* Backdrop overlay when menu is open */}
       <div 
         className={`md:hidden fixed inset-0 bg-black transition-opacity duration-300 ease-in-out ${
-          isMenuOpen ? 'opacity-25 z-10' : 'opacity-0 -z-10'
+          isMenuOpen ? 'opacity-25 z-10 pointer-events-auto' : 'opacity-0 -z-10 pointer-events-none'
         }`}
         onClick={() => setIsMenuOpen(false)}
       />
