@@ -44,10 +44,10 @@ export default function DailyHoursChart({ weekStartDate }: DailyHoursChartProps)
       // Group entries by project
       const projectHours: Record<string, number> = {};
       dayEntries.forEach(entry => {
-        if (!projectHours[entry.projectId]) {
-          projectHours[entry.projectId] = 0;
+        if (!projectHours[entry.project_id]) {
+          projectHours[entry.project_id] = 0;
         }
-        projectHours[entry.projectId] += entry.hours;
+        projectHours[entry.project_id] += entry.hours;
       });
       
       // Create project breakdown with positioning information

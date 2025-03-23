@@ -95,11 +95,8 @@ export default function TimeEntriesPage() {
                     <div className="flex justify-between items-start">
                       <div>
                         <h3 className="text-sm font-medium text-gray-800">
-                          {getProjectName(entry.projectId)}
+                          {getProjectName(entry.project_id)}
                         </h3>
-                        {entry.notes && (
-                          <p className="mt-1 text-sm text-gray-600">{entry.notes}</p>
-                        )}
                       </div>
                       <div className="flex items-center">
                         <span className="text-sm font-medium text-gray-700 mr-4">
