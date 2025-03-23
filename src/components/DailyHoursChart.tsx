@@ -104,33 +104,61 @@ export default function DailyHoursChart({ weekStartDate }: DailyHoursChartProps)
             </span>
             
             <div className="w-full h-20 bg-gray-50 border border-gray-200 rounded relative mb-1">
+              {/* Horizontal grid lines */}
+              <div className="absolute inset-0 flex flex-col pointer-events-none">
+                {Array.from({ length: 8 }).map((_, i) => (
+                  <div 
+                    key={`divider-${i}`} 
+                    className="border-b border-gray-200 flex-1"
+                  />
+                ))}
+              </div>
+              
               {day.totalHoursWorked > 0 ? (
                 <>
-                  {/* Render stacked bars for each project */}
-                  {day.projectBreakdown.map((project) => (
+                  {/* Project bars */}
+                  <div className="absolute inset-0">
+                    {day.projectBreakdown.map((project) => {
+                      // Only show up to 100% of the chart height
+                      const normalizedStartPercent = Math.min(project.startPercent, 100);
+                      const normalizedEndPercent = Math.min(project.endPercent, 100);
+                      const height = normalizedEndPercent - normalizedStartPercent;
+                      
+                      return (
+                        <div 
+                          key={`${day.date.toISOString()}-${project.projectId}`}
+                          className="absolute left-0 right-0 transition-all duration-300"
+                          style={{ 
+                            bottom: `${normalizedStartPercent}%`, 
+                            height: `${height}%`,
+                            backgroundColor: project.color,
+                          }}
+                          title={`${project.projectName}: ${project.hours} hours`}
+                        />
+                      );
+                    })}
+                  </div>
+                  
+                  {/* Overtime indicator - red overlay for anything over 100% */}
+                  {day.totalHoursWorked > day.maxHours && (
                     <div 
-                      key={`${day.date.toISOString()}-${project.projectId}`}
-                      className="absolute left-0 right-0 transition-all duration-300"
-                      style={{ 
-                        bottom: `${project.startPercent}%`, 
-                        height: `${project.endPercent - project.startPercent}%`,
-                        backgroundColor: project.color,
-                      }}
-                      title={`${project.projectName}: ${project.hours} hours`}
+                      className="absolute left-0 right-0 bottom-0 bg-red-500 opacity-30"
+                      style={{ height: '100%' }}
                     />
-                  ))}
+                  )}
                 </>
-              ) : (
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="text-xs text-gray-400">No data</span>
-                </div>
-              )}
+              ) : null}
               
               {/* Daily limit indicator */}
-              <div className="absolute w-full border-t border-dashed border-gray-400 z-10" style={{ top: '0%' }} />
+              <div className="absolute w-full border-t border-dashed border-gray-400" style={{ top: '0%' }} />
+              
+              {/* Add red border when overtime */}
+              {day.totalHoursWorked > day.maxHours && (
+                <div className="absolute inset-0 border-2 border-red-500 rounded pointer-events-none" />
+              )}
             </div>
             
-            <span className="text-xs font-medium text-gray-700">
+            <span className={`text-xs font-medium ${day.totalHoursWorked > day.maxHours ? 'text-red-600' : 'text-gray-700'}`}>
               {day.totalHoursWorked}/{day.maxHours}h
             </span>
           </div>
