@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { signIn } from '@/lib/auth';
 import Logo from '@/components/Logo';
+import PasswordInput from '@/components/PasswordInput';
 
 // Background component for auth pages
 function AuthBackground() {
@@ -120,23 +121,16 @@ function LoginContent() {
                 disabled={loading}
               />
             </div>
-            <div>
-              <label htmlFor="password" className="sr-only">
-                Password
-              </label>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                autoComplete="current-password"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md"
-                placeholder="Password"
-                disabled={loading}
-              />
-            </div>
+            <PasswordInput
+              id="password"
+              label="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              autoComplete="current-password"
+              placeholder="Password"
+              disabled={loading}
+              rounded="bottom"
+            />
           </div>
 
           <div className="flex items-center justify-between">

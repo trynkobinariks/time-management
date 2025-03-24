@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { signUp } from '@/lib/auth';
 import Logo from '@/components/Logo';
+import PasswordInput from '@/components/PasswordInput';
 
 // Background component for auth pages
 function AuthBackground() {
@@ -111,22 +112,16 @@ export default function SignUpPage() {
                 placeholder="Email address"
               />
             </div>
-            <div>
-              <label htmlFor="password" className="sr-only">
-                Password
-              </label>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                autoComplete="new-password"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md"
-                placeholder="Password"
-              />
-            </div>
+            <PasswordInput
+              id="password"
+              label="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              autoComplete="new-password"
+              placeholder="Password"
+              disabled={loading}
+              rounded="bottom"
+            />
           </div>
 
           {error && (
