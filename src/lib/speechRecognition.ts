@@ -42,15 +42,18 @@ declare global {
 }
 
 export type RecognitionStatus = 'inactive' | 'listening' | 'processing' | 'error';
+export type RecognitionLanguage = 'en-US' | 'uk-UA';
 
 export interface UseSpeechRecognitionReturn {
   text: string;
   isListening: boolean;
   status: RecognitionStatus;
-  startListening: () => void;
+  startListening: (language?: RecognitionLanguage) => void;
   stopListening: () => void;
   resetText: () => void;
   error: string | null;
+  currentLanguage: RecognitionLanguage;
+  setLanguage: (language: RecognitionLanguage) => void;
 }
 
 export function useSpeechRecognition(): UseSpeechRecognitionReturn {
@@ -58,6 +61,7 @@ export function useSpeechRecognition(): UseSpeechRecognitionReturn {
   const [isListening, setIsListening] = useState(false);
   const [status, setStatus] = useState<RecognitionStatus>('inactive');
   const [error, setError] = useState<string | null>(null);
+  const [currentLanguage, setCurrentLanguage] = useState<RecognitionLanguage>('en-US');
   const recognitionRef = useRef<SpeechRecognitionInstance | null>(null);
 
   // This implementation can only be used in the browser
@@ -73,7 +77,7 @@ export function useSpeechRecognition(): UseSpeechRecognitionReturn {
     
     recognition.continuous = true;
     recognition.interimResults = false;
-    recognition.lang = 'en-US';
+    recognition.lang = currentLanguage;
     
     recognition.onstart = () => {
       setIsListening(true);
@@ -106,12 +110,23 @@ export function useSpeechRecognition(): UseSpeechRecognitionReturn {
         recognitionRef.current.abort();
       }
     };
-  }, [isBrowser, hasSupport]);
+  }, [isBrowser, hasSupport, currentLanguage]);
 
-  const startListening = useCallback(() => {
+  const setLanguage = useCallback((language: RecognitionLanguage) => {
+    setCurrentLanguage(language);
+    if (recognitionRef.current) {
+      recognitionRef.current.lang = language;
+    }
+  }, []);
+
+  const startListening = useCallback((language?: RecognitionLanguage) => {
     if (!isBrowser || !hasSupport) {
       setError('Speech recognition is not supported');
       return;
+    }
+
+    if (language && language !== currentLanguage) {
+      setLanguage(language);
     }
     
     if (recognitionRef.current) {
@@ -122,7 +137,7 @@ export function useSpeechRecognition(): UseSpeechRecognitionReturn {
         console.error('Speech recognition error:', err);
       }
     }
-  }, [isBrowser, hasSupport]);
+  }, [isBrowser, hasSupport, currentLanguage, setLanguage]);
 
   const stopListening = useCallback(() => {
     if (recognitionRef.current) {
@@ -144,7 +159,9 @@ export function useSpeechRecognition(): UseSpeechRecognitionReturn {
       startListening,
       stopListening,
       resetText,
-      error: 'Speech recognition is not supported in this browser'
+      error: 'Speech recognition is not supported in this browser',
+      currentLanguage,
+      setLanguage
     };
   }
 
@@ -155,6 +172,8 @@ export function useSpeechRecognition(): UseSpeechRecognitionReturn {
     startListening,
     stopListening,
     resetText,
-    error
+    error,
+    currentLanguage,
+    setLanguage
   };
 } 

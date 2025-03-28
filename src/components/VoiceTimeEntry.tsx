@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useSpeechRecognition } from '@/lib/speechRecognition';
+import { useSpeechRecognition, RecognitionLanguage } from '@/lib/speechRecognition';
 import { parseVoiceInput, ParsedTimeEntry } from '@/lib/aiParser';
 import { useProjectContext } from '@/lib/ProjectContext';
 
@@ -10,7 +10,18 @@ interface VoiceTimeEntryProps {
 }
 
 export default function VoiceTimeEntry({ onDataCapture }: VoiceTimeEntryProps) {
-  const { text, isListening, status, startListening, stopListening, resetText, error: speechError } = useSpeechRecognition();
+  const { 
+    text, 
+    isListening, 
+    status, 
+    startListening, 
+    stopListening, 
+    resetText, 
+    error: speechError,
+    currentLanguage,
+    setLanguage
+  } = useSpeechRecognition();
+  
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { projects } = useProjectContext();
@@ -40,14 +51,30 @@ export default function VoiceTimeEntry({ onDataCapture }: VoiceTimeEntryProps) {
     };
     
     processVoiceInput();
-  }, [status, text, projects, onDataCapture, resetText]);
+  }, [status, text, projects, onDataCapture, resetText, currentLanguage]);
   
   return (
-    <div className="mt-2 space-y-2">
+    <div className="mt-2 space-y-4">
+      <div className="flex items-center gap-2 mb-3">
+        <label htmlFor="speech-language" className="text-sm font-medium text-gray-700">
+          Language:
+        </label>
+        <select
+          id="speech-language"
+          value={currentLanguage}
+          onChange={(e) => setLanguage(e.target.value as RecognitionLanguage)}
+          className="rounded-md border border-gray-300 px-3 py-1 text-sm text-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-500 cursor-pointer"
+          disabled={isListening || isProcessing}
+        >
+          <option value="en-US">English</option>
+          <option value="uk-UA">Українська</option>
+        </select>
+      </div>
+    
       <div className="flex items-center gap-2">
         <button
           type="button"
-          onClick={isListening ? stopListening : startListening}
+          onClick={isListening ? stopListening : () => startListening(currentLanguage)}
           className={`px-4 py-2 text-sm font-medium text-white rounded-md transition-colors ${
             isListening 
               ? 'bg-red-600 hover:bg-red-700' 
@@ -55,20 +82,27 @@ export default function VoiceTimeEntry({ onDataCapture }: VoiceTimeEntryProps) {
           }`}
           disabled={isProcessing}
         >
-          {isListening ? 'Stop Recording' : 'Record Time Entry'}
+          {isListening ? 
+            (currentLanguage === 'uk-UA' ? 'Зупинити запис' : 'Stop Recording') : 
+            (currentLanguage === 'uk-UA' ? 'Записати голос' : 'Record Time Entry')
+          }
         </button>
         
         {isListening && (
           <div className="flex items-center gap-1">
             <span className="animate-pulse text-red-600">●</span>
-            <span className="text-sm text-gray-600">Recording...</span>
+            <span className="text-sm text-gray-600">
+              {currentLanguage === 'uk-UA' ? 'Запис...' : 'Recording...'}
+            </span>
           </div>
         )}
         
         {isProcessing && (
           <div className="flex items-center gap-1">
             <span className="animate-spin text-blue-600">◌</span>
-            <span className="text-sm text-gray-600">Processing...</span>
+            <span className="text-sm text-gray-600">
+              {currentLanguage === 'uk-UA' ? 'Обробка...' : 'Processing...'}
+            </span>
           </div>
         )}
       </div>
@@ -77,7 +111,9 @@ export default function VoiceTimeEntry({ onDataCapture }: VoiceTimeEntryProps) {
         <div className="mt-2 p-3 bg-gray-50 rounded-md">
           {text && (
             <div className="mb-2">
-              <div className="text-sm font-medium text-gray-700">Transcribed Text:</div>
+              <div className="text-sm font-medium text-gray-700">
+                {currentLanguage === 'uk-UA' ? 'Розпізнаний текст:' : 'Transcribed Text:'}
+              </div>
               <p className="text-gray-900">{text}</p>
             </div>
           )}
@@ -91,7 +127,11 @@ export default function VoiceTimeEntry({ onDataCapture }: VoiceTimeEntryProps) {
       )}
       
       <div className="text-xs text-gray-500 mt-1">
-        <p>Try saying something like: &ldquo;I spent 2 hours on Project X yesterday working on documentation&rdquo;</p>
+        {currentLanguage === 'uk-UA' ? (
+          <p>Спробуйте сказати щось на зразок: &ldquo;Я провів 2 години на Проекті Х вчора, працюючи над документацією&rdquo;</p>
+        ) : (
+          <p>Try saying something like: &ldquo;I spent 2 hours on Project X yesterday working on documentation&rdquo;</p>
+        )}
       </div>
     </div>
   );

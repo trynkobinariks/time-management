@@ -1,6 +1,7 @@
 'use client';
 
 import { Project } from './types';
+import { RecognitionLanguage } from './speechRecognition';
 
 export interface ParsedTimeEntry {
   date: string; // YYYY-MM-DD format
@@ -11,7 +12,8 @@ export interface ParsedTimeEntry {
 
 export async function parseVoiceInput(
   text: string, 
-  projects: Project[]
+  projects: Project[],
+  language: RecognitionLanguage = 'en-US'
 ): Promise<ParsedTimeEntry | null> {
   if (!text || !projects.length) return null;
   
@@ -23,7 +25,8 @@ export async function parseVoiceInput(
       },
       body: JSON.stringify({
         text,
-        projects
+        projects,
+        language
       })
     });
     
