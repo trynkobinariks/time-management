@@ -41,6 +41,7 @@ export default function Header() {
   const navItems = [
     { name: 'Dashboard', href: '/' },
     { name: 'Projects', href: '/projects' },
+    { name: 'Time Entries', href: '/time-entries' },
     { name: 'Settings', href: '/settings' },
   ];
   

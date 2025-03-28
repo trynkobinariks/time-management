@@ -17,7 +17,7 @@ export default function TimeEntryForm({ projectId, onSuccess, onCancel }: TimeEn
     project_id: projectId || '',
     date: format(new Date(), 'yyyy-MM-dd'),
     hours: '',
-    notes: '',
+    description: '',
   });
   
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -87,7 +87,8 @@ export default function TimeEntryForm({ projectId, onSuccess, onCancel }: TimeEn
       addTimeEntry({
         project_id: formData.project_id,
         date: formData.date,
-        hours: parseFloat(formData.hours)
+        hours: parseFloat(formData.hours),
+        description: formData.description
       });
       
       if (onSuccess) {
@@ -164,6 +165,21 @@ export default function TimeEntryForm({ projectId, onSuccess, onCancel }: TimeEn
         {errors.hours && (
           <p className="mt-1 text-sm text-gray-700">{errors.hours}</p>
         )}
+      </div>
+      
+      <div>
+        <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
+          Description
+        </label>
+        <textarea
+          id="description"
+          name="description"
+          value={formData.description}
+          onChange={handleChange}
+          rows={3}
+          className="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-500"
+          placeholder="Describe what you worked on..."
+        />
       </div>
       
       <div className="flex justify-end space-x-3 pt-4">

@@ -29,6 +29,7 @@ export interface TimeEntry extends BaseModel {
   project_id: string; // UUID, references projects(id)
   date: string; // DATE in YYYY-MM-DD format
   hours: number; // NUMERIC(5,2)
+  description: string; // Description of the task/work done
 }
 
 export interface DailyLimit extends BaseModel {
