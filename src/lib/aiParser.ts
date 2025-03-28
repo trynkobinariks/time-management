@@ -6,7 +6,7 @@ export interface ParsedTimeEntry {
   date: string; // YYYY-MM-DD format
   project_name: string;
   hours: number;
-  description: string;
+  description?: string; // Make description optional
 }
 
 export async function parseVoiceInput(

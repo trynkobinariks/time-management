@@ -50,11 +50,37 @@ export default function TimeEntryForm({ projectId, onSuccess, onCancel }: TimeEn
         project_id: projectMatch.id,
         date: parsedData.date,
         hours: parsedData.hours.toString(),
-        description: parsedData.description,
+        description: parsedData.description || '' // Use empty string if description is undefined
       });
       
       // Clear any existing errors
       setErrors({});
+    } else {
+      // Handle case where project name doesn't match exactly
+      // This might happen if the AI parsing slightly modified the project name
+      console.warn(`No exact project match found for "${parsedData.project_name}". Trying fuzzy match.`);
+      
+      // Try to find a fuzzy match among project names
+      const fuzzyMatch = projects.find(p => 
+        p.name.toLowerCase().includes(parsedData.project_name.toLowerCase()) ||
+        parsedData.project_name.toLowerCase().includes(p.name.toLowerCase())
+      );
+      
+      if (fuzzyMatch) {
+        console.log(`Found fuzzy match: "${fuzzyMatch.name}" for "${parsedData.project_name}"`);
+        setFormData({
+          project_id: fuzzyMatch.id,
+          date: parsedData.date,
+          hours: parsedData.hours.toString(),
+          description: parsedData.description || '' // Use empty string if description is undefined
+        });
+        setErrors({});
+      } else {
+        setErrors(prev => ({
+          ...prev,
+          project_id: `Could not find a project matching "${parsedData.project_name}". Please select manually.`
+        }));
+      }
     }
   };
   
@@ -102,19 +128,33 @@ export default function TimeEntryForm({ projectId, onSuccess, onCancel }: TimeEn
     return Object.keys(newErrors).length === 0;
   };
   
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (validateForm()) {
-      addTimeEntry({
-        project_id: formData.project_id,
-        date: formData.date,
-        hours: parseFloat(formData.hours),
-        description: formData.description
-      });
-      
-      if (onSuccess) {
-        onSuccess();
+      try {
+        await addTimeEntry({
+          project_id: formData.project_id,
+          date: formData.date,
+          hours: parseFloat(formData.hours),
+          description: '' // Provide empty string to satisfy TypeScript, even if field doesn't exist in DB
+        });
+        
+        if (onSuccess) {
+          onSuccess();
+        }
+      } catch (error) {
+        console.error('Failed to create time entry:', error);
+        
+        // Show user-friendly error
+        const errorMessage = error instanceof Error 
+          ? error.message 
+          : 'Failed to save time entry. Please try again.';
+          
+        setErrors(prev => ({
+          ...prev,
+          submit: errorMessage
+        }));
       }
     }
   };

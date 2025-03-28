@@ -6,7 +6,7 @@ interface ParsedTimeEntry {
   date: string;
   project_name: string;
   hours: number;
-  description: string;
+  description?: string;
 }
 
 interface RequestBody {
@@ -87,8 +87,7 @@ function simpleParse(text: string, projects: Project[]): ParsedTimeEntry | null 
       projectName = projects[0].name;
     }
     
-    // Description is everything else
-    // Remove project name, hours references, and date references for cleaner description
+    // Description is optional, only include if supported by database
     let description = text
       .replace(new RegExp(projectName, 'gi'), '')
       .replace(/(\d+(\.\d+)?)\s*(hour|hours|hr|hrs|h)/gi, '')
@@ -101,6 +100,7 @@ function simpleParse(text: string, projects: Project[]): ParsedTimeEntry | null 
       description = `Work on ${projectName}`;
     }
     
+    // Now include description field since DB supports it
     return {
       date,
       project_name: projectName,
@@ -195,7 +195,7 @@ export async function POST(request: NextRequest) {
       const parsedData = JSON.parse(jsonMatch[0]) as ParsedTimeEntry;
       
       // Validate the parsed data
-      if (!parsedData.date || !parsedData.project_name || !parsedData.hours || !parsedData.description) {
+      if (!parsedData.date || !parsedData.project_name || !parsedData.hours) {
         throw new Error('Parsed data is missing required fields');
       }
       
@@ -220,7 +220,7 @@ export async function POST(request: NextRequest) {
         date: parsedData.date,
         project_name: projectMatch.name,
         hours: parsedData.hours,
-        description: parsedData.description
+        description: parsedData.description || ''
       });
     } catch (openAIError) {
       // If OpenAI fails, fall back to simple parsing
