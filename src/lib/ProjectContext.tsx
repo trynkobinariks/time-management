@@ -64,6 +64,9 @@ export function ProjectProvider({ children }: ProjectProviderProps) {
   useEffect(() => {
     if (!user) return;
 
+    const selectedYear = selectedDate.getFullYear();
+    const selectedMonth = selectedDate.getMonth();
+
     const loadData = async () => {
       try {
         // Load projects
@@ -71,8 +74,8 @@ export function ProjectProvider({ children }: ProjectProviderProps) {
         setProjects(projectsData);
 
         // Load time entries for the entire month
-        const monthStart = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1);
-        const monthEnd = new Date(selectedDate.getFullYear(), selectedDate.getMonth() + 1, 0);
+        const monthStart = new Date(selectedYear, selectedMonth, 1);
+        const monthEnd = new Date(selectedYear, selectedMonth + 1, 0);
 
         const timeEntriesData = await db.getTimeEntries(user.id, monthStart, monthEnd);
         setTimeEntries(timeEntriesData);
@@ -82,7 +85,7 @@ export function ProjectProvider({ children }: ProjectProviderProps) {
     };
 
     loadData();
-  }, [user, selectedDate.getMonth(), selectedDate.getFullYear()]);
+  }, [user, selectedDate]);
 
   const addProject = async (project: Omit<Project, 'id' | 'created_at' | 'updated_at' | 'user_id'>) => {
     if (!user) return;

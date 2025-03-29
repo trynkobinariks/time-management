@@ -1,25 +1,11 @@
 'use client';
 
-import { useState } from 'react';
 import { useProjectContext } from '@/lib/ProjectContext';
-import TimeEntryForm from '@/components/TimeEntryForm';
 import { format } from 'date-fns';
 
 export default function TimeEntriesPage() {
   const { timeEntries, projects, deleteTimeEntry } = useProjectContext();
-  const [showAddForm, setShowAddForm] = useState(false);
 
-  const handleAddClick = () => {
-    setShowAddForm(true);
-  };
-
-  const handleFormSuccess = () => {
-    setShowAddForm(false);
-  };
-
-  const handleFormCancel = () => {
-    setShowAddForm(false);
-  };
 
   const handleDeleteEntry = (entryId: string) => {
     if (window.confirm('Are you sure you want to delete this time entry?')) {
@@ -28,7 +14,7 @@ export default function TimeEntriesPage() {
   };
 
   // Sort entries by date (newest first)
-  const sortedEntries = [...timeEntries].sort((a, b) => 
+  const sortedEntries = [...timeEntries].sort((a, b) =>
     new Date(b.date).getTime() - new Date(a.date).getTime()
   );
 
@@ -52,33 +38,11 @@ export default function TimeEntriesPage() {
     <div className="container mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-medium text-gray-800">Time Entries</h1>
-        <button
-          onClick={handleAddClick}
-          className="px-4 py-2 text-sm font-medium text-white bg-gray-800 rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 cursor-pointer transition-colors"
-        >
-          Add Time Entry
-        </button>
       </div>
 
-      {showAddForm && (
-        <div className="mb-8 p-4 border border-gray-200 rounded-md bg-white">
-          <h2 className="text-xl font-medium text-gray-800 mb-4">Add Time Entry</h2>
-          <TimeEntryForm 
-            onSuccess={handleFormSuccess} 
-            onCancel={handleFormCancel} 
-          />
-        </div>
-      )}
-
-      {Object.keys(entriesByDate).length === 0 && !showAddForm ? (
+      {Object.keys(entriesByDate).length === 0 ? (
         <div className="text-center py-12">
           <p className="text-gray-600 mb-4">No time entries yet. Add your first entry to get started.</p>
-          <button
-            onClick={handleAddClick}
-            className="px-4 py-2 text-sm font-medium text-white bg-gray-800 rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 cursor-pointer transition-colors"
-          >
-            Add Time Entry
-          </button>
         </div>
       ) : (
         <div className="space-y-6">
@@ -128,4 +92,4 @@ export default function TimeEntriesPage() {
       )}
     </div>
   );
-} 
+}
