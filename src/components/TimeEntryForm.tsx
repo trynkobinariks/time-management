@@ -1,19 +1,23 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useProjectContext } from '@/lib/ProjectContext';
 import { format, startOfWeek, endOfWeek } from 'date-fns';
 import VoiceTimeEntry from './VoiceTimeEntry';
 import { ParsedTimeEntry } from '@/lib/aiParser';
+import { TimeEntry } from '@/lib/types';
+import { useTheme } from '@/lib/ThemeContext';
 
 interface TimeEntryFormProps {
   projectId?: string;
   onSuccess?: () => void;
   onCancel?: () => void;
+  editingEntry?: TimeEntry | null;
 }
 
-export default function TimeEntryForm({ projectId, onSuccess, onCancel }: TimeEntryFormProps) {
-  const { projects, timeEntries, addTimeEntry } = useProjectContext();
+export default function TimeEntryForm({ projectId, onSuccess, onCancel, editingEntry }: TimeEntryFormProps) {
+  const { projects, timeEntries, addTimeEntry, updateTimeEntry } = useProjectContext();
+  const { colors } = useTheme();
   
   const [formData, setFormData] = useState({
     project_id: projectId || '',
@@ -21,6 +25,17 @@ export default function TimeEntryForm({ projectId, onSuccess, onCancel }: TimeEn
     hours: '',
     description: '',
   });
+  
+  useEffect(() => {
+    if (editingEntry) {
+      setFormData({
+        project_id: editingEntry.project_id,
+        date: editingEntry.date,
+        hours: editingEntry.hours.toString(),
+        description: editingEntry.description || '',
+      });
+    }
+  }, [editingEntry]);
   
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [showVoiceInput, setShowVoiceInput] = useState(false);
@@ -50,14 +65,13 @@ export default function TimeEntryForm({ projectId, onSuccess, onCancel }: TimeEn
         project_id: projectMatch.id,
         date: parsedData.date,
         hours: parsedData.hours.toString(),
-        description: parsedData.description || '' // Use empty string if description is undefined
+        description: parsedData.description || ''
       });
       
       // Clear any existing errors
       setErrors({});
     } else {
       // Handle case where project name doesn't match exactly
-      // This might happen if the AI parsing slightly modified the project name
       console.warn(`No exact project match found for "${parsedData.project_name}". Trying fuzzy match.`);
       
       // Try to find a fuzzy match among project names
@@ -72,7 +86,7 @@ export default function TimeEntryForm({ projectId, onSuccess, onCancel }: TimeEn
           project_id: fuzzyMatch.id,
           date: parsedData.date,
           hours: parsedData.hours.toString(),
-          description: parsedData.description || '' // Use empty string if description is undefined
+          description: parsedData.description || ''
         });
         setErrors({});
       } else {
@@ -133,18 +147,28 @@ export default function TimeEntryForm({ projectId, onSuccess, onCancel }: TimeEn
     
     if (validateForm()) {
       try {
-        await addTimeEntry({
-          project_id: formData.project_id,
-          date: formData.date,
-          hours: parseFloat(formData.hours),
-          description: '' // Provide empty string to satisfy TypeScript, even if field doesn't exist in DB
-        });
+        if (editingEntry) {
+          await updateTimeEntry({
+            ...editingEntry,
+            project_id: formData.project_id,
+            date: formData.date,
+            hours: parseFloat(formData.hours),
+            description: formData.description,
+          });
+        } else {
+          await addTimeEntry({
+            project_id: formData.project_id,
+            date: formData.date,
+            hours: parseFloat(formData.hours),
+            description: formData.description,
+          });
+        }
         
         if (onSuccess) {
           onSuccess();
         }
       } catch (error) {
-        console.error('Failed to create time entry:', error);
+        console.error('Failed to save time entry:', error);
         
         // Show user-friendly error
         const errorMessage = error instanceof Error 
@@ -163,7 +187,7 @@ export default function TimeEntryForm({ projectId, onSuccess, onCancel }: TimeEn
     <div>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label htmlFor="project_id" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="project_id" className={`block text-sm font-medium ${colors.text} mb-1`}>
             Project
           </label>
           <select
@@ -173,8 +197,8 @@ export default function TimeEntryForm({ projectId, onSuccess, onCancel }: TimeEn
             onChange={handleChange}
             disabled={!!projectId}
             className={`w-full rounded-md border ${
-              errors.project_id ? 'border-gray-400' : 'border-gray-300'
-            } px-3 py-2 text-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-500 cursor-pointer`}
+              errors.project_id ? 'border-red-500' : colors.border
+            } px-3 py-2 ${colors.text} ${colors.background} focus:outline-none focus:ring-1 focus:ring-gray-500 cursor-pointer`}
           >
             <option value="">Select a project</option>
             {projects.map(project => (
@@ -184,12 +208,12 @@ export default function TimeEntryForm({ projectId, onSuccess, onCancel }: TimeEn
             ))}
           </select>
           {errors.project_id && (
-            <p className="mt-1 text-sm text-gray-700">{errors.project_id}</p>
+            <p className={`mt-1 text-sm ${colors.danger}`}>{errors.project_id}</p>
           )}
         </div>
         
         <div>
-          <label htmlFor="date" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="date" className={`block text-sm font-medium ${colors.text} mb-1`}>
             Date
           </label>
           <input
@@ -199,16 +223,16 @@ export default function TimeEntryForm({ projectId, onSuccess, onCancel }: TimeEn
             value={formData.date}
             onChange={handleChange}
             className={`w-full rounded-md border ${
-              errors.date ? 'border-gray-400' : 'border-gray-300'
-            } px-3 py-2 text-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-500 cursor-pointer`}
+              errors.date ? 'border-red-500' : colors.border
+            } px-3 py-2 ${colors.text} ${colors.background} focus:outline-none focus:ring-1 focus:ring-gray-500 cursor-pointer`}
           />
           {errors.date && (
-            <p className="mt-1 text-sm text-gray-700">{errors.date}</p>
+            <p className={`mt-1 text-sm ${colors.danger}`}>{errors.date}</p>
           )}
         </div>
         
         <div>
-          <label htmlFor="hours" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="hours" className={`block text-sm font-medium ${colors.text} mb-1`}>
             Hours
           </label>
           <input
@@ -221,17 +245,17 @@ export default function TimeEntryForm({ projectId, onSuccess, onCancel }: TimeEn
             min="0.25"
             max="24"
             className={`w-full rounded-md border ${
-              errors.hours ? 'border-gray-400' : 'border-gray-300'
-            } px-3 py-2 text-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-500`}
+              errors.hours ? 'border-red-500' : colors.border
+            } px-3 py-2 ${colors.text} ${colors.background} focus:outline-none focus:ring-1 focus:ring-gray-500`}
             placeholder="0.0"
           />
           {errors.hours && (
-            <p className="mt-1 text-sm text-gray-700">{errors.hours}</p>
+            <p className={`mt-1 text-sm ${colors.danger}`}>{errors.hours}</p>
           )}
         </div>
         
         <div>
-          <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="description" className={`block text-sm font-medium ${colors.text} mb-1`}>
             Description
           </label>
           <textarea
@@ -240,7 +264,7 @@ export default function TimeEntryForm({ projectId, onSuccess, onCancel }: TimeEn
             value={formData.description}
             onChange={handleChange}
             rows={3}
-            className="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-500"
+            className={`w-full rounded-md border ${colors.border} px-3 py-2 ${colors.text} ${colors.background} focus:outline-none focus:ring-1 focus:ring-gray-500`}
             placeholder="Describe what you worked on..."
           />
         </div>
@@ -265,20 +289,18 @@ export default function TimeEntryForm({ projectId, onSuccess, onCancel }: TimeEn
         </div>
         
         <div className="flex justify-end space-x-3 pt-4">
-          {onCancel && (
-            <button
-              type="button"
-              onClick={onCancel}
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 cursor-pointer transition-colors"
-            >
-              Cancel
-            </button>
-          )}
+          <button
+            type="button"
+            onClick={onCancel}
+            className={`px-4 py-2 rounded-md ${colors.secondary} ${colors.text} ${colors.secondaryHover}`}
+          >
+            Cancel
+          </button>
           <button
             type="submit"
-            className="px-4 py-2 text-sm font-medium text-white bg-gray-800 rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 cursor-pointer transition-colors"
+            className={`px-4 py-2 rounded-md ${colors.primary} text-white ${colors.primaryHover}`}
           >
-            Save Time Entry
+            {editingEntry ? 'Update' : 'Add'} Entry
           </button>
         </div>
       </form>
