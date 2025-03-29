@@ -3,51 +3,42 @@
 import { useState, useEffect } from 'react';
 import { useProjectContext } from '@/lib/ProjectContext';
 import { useWelcomeContext } from '@/lib/WelcomeContext';
-import WeekSelector from '@/components/WeekSelector';
-import DailyHoursChart from '@/components/DailyHoursChart';
-import ProjectCard from '@/components/ProjectCard';
 import TimeEntryForm from '@/components/TimeEntryForm';
-import WeeklyLimitsSettings from '@/components/WeeklyLimitsSettings';
-import HeaderStats from '@/components/HeaderStats';
-import { startOfWeek, endOfWeek, addWeeks, format } from 'date-fns';
+import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, isToday, isSameMonth, startOfWeek, endOfWeek } from 'date-fns';
 
 export default function Dashboard() {
-  const { projects } = useProjectContext();
+  const { projects, timeEntries, selectedDate, setSelectedDate } = useProjectContext();
   const { setShowWelcomePopup } = useWelcomeContext();
-  const [currentWeekStart, setCurrentWeekStart] = useState(() => 
-    startOfWeek(new Date(), { weekStartsOn: 1 }) // Week starts on Monday
-  );
   const [showAddTimeEntry, setShowAddTimeEntry] = useState(false);
   
-  const handlePreviousWeek = () => {
-    setCurrentWeekStart(prev => addWeeks(prev, -1));
-  };
+  // Get current month's days
+  const monthStart = startOfMonth(selectedDate);
+  const monthEnd = endOfMonth(selectedDate);
+  const calendarStart = startOfWeek(monthStart, { weekStartsOn: 1 });
+  const calendarEnd = endOfWeek(monthEnd, { weekStartsOn: 1 });
+  const days = eachDayOfInterval({ start: calendarStart, end: calendarEnd });
   
-  const handleNextWeek = () => {
-    setCurrentWeekStart(prev => addWeeks(prev, 1));
-  };
+  // Filter time entries for selected date
+  const selectedDateEntries = timeEntries.filter(entry => 
+    isSameDay(new Date(entry.date), selectedDate)
+  );
   
-  const handleCurrentWeek = () => {
-    setCurrentWeekStart(startOfWeek(new Date(), { weekStartsOn: 1 }));
+  // Get project name by ID
+  const getProjectName = (projectId: string) => {
+    const project = projects.find(p => p.id === projectId);
+    return project ? project.name : 'Unknown Project';
   };
-  
-  const currentWeekEnd = endOfWeek(currentWeekStart, { weekStartsOn: 1 });
   
   // Check for login flag when dashboard loads
   useEffect(() => {
     try {
-      // Check both sessionStorage and localStorage for login flags
       const justLoggedIn = sessionStorage.getItem('justLoggedIn') === 'true';
       const welcomeTimestamp = localStorage.getItem('showWelcome');
       
       if (justLoggedIn || welcomeTimestamp) {
-        // Clear flags
         sessionStorage.removeItem('justLoggedIn');
         if (welcomeTimestamp) localStorage.removeItem('showWelcome');
-        
-        // Show welcome popup
         setShowWelcomePopup(true);
-        console.log('Dashboard triggered welcome popup');
       }
     } catch (error) {
       console.error('Error checking login status:', error);
@@ -55,89 +46,127 @@ export default function Dashboard() {
   }, [setShowWelcomePopup]);
   
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
-        <div>
-          <h1 className="text-2xl font-medium text-gray-800">Dashboard</h1>
-          <p className="text-gray-600 mt-1">
-            Week of {format(currentWeekStart, 'MMM d')} - {format(currentWeekEnd, 'MMM d, yyyy')}
-          </p>
-        </div>
-        <div className="mt-4 md:mt-0">
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-7xl mx-auto px-4 py-8">
+        <div className="flex justify-between items-start mb-8">
+          {/* Calendar Section */}
+          <div className="bg-white rounded-lg shadow-sm p-6 w-[400px]">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-lg font-medium text-gray-900">
+                {format(selectedDate, 'MMMM yyyy')}
+              </h2>
+              <button
+                onClick={() => setSelectedDate(new Date())}
+                className="text-sm text-gray-600 hover:text-gray-900"
+              >
+                Today
+              </button>
+            </div>
+            
+            <div className="grid grid-cols-7 gap-1 mb-2">
+              {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(day => (
+                <div key={day} className="text-center text-sm font-medium text-gray-500">
+                  {day}
+                </div>
+              ))}
+            </div>
+            
+            <div className="grid grid-cols-7 gap-1">
+              {days.map((day) => {
+                const hasEntries = timeEntries.some(entry => 
+                  isSameDay(new Date(entry.date), day)
+                );
+                
+                const isCurrentMonth = isSameMonth(day, selectedDate);
+                
+                return (
+                  <button
+                    key={day.toString()}
+                    onClick={() => setSelectedDate(day)}
+                    className={`
+                      h-10 w-10 rounded-full flex items-center justify-center text-sm
+                      ${isSameDay(day, selectedDate) 
+                        ? 'bg-gray-900 text-white' 
+                        : isToday(day)
+                          ? 'bg-gray-100 text-gray-900'
+                          : isCurrentMonth
+                            ? 'text-gray-900 hover:bg-gray-100'
+                            : 'text-gray-400'
+                      }
+                      ${hasEntries ? 'ring-2 ring-gray-900 ring-offset-2' : ''}
+                    `}
+                  >
+                    {format(day, 'd')}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+          
+          {/* Log Time Button */}
           <button
             onClick={() => setShowAddTimeEntry(true)}
-            className="px-4 py-2 text-sm font-medium text-white bg-gray-800 rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 cursor-pointer transition-colors"
+            className="w-16 h-16 rounded-full bg-gray-900 text-white flex items-center justify-center shadow-lg hover:bg-gray-800 transition-colors"
+            aria-label="Log time"
           >
-            Log Time
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
           </button>
         </div>
-      </div>
-      
-      <HeaderStats selectedWeekStart={currentWeekStart} />
-      
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2">
-          <WeekSelector
-            currentWeekStart={currentWeekStart}
-            onPreviousWeek={handlePreviousWeek}
-            onNextWeek={handleNextWeek}
-            onCurrentWeek={handleCurrentWeek}
-          />
-          
-          <div className="mt-6">
-            <DailyHoursChart weekStartDate={currentWeekStart} />
-          </div>
-          
-          <div className="mt-8">
-            <h2 className="text-xl font-medium text-gray-800 mb-4">Your Projects</h2>
-            {projects.length === 0 ? (
-              <div className="text-center py-8 border border-gray-200 rounded-md bg-white">
-                <p className="text-gray-600 mb-4">You don&apos;t have any projects yet.</p>
-                <a 
-                  href="/projects" 
-                  className="px-4 py-2 text-sm font-medium text-white bg-gray-800 rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 cursor-pointer transition-colors"
-                >
-                  Add Your First Project
-                </a>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {projects.slice(0, 4).map(project => (
-                  <ProjectCard 
-                    key={project.id} 
-                    project={project}
-                    onEditClick={() => window.location.href = '/projects'}
-                  />
-                ))}
-                {projects.length > 4 && (
-                  <a 
-                    href="/projects" 
-                    className="flex items-center justify-center p-4 border border-gray-200 rounded-md bg-white text-gray-700 hover:bg-gray-50 cursor-pointer transition-colors"
-                  >
-                    View All Projects
-                  </a>
-                )}
-              </div>
-            )}
-          </div>
-        </div>
         
-        <div className="space-y-6">
-          <WeeklyLimitsSettings />
-          {/* Add other sidebar components here */}
+        {/* Time Entries List */}
+        <div className="bg-white rounded-lg shadow-sm">
+          <div className="px-6 py-4 border-b border-gray-200">
+            <h2 className="text-lg font-medium text-gray-900">
+              {format(selectedDate, 'EEEE, MMMM d, yyyy')}
+            </h2>
+          </div>
+          
+          {selectedDateEntries.length === 0 ? (
+            <div className="px-6 py-8 text-center text-gray-500">
+              No time entries for this day
+            </div>
+          ) : (
+            <div className="divide-y divide-gray-200">
+              {selectedDateEntries.map((entry, index) => (
+                <div key={entry.id} className="px-6 py-4 flex items-center justify-between">
+                  <div className="flex items-center space-x-4">
+                    <span className="text-sm font-medium text-gray-500 w-8">
+                      #{index + 1}
+                    </span>
+                    <div>
+                      <h3 className="text-sm font-medium text-gray-900">
+                        {getProjectName(entry.project_id)}
+                      </h3>
+                      {entry.description && (
+                        <p className="text-sm text-gray-500 mt-1">
+                          {entry.description}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                  <span className="text-sm font-medium text-gray-900">
+                    {entry.hours} {entry.hours === 1 ? 'hour' : 'hours'}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
       
+      {/* Time Entry Modal */}
       {showAddTimeEntry && (
-        <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50">
-          <div className="bg-white rounded-md shadow-lg p-6 max-w-md w-full">
+        <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-xl p-6 max-w-md w-full mx-4">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-lg font-medium text-gray-800">
+              <h2 className="text-lg font-medium text-gray-900">
                 Log Time
               </h2>
               <button 
                 onClick={() => setShowAddTimeEntry(false)}
-                className="text-gray-500 hover:text-gray-700 cursor-pointer"
+                className="text-gray-400 hover:text-gray-500"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />

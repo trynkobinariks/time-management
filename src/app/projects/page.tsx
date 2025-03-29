@@ -18,7 +18,7 @@ export default function ProjectsPage() {
 
   const handleEditClick = (project: Project) => {
     setEditingProject(project);
-    setShowAddForm(false);
+    setShowAddForm(true);
   };
 
   const handleFormSuccess = () => {
@@ -32,7 +32,7 @@ export default function ProjectsPage() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8 relative">
+    <div className="container mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-medium text-gray-800">Projects</h1>
         <button
@@ -49,25 +49,7 @@ export default function ProjectsPage() {
         </button>
       </div>
 
-      {showAddForm && (
-        <div className="mb-8 p-4 border border-gray-200 rounded-md bg-white relative z-20">
-          <h2 className="text-xl font-medium text-gray-800 mb-4">Add New Project</h2>
-          <ProjectForm onSuccess={handleFormSuccess} onCancel={handleFormCancel} />
-        </div>
-      )}
-
-      {editingProject && (
-        <div className="mb-8 p-4 border border-gray-200 rounded-md bg-white relative z-20">
-          <h2 className="text-xl font-medium text-gray-800 mb-4">Edit Project</h2>
-          <ProjectForm
-            project={editingProject}
-            onSuccess={handleFormSuccess}
-            onCancel={handleFormCancel}
-          />
-        </div>
-      )}
-
-      {projects.length === 0 && !showAddForm && !editingProject ? (
+      {projects.length === 0 ? (
         <div className="text-center py-12">
           <p className="text-gray-600 mb-4">No projects yet. Add your first project to get started.</p>
           <button
@@ -92,6 +74,32 @@ export default function ProjectsPage() {
               onEditClick={() => handleEditClick(project)}
             />
           ))}
+        </div>
+      )}
+
+      {/* Project Form Modal */}
+      {showAddForm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-lg font-medium text-gray-900">
+                {editingProject ? 'Edit Project' : 'Add New Project'}
+              </h2>
+              <button
+                onClick={handleFormCancel}
+                className="text-gray-400 hover:text-gray-500"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <ProjectForm
+              project={editingProject || undefined}
+              onSuccess={handleFormSuccess}
+              onCancel={handleFormCancel}
+            />
+          </div>
         </div>
       )}
     </div>

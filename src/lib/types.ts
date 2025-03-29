@@ -18,10 +18,8 @@ export interface Profile extends BaseModel {
 export interface Project extends BaseModel {
   user_id: string; // UUID, references auth.users(id)
   name: string;
-  description: string | null;
-  weekly_hours_allocation: number; // NUMERIC(5,2)
-  color: string | null;
-  project_type: ProjectType;
+  description?: string;
+  color?: string;
 }
 
 export interface TimeEntry extends BaseModel {
@@ -29,24 +27,7 @@ export interface TimeEntry extends BaseModel {
   project_id: string; // UUID, references projects(id)
   date: string; // DATE in YYYY-MM-DD format
   hours: number; // NUMERIC(5,2)
-  description: string; // Description of the task/work done
-}
-
-export interface DailyLimit extends BaseModel {
-  user_id: string; // UUID, references auth.users(id)
-  date: string; // DATE in YYYY-MM-DD format
-  max_hours: number; // NUMERIC(5,2)
-}
-
-export interface WeeklyLimit extends BaseModel {
-  user_id: string; // UUID, references auth.users(id)
-  week_start_date: string; // DATE in YYYY-MM-DD format
-  max_hours: number; // NUMERIC(5,2)
-}
-
-export interface UserSettings extends BaseModel {
-  user_id: string; // UUID, references auth.users(id)
-  internal_hours_limit: number; // NUMERIC(5,2)
+  description?: string; // Description of the task/work done
 }
 
 // Helper type for project with time entries
@@ -60,8 +41,6 @@ export interface ProjectWithTimeEntries extends Project {
 export interface DailySummary {
   date: Date;
   totalHoursWorked: number;
-  maxHours: number;
-  remainingHours: number;
   entries: TimeEntry[];
 }
 
@@ -70,8 +49,6 @@ export interface WeeklySummary {
   weekStartDate: Date;
   weekEndDate: Date;
   totalHoursWorked: number;
-  maxHours: number;
-  remainingHours: number;
   dailySummaries: DailySummary[];
   projectSummaries: ProjectWithTimeEntries[];
 } 
