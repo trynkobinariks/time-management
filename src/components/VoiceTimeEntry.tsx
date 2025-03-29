@@ -62,13 +62,18 @@ export default function VoiceTimeEntry() {
   return (
     <div className="mt-2 space-y-8">
       <div className="flex justify-center mb-8">
-        <div className="inline-flex rounded-lg border border-gray-200 dark:border-gray-700 p-1 bg-gray-100 dark:bg-gray-800">
+        <div className="relative inline-flex rounded-lg border border-gray-200 dark:border-gray-700 p-1 bg-gray-100 dark:bg-gray-800">
+          <div 
+            className={`absolute h-[calc(100%-8px)] w-[calc(50%-2px)] bg-white dark:bg-gray-700 rounded-md shadow-sm transition-all duration-300 ease-in-out ${
+              currentLanguage === 'uk-UA' ? 'translate-x-full' : ''
+            }`}
+          />
           <button
             type="button"
             onClick={() => setLanguage('en-US')}
-            className={`px-4 py-1.5 text-sm font-medium rounded-md transition-all duration-200 ${
+            className={`relative px-4 py-1.5 text-sm font-medium transition-colors duration-200 cursor-pointer ${
               currentLanguage === 'en-US'
-                ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm'
+                ? 'text-gray-900 dark:text-white'
                 : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
             }`}
             disabled={isListening || isProcessing}
@@ -78,9 +83,9 @@ export default function VoiceTimeEntry() {
           <button
             type="button"
             onClick={() => setLanguage('uk-UA')}
-            className={`px-4 py-1.5 text-sm font-medium rounded-md transition-all duration-200 ${
+            className={`relative px-4 py-1.5 text-sm font-medium transition-colors duration-200 cursor-pointer ${
               currentLanguage === 'uk-UA'
-                ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm'
+                ? 'text-gray-900 dark:text-white'
                 : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
             }`}
             disabled={isListening || isProcessing}
