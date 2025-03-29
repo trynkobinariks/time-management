@@ -6,7 +6,6 @@ import { usePathname, useRouter } from 'next/navigation';
 import { createBrowserClient } from '@supabase/ssr';
 import type { User } from '@supabase/supabase-js';
 import Logo from './Logo';
-import { useTheme } from '@/lib/ThemeContext';
 import ThemeSwitcher from './ThemeSwitcher';
 
 export default function Header() {
@@ -18,7 +17,6 @@ export default function Header() {
   );
   const [user, setUser] = React.useState<User | null>(null);
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
-  const { colors } = useTheme();
 
   React.useEffect(() => {
     const getUser = async () => {
@@ -49,13 +47,13 @@ export default function Header() {
   ];
 
   return (
-    <header className={`sticky top-0 z-50 ${colors.surface} ${colors.border} border-b`}>
+    <header className="sticky top-0 z-50 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex items-center">
             <Link href="/" className="flex items-center">
               <Logo size="md" className="mr-2" />
-              <span className={`text-xl font-bold ${colors.text} hidden sm:inline`}>
+              <span className="text-xl font-bold text-gray-900 dark:text-gray-100 hidden sm:inline">
                 Hours Tracker
               </span>
             </Link>
@@ -67,8 +65,8 @@ export default function Header() {
                   href={item.href}
                   className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
                     pathname === item.href
-                      ? `${colors.primary} text-white shadow-md`
-                      : `${colors.secondary} ${colors.text} ${colors.secondaryHover}`
+                      ? 'bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 shadow-md'
+                      : 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-600'
                   }`}
                 >
                   {item.name}
@@ -80,18 +78,18 @@ export default function Header() {
             <ThemeSwitcher />
             {user && (
               <>
-                <span className={`text-sm ${colors.textSecondary} hidden md:inline`}>
+                <span className="text-sm text-gray-500 dark:text-gray-400 hidden md:inline">
                   {user.email}
                 </span>
                 {/* Logout icon button */}
                 <button
                   onClick={() => signOut()}
-                  className={`p-2 rounded-full ${colors.secondary} ${colors.secondaryHover}`}
+                  className="p-2 rounded-full bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600"
                   aria-label="Sign out"
                 >
                   <svg 
                     xmlns="http://www.w3.org/2000/svg" 
-                    className={`h-5 w-5 ${colors.text}`}
+                    className="h-5 w-5 text-gray-900 dark:text-gray-100"
                     fill="none" 
                     viewBox="0 0 24 24" 
                     stroke="currentColor"
@@ -107,7 +105,7 @@ export default function Header() {
                 
                 {/* Mobile burger menu button */}
                 <button
-                  className={`ml-2 inline-flex items-center justify-center p-2 rounded-md ${colors.text} ${colors.secondary} ${colors.secondaryHover} md:hidden`}
+                  className="ml-2 inline-flex items-center justify-center p-2 rounded-md text-gray-900 dark:text-gray-100 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 md:hidden"
                   onClick={() => setIsMenuOpen(!isMenuOpen)}
                   aria-expanded={isMenuOpen}
                 >
@@ -148,18 +146,18 @@ export default function Header() {
       </div>
       
       {/* Mobile navigation menu */}
-      <div className={`md:hidden fixed inset-y-0 right-0 w-64 ${colors.surface} shadow-lg transform transition-transform duration-300 ease-in-out z-20 ${
+      <div className={`md:hidden fixed inset-y-0 right-0 w-64 bg-white dark:bg-gray-800 shadow-lg transform transition-transform duration-300 ease-in-out z-20 ${
         isMenuOpen ? 'translate-x-0 pointer-events-auto' : 'translate-x-full pointer-events-none'
       }`}>
-        <div className={`h-full flex flex-col pt-16 pb-3 px-3 ${colors.border} border-l`}>
+        <div className="h-full flex flex-col pt-16 pb-3 px-3 border-l border-gray-200 dark:border-gray-700">
           <button
-            className={`absolute top-4 right-4 p-2 rounded-full ${colors.secondary} ${colors.secondaryHover}`}
+            className="absolute top-4 right-4 p-2 rounded-full bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600"
             onClick={() => setIsMenuOpen(false)}
             aria-label="Close menu"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className={`h-6 w-6 ${colors.text}`}
+              className="h-6 w-6 text-gray-900 dark:text-gray-100"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -179,8 +177,8 @@ export default function Header() {
                 href={item.href}
                 className={`block px-4 py-2 rounded-md text-base font-medium ${
                   pathname === item.href
-                    ? `${colors.primary} text-white`
-                    : `${colors.secondary} ${colors.text} ${colors.secondaryHover}`
+                    ? 'bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900'
+                    : 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-600'
                 }`}
                 onClick={() => setIsMenuOpen(false)}
               >
@@ -189,8 +187,8 @@ export default function Header() {
             ))}
           </div>
           {user && (
-            <div className={`mt-auto pt-4 ${colors.border} border-t`}>
-              <span className={`block px-4 py-2 text-sm ${colors.textSecondary}`}>
+            <div className="mt-auto pt-4 border-t border-gray-200 dark:border-gray-700">
+              <span className="block px-4 py-2 text-sm text-gray-500 dark:text-gray-400">
                 {user.email}
               </span>
             </div>
