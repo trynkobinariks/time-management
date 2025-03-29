@@ -32,9 +32,9 @@ export default function ProjectsPage() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8 max-w-7xl">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-medium text-gray-800">Projects</h1>
+        <h1 className="text-2xl font-medium text-gray-800 dark:text-white">Projects</h1>
         <button
           onClick={handleAddClick}
           onTouchEnd={(e) => {
@@ -49,33 +49,58 @@ export default function ProjectsPage() {
         </button>
       </div>
 
-      {projects.length === 0 ? (
-        <div className="text-center py-12">
-          <p className="text-gray-600 mb-4">No projects yet. Add your first project to get started.</p>
-          <button
-            onClick={handleAddClick}
-            onTouchEnd={(e) => {
-              e.preventDefault();
-              handleAddClick();
-            }}
-            className="px-4 py-2 text-sm font-medium text-white bg-gray-800 rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 cursor-pointer transition-colors active:bg-gray-600 touch-action-manipulation z-20 relative"
-            aria-label="Add Project"
-            role="button"
-          >
-            Add Project
-          </button>
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm">
+        <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+          <h2 className="text-lg font-medium text-gray-900 dark:text-white">All Projects</h2>
         </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {projects.map((project) => (
-            <ProjectCard
-              key={project.id}
-              project={project}
-              onEditClick={() => handleEditClick(project)}
-            />
-          ))}
-        </div>
-      )}
+
+        {projects.length === 0 ? (
+          <div className="px-6 py-8 text-center">
+            <p className="text-gray-500 dark:text-gray-400 mb-4">No projects yet. Add your first project to get started.</p>
+            <button
+              onClick={handleAddClick}
+              onTouchEnd={(e) => {
+                e.preventDefault();
+                handleAddClick();
+              }}
+              className="px-4 py-2 text-sm font-medium text-white bg-gray-800 rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 cursor-pointer transition-colors active:bg-gray-600 touch-action-manipulation"
+              aria-label="Add Project"
+              role="button"
+            >
+              Add Project
+            </button>
+          </div>
+        ) : (
+          <div className="divide-y divide-gray-100 dark:divide-gray-700">
+            {projects.map((project) => (
+              <div key={project.id} className="px-6 py-4">
+                <ProjectCard
+                  project={project}
+                  onEditClick={() => handleEditClick(project)}
+                />
+              </div>
+            ))}
+
+            <div className="px-6 py-4 flex items-center justify-between bg-gray-50 dark:bg-gray-700">
+              <div className="flex items-center space-x-4">
+                <span className="w-8"></span>
+                <span className="text-sm font-medium text-gray-900 dark:text-white">
+                  Total Projects
+                </span>
+              </div>
+
+              <div className="flex-1 mx-8"></div>
+
+              <div className="flex items-center space-x-4">
+                <span className="text-lg font-semibold text-gray-900 dark:text-white">
+                  {projects.length} {projects.length === 1 ? 'project' : 'projects'}
+                </span>
+                <span className="w-16"></span>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
 
       {/* Project Form Modal */}
       {showAddForm && (
