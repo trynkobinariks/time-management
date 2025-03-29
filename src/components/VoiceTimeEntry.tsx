@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useSpeechRecognition, RecognitionLanguage } from '@/lib/speechRecognition';
-import { parseVoiceInput, ParsedTimeEntry } from '@/lib/aiParser';
+import { useSpeechRecognition } from '@/lib/speechRecognition';
+import { parseVoiceInput } from '@/lib/aiParser';
 import { useProjectContext } from '@/lib/ProjectContext';
 
 export default function VoiceTimeEntry() {
@@ -60,75 +60,88 @@ export default function VoiceTimeEntry() {
   }, [status, text, projects, addTimeEntry, resetText, currentLanguage]);
   
   return (
-    <div className="mt-2 space-y-4">
-      <div className="flex items-center gap-2 mb-3">
-        <label htmlFor="speech-language" className="text-sm font-medium text-gray-700 dark:text-gray-200">
-          Language:
-        </label>
-        <select
-          id="speech-language"
-          value={currentLanguage}
-          onChange={(e) => setLanguage(e.target.value as RecognitionLanguage)}
-          className="rounded-md border border-gray-300 dark:border-gray-600 px-3 py-1 text-sm text-gray-900 dark:text-white bg-white dark:bg-gray-800 focus:outline-none focus:ring-1 focus:ring-gray-500 cursor-pointer"
-          disabled={isListening || isProcessing}
-        >
-          <option value="en-US" className="bg-white dark:bg-gray-800">English</option>
-          <option value="uk-UA" className="bg-white dark:bg-gray-800">Українська</option>
-        </select>
+    <div className="mt-2 space-y-8">
+      <div className="flex justify-center mb-8">
+        <div className="inline-flex rounded-lg border border-gray-200 dark:border-gray-700 p-1 bg-gray-100 dark:bg-gray-800">
+          <button
+            type="button"
+            onClick={() => setLanguage('en-US')}
+            className={`px-4 py-1.5 text-sm font-medium rounded-md transition-all duration-200 ${
+              currentLanguage === 'en-US'
+                ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm'
+                : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+            }`}
+            disabled={isListening || isProcessing}
+          >
+            EN
+          </button>
+          <button
+            type="button"
+            onClick={() => setLanguage('uk-UA')}
+            className={`px-4 py-1.5 text-sm font-medium rounded-md transition-all duration-200 ${
+              currentLanguage === 'uk-UA'
+                ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm'
+                : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+            }`}
+            disabled={isListening || isProcessing}
+          >
+            UA
+          </button>
+        </div>
       </div>
     
-      <div className="flex items-center gap-2">
+      <div className="flex flex-col items-center gap-4">
         <button
           type="button"
           onClick={isListening ? stopListening : () => startListening(currentLanguage)}
-          className={`px-4 py-2 text-sm font-medium text-white rounded-md transition-colors ${
+          className={`w-20 h-20 rounded-full flex items-center justify-center text-white transition-all duration-200 cursor-pointer ${
             isListening 
-              ? 'bg-red-600 hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-600' 
-              : 'bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600'
+              ? 'bg-red-700 hover:bg-red-900 dark:bg-red-600 dark:hover:bg-red-700 shadow-lg shadow-red-500/30' 
+              : 'bg-red-600 hover:bg-red-800 dark:bg-red-500 dark:hover:bg-red-600 shadow-lg shadow-red-500/30'
           }`}
           disabled={isProcessing}
+          aria-label={isListening ? 'Stop Recording' : 'Start Recording'}
         >
-          {isListening ? 
-            (currentLanguage === 'uk-UA' ? 'Зупинити запис' : 'Stop Recording') : 
-            (currentLanguage === 'uk-UA' ? 'Записати голос' : 'Record Time Entry')
-          }
+          {isListening ? (
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 10a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z" />
+            </svg>
+          ) : (
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+            </svg>
+          )}
         </button>
         
-        {isListening && (
-          <div className="flex items-center gap-1">
-            <span className="animate-pulse text-red-600 dark:text-red-400">●</span>
-            <span className="text-sm text-gray-600 dark:text-gray-300">
-              {currentLanguage === 'uk-UA' ? 'Запис...' : 'Recording...'}
-            </span>
-          </div>
-        )}
-        
-        {isProcessing && (
-          <div className="flex items-center gap-1">
-            <span className="animate-spin text-blue-600 dark:text-blue-400">◌</span>
-            <span className="text-sm text-gray-600 dark:text-gray-300">
-              {currentLanguage === 'uk-UA' ? 'Обробка...' : 'Processing...'}
-            </span>
+        {(isListening || isProcessing) && (
+          <div className="flex items-center gap-2">
+            {isListening && (
+              <div className="flex items-center gap-1">
+                <span className="animate-pulse text-red-600 dark:text-red-400">●</span>
+                <span className="text-sm text-gray-600 dark:text-gray-300">
+                  {currentLanguage === 'uk-UA' ? 'Запис...' : 'Recording...'}
+                </span>
+              </div>
+            )}
+            
+            {isProcessing && (
+              <div className="flex items-center gap-1">
+                <span className="animate-spin text-blue-600 dark:text-blue-400">◌</span>
+                <span className="text-sm text-gray-600 dark:text-gray-300">
+                  {currentLanguage === 'uk-UA' ? 'Обробка...' : 'Processing...'}
+                </span>
+              </div>
+            )}
           </div>
         )}
       </div>
       
-      {(text || error || speechError) && (
+      {(error || speechError) && (
         <div className="mt-2 p-3 bg-gray-50 dark:bg-gray-800 rounded-md">
-          {text && (
-            <div className="mb-2">
-              <div className="text-sm font-medium text-gray-700 dark:text-gray-200">
-                {currentLanguage === 'uk-UA' ? 'Розпізнаний текст:' : 'Transcribed Text:'}
-              </div>
-              <p className="text-gray-900 dark:text-white">{text}</p>
-            </div>
-          )}
-          
-          {(error || speechError) && (
-            <div className="text-sm text-red-600 dark:text-red-400">
-              {error || speechError}
-            </div>
-          )}
+          <div className="text-sm text-red-600 dark:text-red-400">
+            {error || speechError}
+          </div>
         </div>
       )}
       

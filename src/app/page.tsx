@@ -96,7 +96,7 @@ export default function Dashboard() {
         {/* Voice Entry Section */}
         <div className="lg:col-span-3">
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
-            <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
+            <h2 className="text-lg text-center font-medium text-gray-900 dark:text-white mb-4">
               Quick Time Entry
             </h2>
             <VoiceTimeEntry />
