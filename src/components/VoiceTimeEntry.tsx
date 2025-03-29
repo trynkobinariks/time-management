@@ -5,11 +5,7 @@ import { useSpeechRecognition, RecognitionLanguage } from '@/lib/speechRecogniti
 import { parseVoiceInput, ParsedTimeEntry } from '@/lib/aiParser';
 import { useProjectContext } from '@/lib/ProjectContext';
 
-interface VoiceTimeEntryProps {
-  onDataCapture: (data: ParsedTimeEntry) => void;
-}
-
-export default function VoiceTimeEntry({ onDataCapture }: VoiceTimeEntryProps) {
+export default function VoiceTimeEntry() {
   const { 
     text, 
     isListening, 
@@ -24,7 +20,7 @@ export default function VoiceTimeEntry({ onDataCapture }: VoiceTimeEntryProps) {
   
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { projects } = useProjectContext();
+  const { projects, addTimeEntry } = useProjectContext();
   
   // Process voice input when user stops speaking
   useEffect(() => {
@@ -37,8 +33,18 @@ export default function VoiceTimeEntry({ onDataCapture }: VoiceTimeEntryProps) {
           const parsedData = await parseVoiceInput(text, projects);
           
           if (parsedData) {
-            onDataCapture(parsedData);
-            resetText();
+            const project = projects.find(p => p.name === parsedData.project_name);
+            if (project) {
+              await addTimeEntry({
+                project_id: project.id,
+                date: parsedData.date,
+                hours: parsedData.hours,
+                description: parsedData.description || '',
+              });
+              resetText();
+            } else {
+              setError('Project not found. Please try again with a valid project name.');
+            }
           } else {
             setError('Could not parse your input. Please try again with a clearer description of your time entry.');
           }
@@ -51,23 +57,23 @@ export default function VoiceTimeEntry({ onDataCapture }: VoiceTimeEntryProps) {
     };
     
     processVoiceInput();
-  }, [status, text, projects, onDataCapture, resetText, currentLanguage]);
+  }, [status, text, projects, addTimeEntry, resetText, currentLanguage]);
   
   return (
     <div className="mt-2 space-y-4">
       <div className="flex items-center gap-2 mb-3">
-        <label htmlFor="speech-language" className="text-sm font-medium text-gray-700">
+        <label htmlFor="speech-language" className="text-sm font-medium text-gray-700 dark:text-gray-200">
           Language:
         </label>
         <select
           id="speech-language"
           value={currentLanguage}
           onChange={(e) => setLanguage(e.target.value as RecognitionLanguage)}
-          className="rounded-md border border-gray-300 px-3 py-1 text-sm text-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-500 cursor-pointer"
+          className="rounded-md border border-gray-300 dark:border-gray-600 px-3 py-1 text-sm text-gray-900 dark:text-white bg-white dark:bg-gray-800 focus:outline-none focus:ring-1 focus:ring-gray-500 cursor-pointer"
           disabled={isListening || isProcessing}
         >
-          <option value="en-US">English</option>
-          <option value="uk-UA">Українська</option>
+          <option value="en-US" className="bg-white dark:bg-gray-800">English</option>
+          <option value="uk-UA" className="bg-white dark:bg-gray-800">Українська</option>
         </select>
       </div>
     
@@ -77,8 +83,8 @@ export default function VoiceTimeEntry({ onDataCapture }: VoiceTimeEntryProps) {
           onClick={isListening ? stopListening : () => startListening(currentLanguage)}
           className={`px-4 py-2 text-sm font-medium text-white rounded-md transition-colors ${
             isListening 
-              ? 'bg-red-600 hover:bg-red-700' 
-              : 'bg-blue-600 hover:bg-blue-700'
+              ? 'bg-red-600 hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-600' 
+              : 'bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600'
           }`}
           disabled={isProcessing}
         >
@@ -90,8 +96,8 @@ export default function VoiceTimeEntry({ onDataCapture }: VoiceTimeEntryProps) {
         
         {isListening && (
           <div className="flex items-center gap-1">
-            <span className="animate-pulse text-red-600">●</span>
-            <span className="text-sm text-gray-600">
+            <span className="animate-pulse text-red-600 dark:text-red-400">●</span>
+            <span className="text-sm text-gray-600 dark:text-gray-300">
               {currentLanguage === 'uk-UA' ? 'Запис...' : 'Recording...'}
             </span>
           </div>
@@ -99,8 +105,8 @@ export default function VoiceTimeEntry({ onDataCapture }: VoiceTimeEntryProps) {
         
         {isProcessing && (
           <div className="flex items-center gap-1">
-            <span className="animate-spin text-blue-600">◌</span>
-            <span className="text-sm text-gray-600">
+            <span className="animate-spin text-blue-600 dark:text-blue-400">◌</span>
+            <span className="text-sm text-gray-600 dark:text-gray-300">
               {currentLanguage === 'uk-UA' ? 'Обробка...' : 'Processing...'}
             </span>
           </div>
@@ -108,25 +114,25 @@ export default function VoiceTimeEntry({ onDataCapture }: VoiceTimeEntryProps) {
       </div>
       
       {(text || error || speechError) && (
-        <div className="mt-2 p-3 bg-gray-50 rounded-md">
+        <div className="mt-2 p-3 bg-gray-50 dark:bg-gray-800 rounded-md">
           {text && (
             <div className="mb-2">
-              <div className="text-sm font-medium text-gray-700">
+              <div className="text-sm font-medium text-gray-700 dark:text-gray-200">
                 {currentLanguage === 'uk-UA' ? 'Розпізнаний текст:' : 'Transcribed Text:'}
               </div>
-              <p className="text-gray-900">{text}</p>
+              <p className="text-gray-900 dark:text-white">{text}</p>
             </div>
           )}
           
           {(error || speechError) && (
-            <div className="text-sm text-red-600">
+            <div className="text-sm text-red-600 dark:text-red-400">
               {error || speechError}
             </div>
           )}
         </div>
       )}
       
-      <div className="text-xs text-gray-500 mt-1">
+      <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
         {currentLanguage === 'uk-UA' ? (
           <p>Спробуйте сказати щось на зразок: &ldquo;Я провів 2 години на Проекті Х вчора, працюючи над документацією&rdquo;</p>
         ) : (
