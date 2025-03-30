@@ -3,51 +3,54 @@
 import { useEffect, useState } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 
+type TranslationValue = string | { [key: string]: TranslationValue };
+type Translations = { [key: string]: TranslationValue };
+
+// Pre-import translations to ensure they're available
+import enTranslations from '@/i18n/locales/en/common.json';
+import ukTranslations from '@/i18n/locales/uk/common.json';
+
+const translationsMap: Record<string, Translations> = {
+  'en-US': enTranslations,
+  'uk-UA': ukTranslations
+};
+
 export function useClientTranslation() {
   const { language } = useLanguage();
-  const [translations, setTranslations] = useState<Record<string, string>>({});
+  const [translations, setTranslations] = useState<Translations>(translationsMap[language] || enTranslations);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    const loadTranslations = async () => {
-      try {
-        // Map the language codes to folder names
-        const languageMap: Record<string, string> = {
-          'en-US': 'en',
-          'uk-UA': 'uk'
-        };
-        
-        const folderName = languageMap[language] || language;
-        console.log('Loading translations for:', {
-          language,
-          folderName,
-          fullPath: `@/i18n/locales/${folderName}/common.json`
-        });
-
-        const translationModule = await import(`@/i18n/locales/${folderName}/common.json`);
-        console.log('Loaded translations:', translationModule.default);
-        setTranslations(translationModule.default);
-      } catch (error) {
-        console.error('Failed to load translations:', error);
-        // Fallback to English
-        try {
-          console.log('Attempting to load fallback English translations');
-          const fallbackModule = await import('@/i18n/locales/en/common.json');
-          console.log('Loaded fallback translations:', fallbackModule.default);
-          setTranslations(fallbackModule.default as unknown as Record<string, string>);
-        } catch (fallbackError) {
-          console.error('Failed to load fallback translations:', fallbackError);
-        }
-      }
-    };
-
-    loadTranslations();
+    setIsLoading(true);
+    try {
+      const newTranslations = translationsMap[language] || enTranslations;
+      setTranslations(newTranslations);
+    } catch (error) {
+      console.error('Failed to load translations:', error);
+      setTranslations(enTranslations);
+    } finally {
+      setIsLoading(false);
+    }
   }, [language]);
 
   const t = (key: string) => {
-    const translation = translations[key] || key;
-    console.log('Translation lookup:', { key, translation, availableKeys: Object.keys(translations) });
-    return translation;
+    if (isLoading) {
+      return key;
+    }
+
+    const keys = key.split('.');
+    let translation: TranslationValue = translations;
+    
+    for (const k of keys) {
+      if (translation && typeof translation === 'object') {
+        translation = translation[k];
+      } else {
+        return key;
+      }
+    }
+    
+    return typeof translation === 'string' ? translation : key;
   };
 
-  return { t, language };
+  return { t, language, isLoading };
 } 
