@@ -9,7 +9,7 @@ import Logo from './Logo';
 import ThemeSwitcher from './ThemeSwitcher';
 import LanguageSwitcher from './LanguageSwitcher';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useClientTranslation } from '../../hooks/useClientTranslation';
+import { useClientTranslation } from '../hooks/useClientTranslation';
 
 export default function Header() {
   const pathname = usePathname();

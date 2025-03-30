@@ -6,7 +6,7 @@ import { useWelcomeContext } from '@/contexts/WelcomeContext';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, isToday, isSameMonth, startOfWeek, endOfWeek } from 'date-fns';
 import VoiceTimeEntry from '@/components/VoiceTimeEntry';
 import TimeEntriesList from '@/components/TimeEntriesList';
-import { useClientTranslation } from '../../hooks/useClientTranslation';
+import { useClientTranslation } from '../hooks/useClientTranslation';
 export default function Dashboard() {
   const { projects, timeEntries, selectedDate, setSelectedDate, deleteTimeEntry } = useProjectContext();
   const { setShowWelcomePopup } = useWelcomeContext();

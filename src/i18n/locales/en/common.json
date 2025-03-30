@@ -13,6 +13,65 @@
     "quickTimeEntry": "Quick Time Entry",
     "noTimeEntriesForThisDate": "No time entries for this date",
     "unknownProject": "Unknown Project",
-    "deleteEntry": "Delete Entry"
+    "deleteEntry": "Delete Entry",
+    "noTimeEntries": "No time entries yet. Add your first entry to get started.",
+    "timeEntry": "Time Entry"
+  },
+  "projects": {
+    "title": "Projects",
+    "addProject": "Add Project",
+    "allProjects": "All Projects",
+    "noProjects": "No projects yet. Add your first project to get started.",
+    "totalProjects": "Total Projects",
+    "project": "project",
+    "projects": "projects"
+  },
+  "auth": {
+    "login": {
+      "title": "Login to your account",
+      "createAccount": "Or create a new account",
+      "email": "Email address",
+      "password": "Password",
+      "forgotPassword": "Forgot your password?",
+      "signingIn": "Signing in...",
+      "signIn": "Sign in",
+      "error": "Error"
+    },
+    "signup": {
+      "checkEmail": "Check your email",
+      "verificationSent": "We've sent you an email with a link to verify your account. Please check your inbox (and spam folder) and click the link to continue.",
+      "autoRedirect": "After verifying your email, you'll be automatically redirected to the dashboard.",
+      "spamNote": "If you don't see the email, please wait a few minutes and check your spam folder.",
+      "returnToLogin": "Return to login"
+    },
+    "loading": "Loading..."
+  },
+  "welcome": {
+    "title": "Welcome to Time Management",
+    "description": "This application helps you track and manage your time effectively across different projects.",
+    "features": "Key Features:",
+    "featuresList": {
+      "trackHours": "Track hours spent on different projects",
+      "setLimits": "Set and monitor weekly hour limits",
+      "visualize": "Visualize your time usage with daily and weekly charts",
+      "manageAllocations": "Manage internal and external project allocations",
+      "generateReports": "Generate reports of your time entries"
+    },
+    "getStarted": "Get started by adding your first project or logging time for existing projects."
+  },
+  "voiceEntry": {
+    "recording": "Recording...",
+    "processing": "Processing...",
+    "trySaying": "Try saying something like:",
+    "examples": {
+      "example1": "I spent 2 hours on Project X yesterday working on documentation",
+      "example2": "Today I worked 3.5 hours on Project Y developing new features",
+      "example3": "I spent 4 hours on Project Z on 03/15/2024 testing the system",
+      "example4": "On 20th March I worked 5 hours on Project W"
+    }
+  },
+  "common": {
+    "today": "Today",
+    "close": "Close"
   }
 }

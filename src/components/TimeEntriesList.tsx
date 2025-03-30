@@ -1,5 +1,5 @@
 import { format } from 'date-fns';
-import { useClientTranslation } from '../../hooks/useClientTranslation';
+import { useClientTranslation } from '../hooks/useClientTranslation';
 interface TimeEntry {
   id: string;
   project_id: string;

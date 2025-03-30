@@ -5,6 +5,7 @@ import { useSpeechRecognition, RecognitionLanguage } from '@/lib/speechRecogniti
 import { parseVoiceInput } from '@/lib/aiParser';
 import { useProjectContext } from '@/contexts/ProjectContext';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useTranslation } from 'react-i18next';
 
 export default function VoiceTimeEntry() {
   const { language } = useLanguage();
@@ -21,6 +22,7 @@ export default function VoiceTimeEntry() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { projects, addTimeEntry } = useProjectContext();
+  const { t } = useTranslation('common');
   
   // Process voice input when user stops speaking
   useEffect(() => {
@@ -91,7 +93,7 @@ export default function VoiceTimeEntry() {
               <div className="flex items-center gap-1">
                 <span className="animate-pulse text-red-600 dark:text-red-400">●</span>
                 <span className="text-sm text-gray-600 dark:text-gray-300">
-                  {language === 'uk-UA' ? 'Запис...' : 'Recording...'}
+                  {t('voiceEntry.recording')}
                 </span>
               </div>
             )}
@@ -100,7 +102,7 @@ export default function VoiceTimeEntry() {
               <div className="flex items-center gap-1">
                 <span className="animate-spin text-blue-600 dark:text-blue-400">◌</span>
                 <span className="text-sm text-gray-600 dark:text-gray-300">
-                  {language === 'uk-UA' ? 'Обробка...' : 'Processing...'}
+                  {t('voiceEntry.processing')}
                 </span>
               </div>
             )}
@@ -117,27 +119,15 @@ export default function VoiceTimeEntry() {
       )}
       
       <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-        {language === 'uk-UA' ? (
-          <div className="space-y-1">
-            <p>Спробуйте сказати щось на зразок:</p>
-            <ul className="list-disc list-inside">
-              <li>&ldquo;Я провів 2 години на Проекті Х вчора, працюючи над документацією&rdquo;</li>
-              <li>&ldquo;Сьогодні я працював 3.5 години над Проектом Y, розробляючи новий функціонал&rdquo;</li>
-              <li>&ldquo;На Проекті Z я провів 4 години 15.03.2024, тестуючи систему&rdquo;</li>
-              <li>&ldquo;20 березня я працював 5 годин над Проектом W&rdquo;</li>
-            </ul>
-          </div>
-        ) : (
-          <div className="space-y-1">
-            <p>Try saying something like:</p>
-            <ul className="list-disc list-inside">
-              <li>&ldquo;I spent 2 hours on Project X yesterday working on documentation&rdquo;</li>
-              <li>&ldquo;Today I worked 3.5 hours on Project Y developing new features&rdquo;</li>
-              <li>&ldquo;I spent 4 hours on Project Z on 03/15/2024 testing the system&rdquo;</li>
-              <li>&ldquo;On 20th March I worked 5 hours on Project W&rdquo;</li>
-            </ul>
-          </div>
-        )}
+        <div className="space-y-1">
+          <p>{t('voiceEntry.trySaying')}</p>
+          <ul className="list-disc list-inside">
+            <li>{t('voiceEntry.examples.example1')}</li>
+            <li>{t('voiceEntry.examples.example2')}</li>
+            <li>{t('voiceEntry.examples.example3')}</li>
+            <li>{t('voiceEntry.examples.example4')}</li>
+          </ul>
+        </div>
       </div>
     </div>
   );
