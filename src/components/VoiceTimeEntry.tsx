@@ -65,7 +65,7 @@ export default function VoiceTimeEntry() {
         <div className="relative inline-flex rounded-lg border border-gray-200 dark:border-gray-700 p-1 bg-gray-100 dark:bg-gray-800">
           <div 
             className={`absolute h-[calc(100%-8px)] w-[calc(50%-2px)] bg-white dark:bg-gray-700 rounded-md shadow-sm transition-all duration-300 ease-in-out ${
-              currentLanguage === 'uk-UA' ? 'translate-x-full' : ''
+              currentLanguage === 'uk-UA' ? 'translate-x-[94%]' : ''
             }`}
           />
           <button

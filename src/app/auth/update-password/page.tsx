@@ -53,15 +53,15 @@ export default function UpdatePasswordPage() {
   };
 
   return (
-    <div className="min-h-[calc(100vh-env(safe-area-inset-top))] flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8 pb-env(safe-area-inset-bottom) auth-background">
+    <div className="min-h-[calc(100vh-env(safe-area-inset-top))] flex items-center justify-center bg-gray-900 py-12 px-4 sm:px-6 lg:px-8 pb-env(safe-area-inset-bottom) auth-background">
       <AuthBackground />
       <div className="max-w-md w-full space-y-6 auth-card">
         <div className="flex flex-col items-center">
           <Logo size="lg" className="mb-4" />
-          <h2 className="text-center text-3xl font-medium text-gray-900">
+          <h2 className="text-center text-3xl font-medium text-white">
             Update your password
           </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
+          <p className="mt-2 text-center text-sm text-gray-300">
             Please enter your new password below.
           </p>
         </div>
@@ -76,6 +76,7 @@ export default function UpdatePasswordPage() {
               placeholder="New password"
               disabled={loading}
               rounded="top"
+              className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-600 bg-gray-700 placeholder-gray-400 text-white rounded-t-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
             <PasswordInput
               id="confirm-password"
@@ -86,14 +87,15 @@ export default function UpdatePasswordPage() {
               placeholder="Confirm new password"
               disabled={loading}
               rounded="bottom"
+              className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-600 bg-gray-700 placeholder-gray-400 text-white rounded-b-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
 
           {error && (
-            <div className="rounded-md bg-red-50 p-4">
+            <div className="rounded-md bg-red-900/50 p-4">
               <div className="flex">
                 <div className="ml-3">
-                  <h3 className="text-sm font-medium text-red-800">{error}</h3>
+                  <h3 className="text-sm font-medium text-red-200">{error}</h3>
                 </div>
               </div>
             </div>
@@ -104,7 +106,7 @@ export default function UpdatePasswordPage() {
               type="submit"
               disabled={loading}
               className={`group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white ${
-                loading ? 'bg-gray-400' : 'bg-gray-800 hover:bg-gray-700'
+                loading ? 'bg-gray-600' : 'bg-blue-600 hover:bg-blue-700'
               }`}
             >
               {loading ? 'Updating password...' : 'Update password'}

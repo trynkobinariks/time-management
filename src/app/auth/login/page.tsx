@@ -75,17 +75,17 @@ function LoginContent() {
   };
 
   return (
-    <div className="min-h-[calc(100vh-53px-env(safe-area-inset-top))] flex items-center justify-center bg-gray-50 px-4 sm:px-6 lg:px-8 pb-env(safe-area-inset-bottom) auth-background">
+    <div className="min-h-[calc(100vh-53px-env(safe-area-inset-top))] flex items-center justify-center bg-gray-900 px-4 sm:px-6 lg:px-8 pb-env(safe-area-inset-bottom) auth-background">
       <AuthBackground />
-      <div className="max-w-md w-full space-y-6 auth-card">
+      <div className="max-w-md w-full space-y-6 auth-card bg-gray-800 p-8 rounded-lg shadow-xl">
         <div className="flex flex-col items-center">
           <Logo size="lg" className="mb-4" />
-          <h2 className="text-center text-3xl font-medium text-gray-900">
+          <h2 className="text-center text-3xl font-medium text-white">
             Login to your account
           </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
+          <p className="mt-2 text-center text-sm text-gray-300">
             Or{' '}
-            <Link href="/auth/signup" className="font-medium text-gray-800 hover:text-gray-700">
+            <Link href="/auth/signup" className="font-medium text-blue-400 hover:text-blue-300">
               create a new account
             </Link>
           </p>
@@ -93,11 +93,11 @@ function LoginContent() {
 
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           {error && (
-            <div className="rounded-md bg-red-50 p-4">
+            <div className="rounded-md bg-red-900/50 p-4">
               <div className="flex">
                 <div className="ml-3">
-                  <h3 className="text-sm font-medium text-red-800">Error</h3>
-                  <div className="mt-2 text-sm text-red-700">{error}</div>
+                  <h3 className="text-sm font-medium text-red-200">Error</h3>
+                  <div className="mt-2 text-sm text-red-100">{error}</div>
                 </div>
               </div>
             </div>
@@ -116,7 +116,7 @@ function LoginContent() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md"
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-600 bg-gray-700 placeholder-gray-400 text-white rounded-t-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="Email address"
                 disabled={loading}
               />
@@ -130,12 +130,13 @@ function LoginContent() {
               placeholder="Password"
               disabled={loading}
               rounded="bottom"
+              className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-600 bg-gray-700 placeholder-gray-400 text-white rounded-b-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
 
           <div className="flex items-center justify-between">
             <div className="text-sm">
-              <Link href="/auth/reset-password" className="font-medium text-gray-800 hover:text-gray-700">
+              <Link href="/auth/reset-password" className="font-medium text-blue-400 hover:text-blue-300">
                 Forgot your password?
               </Link>
             </div>
@@ -146,7 +147,7 @@ function LoginContent() {
               type="submit"
               disabled={loading}
               className={`group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white ${
-                loading ? 'bg-gray-400' : 'bg-gray-800 hover:bg-gray-700'
+                loading ? 'bg-gray-600' : 'bg-blue-600 hover:bg-blue-700'
               }`}
             >
               {loading ? 'Signing in...' : 'Sign in'}
