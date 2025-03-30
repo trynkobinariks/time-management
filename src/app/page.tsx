@@ -1,8 +1,8 @@
 'use client';
 
 import { useEffect } from 'react';
-import { useProjectContext } from '@/lib/ProjectContext';
-import { useWelcomeContext } from '@/lib/WelcomeContext';
+import { useProjectContext } from '@/contexts/ProjectContext';
+import { useWelcomeContext } from '@/contexts/WelcomeContext';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, isToday, isSameMonth, startOfWeek, endOfWeek } from 'date-fns';
 import VoiceTimeEntry from '@/components/VoiceTimeEntry';
 import TimeEntriesList from '@/components/TimeEntriesList';

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useMemo } from 'react';
-import { useProjectContext } from '@/lib/ProjectContext';
+import { useProjectContext } from '@/contexts/ProjectContext';
 import { addDays } from '@/lib/utils';
 import { DailySummary } from '@/lib/types';
 

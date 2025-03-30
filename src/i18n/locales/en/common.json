@@ -1,0 +1,11 @@
+{
+  "header": {
+    "appName": "Hours Tracker",
+    "nav": {
+      "dashboard": "Dashboard",
+      "projects": "Projects",
+      "timeEntries": "Time Entries",
+      "settings": "Settings"
+    }
+  }
+}

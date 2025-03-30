@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useProjectContext } from '@/lib/ProjectContext';
+import { useProjectContext } from '@/contexts/ProjectContext';
 import ProjectCard from '@/components/ProjectCard';
 import ProjectForm from '@/components/ProjectForm';
 import { Project } from '@/lib/types';

@@ -1,7 +1,7 @@
 import { createInstance } from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import resourcesToBackend from 'i18next-resources-to-backend';
-import { getOptions } from './src/i18n/settings';
+import { getOptions } from './i18n/settings';
 
 interface TranslationOptions {
   keyPrefix?: string;

@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { Project } from '@/lib/types';
-import { useProjectContext } from '@/lib/ProjectContext';
+import { useProjectContext } from '@/contexts/ProjectContext';
 
 interface ProjectCardProps {
   project: Project;

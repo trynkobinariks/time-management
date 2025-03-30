@@ -1,10 +1,10 @@
 'use client';
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { Project, TimeEntry } from './types';
+import { Project, TimeEntry } from '../lib/types';
 import { createBrowserClient } from '@supabase/ssr';
 import type { User } from '@supabase/supabase-js';
-import * as db from './db';
+import * as db from '../lib/db';
 
 interface ProjectContextType {
   projects: Project[];

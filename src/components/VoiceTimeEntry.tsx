@@ -1,13 +1,13 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useSpeechRecognition } from '@/lib/speechRecognition';
+import { useSpeechRecognition, RecognitionLanguage } from '@/lib/speechRecognition';
 import { parseVoiceInput } from '@/lib/aiParser';
-import { useProjectContext } from '@/lib/ProjectContext';
-import { useLanguage } from '@/lib/LanguageContext';
+import { useProjectContext } from '@/contexts/ProjectContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export default function VoiceTimeEntry() {
-  const { currentLanguage } = useLanguage();
+  const { language } = useLanguage();
   const { 
     text, 
     isListening, 
@@ -16,7 +16,7 @@ export default function VoiceTimeEntry() {
     stopListening, 
     resetText, 
     error: speechError,
-  } = useSpeechRecognition(currentLanguage);
+  } = useSpeechRecognition(language as RecognitionLanguage);
   
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -30,7 +30,7 @@ export default function VoiceTimeEntry() {
         setError(null);
         
         try {
-          const parsedData = await parseVoiceInput(text, projects, currentLanguage);
+          const parsedData = await parseVoiceInput(text, projects, language);
           
           if (parsedData) {
             const project = projects.find(p => p.name === parsedData.project_name);
@@ -57,14 +57,14 @@ export default function VoiceTimeEntry() {
     };
     
     processVoiceInput();
-  }, [status, text, projects, addTimeEntry, resetText, currentLanguage]);
+  }, [status, text, projects, addTimeEntry, resetText, language]);
   
   return (
     <div className="mt-2 space-y-8">
       <div className="flex flex-col items-center gap-4">
         <button
           type="button"
-          onClick={isListening ? stopListening : () => startListening(currentLanguage)}
+          onClick={isListening ? stopListening : () => startListening(language as RecognitionLanguage)}
           className={`w-20 h-20 rounded-full flex items-center justify-center text-white transition-all duration-200 cursor-pointer ${
             isListening 
               ? 'bg-red-700 hover:bg-red-900 dark:bg-red-600 dark:hover:bg-red-700 shadow-lg shadow-red-500/30' 
@@ -91,7 +91,7 @@ export default function VoiceTimeEntry() {
               <div className="flex items-center gap-1">
                 <span className="animate-pulse text-red-600 dark:text-red-400">●</span>
                 <span className="text-sm text-gray-600 dark:text-gray-300">
-                  {currentLanguage === 'uk-UA' ? 'Запис...' : 'Recording...'}
+                  {language === 'uk-UA' ? 'Запис...' : 'Recording...'}
                 </span>
               </div>
             )}
@@ -100,7 +100,7 @@ export default function VoiceTimeEntry() {
               <div className="flex items-center gap-1">
                 <span className="animate-spin text-blue-600 dark:text-blue-400">◌</span>
                 <span className="text-sm text-gray-600 dark:text-gray-300">
-                  {currentLanguage === 'uk-UA' ? 'Обробка...' : 'Processing...'}
+                  {language === 'uk-UA' ? 'Обробка...' : 'Processing...'}
                 </span>
               </div>
             )}
@@ -117,7 +117,7 @@ export default function VoiceTimeEntry() {
       )}
       
       <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-        {currentLanguage === 'uk-UA' ? (
+        {language === 'uk-UA' ? (
           <div className="space-y-1">
             <p>Спробуйте сказати щось на зразок:</p>
             <ul className="list-disc list-inside">

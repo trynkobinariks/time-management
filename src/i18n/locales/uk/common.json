@@ -1,0 +1,11 @@
+{
+  "header": {
+    "appName": "Годинник",
+    "nav": {
+      "dashboard": "Головна",
+      "projects": "Проекти",
+      "timeEntries": "Години",
+      "settings": "Налаштування"
+    }
+  }
+}

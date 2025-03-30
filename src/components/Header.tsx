@@ -8,12 +8,14 @@ import type { User } from '@supabase/supabase-js';
 import Logo from './Logo';
 import ThemeSwitcher from './ThemeSwitcher';
 import LanguageSwitcher from './LanguageSwitcher';
-import { useLanguage } from '@/lib/LanguageContext';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { useClientTranslation } from '../../hooks/useClientTranslation';
 
 export default function Header() {
   const pathname = usePathname();
+  const { t } = useClientTranslation();
   const router = useRouter();
-  const { currentLanguage, setLanguage } = useLanguage();
+  const { language, setLanguage } = useLanguage();
   const supabase = createBrowserClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL || '',
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
@@ -43,10 +45,10 @@ export default function Header() {
   };
   
   const navItems = [
-    { name: 'Dashboard', href: '/' },
-    { name: 'Projects', href: '/projects' },
-    { name: 'Time Entries', href: '/time-entries' },
-    { name: 'Settings', href: '/settings' },
+    { name: t('header.nav.dashboard'), href: '/' },
+    { name: t('header.nav.projects'), href: '/projects' },
+    { name: t('header.nav.timeEntries'), href: '/time-entries' },
+    { name: t('header.nav.settings'), href: '/settings' },
   ];
 
   return (
@@ -57,7 +59,7 @@ export default function Header() {
             <Link href="/" className="flex items-center">
               <Logo size="md" className="mr-2" />
               <span className="text-xl font-bold text-gray-900 dark:text-gray-100 hidden sm:inline">
-                Hours Tracker
+                {t('header.appName')}
               </span>
             </Link>
             {/* Desktop navigation */}
@@ -79,7 +81,7 @@ export default function Header() {
           </div>
           <div className="flex items-center space-x-4">
             <LanguageSwitcher 
-              currentLanguage={currentLanguage}
+              language={language}
               setLanguage={setLanguage}
             />
             <ThemeSwitcher />

@@ -1,6 +1,6 @@
 'use client';
 
-import { useProjectContext } from '@/lib/ProjectContext';
+import { useProjectContext } from '@/contexts/ProjectContext';
 import { format } from 'date-fns';
 
 export default function TimeEntriesPage() {

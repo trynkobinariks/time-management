@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useProjectContext } from '@/lib/ProjectContext';
+import { useProjectContext } from '@/contexts/ProjectContext';
 import { Project } from '@/lib/types';
 
 // Project color palette - modern, accessible colors

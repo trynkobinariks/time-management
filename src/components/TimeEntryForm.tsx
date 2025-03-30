@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useProjectContext } from '@/lib/ProjectContext';
+import { useProjectContext } from '@/contexts/ProjectContext';
 import { format, startOfWeek, endOfWeek } from 'date-fns';
 import { TimeEntry } from '@/lib/types';
 

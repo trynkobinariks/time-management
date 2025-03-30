@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { useWelcomeContext } from '@/lib/WelcomeContext';
+import { useWelcomeContext } from '@/contexts/WelcomeContext';
 import WelcomePopup from './WelcomePopup';
 
 export default function WelcomeManager() {
