@@ -48,7 +48,6 @@ export default function Header() {
     { name: t('header.nav.dashboard'), href: '/' },
     { name: t('header.nav.projects'), href: '/projects' },
     { name: t('header.nav.timeEntries'), href: '/time-entries' },
-    { name: t('header.nav.settings'), href: '/settings' },
   ];
 
   return (
