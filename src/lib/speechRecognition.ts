@@ -63,10 +63,19 @@ export function useSpeechRecognition(): UseSpeechRecognitionReturn {
   const [error, setError] = useState<string | null>(null);
   const [currentLanguage, setCurrentLanguage] = useState<RecognitionLanguage>('en-US');
   const recognitionRef = useRef<SpeechRecognitionInstance | null>(null);
+  const silenceTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   // This implementation can only be used in the browser
   const isBrowser = typeof window !== 'undefined';
   const hasSupport = isBrowser && (window.SpeechRecognition || window.webkitSpeechRecognition);
+
+  // Function to handle silence timeout
+  const handleSilenceTimeout = useCallback(() => {
+    if (recognitionRef.current) {
+      recognitionRef.current.stop();
+      setStatus('processing');
+    }
+  }, []);
 
   // Initialize speech recognition
   useEffect(() => {
@@ -76,7 +85,7 @@ export function useSpeechRecognition(): UseSpeechRecognitionReturn {
     const recognition = new SpeechRecognition();
     
     recognition.continuous = true;
-    recognition.interimResults = false;
+    recognition.interimResults = true;
     recognition.lang = currentLanguage;
     
     recognition.onstart = () => {
@@ -91,16 +100,30 @@ export function useSpeechRecognition(): UseSpeechRecognitionReturn {
         .join(' ');
       
       setText(prev => prev + ' ' + transcript);
+      
+      // Reset silence detection timer
+      if (silenceTimerRef.current) {
+        clearTimeout(silenceTimerRef.current);
+      }
+      
+      // Start or reset the silence timer
+      silenceTimerRef.current = setTimeout(handleSilenceTimeout, 2500);
     };
     
     recognition.onerror = (event) => {
       setError(`Speech recognition error: ${event.error}`);
       setStatus('error');
+      if (silenceTimerRef.current) {
+        clearTimeout(silenceTimerRef.current);
+      }
     };
     
     recognition.onend = () => {
       setIsListening(false);
       setStatus('inactive');
+      if (silenceTimerRef.current) {
+        clearTimeout(silenceTimerRef.current);
+      }
     };
     
     recognitionRef.current = recognition;
@@ -114,8 +137,11 @@ export function useSpeechRecognition(): UseSpeechRecognitionReturn {
       if (recognitionRef.current) {
         recognitionRef.current.abort();
       }
+      if (silenceTimerRef.current) {
+        clearTimeout(silenceTimerRef.current);
+      }
     };
-  }, [isBrowser, hasSupport, currentLanguage]);
+  }, [isBrowser, hasSupport, currentLanguage, handleSilenceTimeout]);
 
   const setLanguage = useCallback((language: RecognitionLanguage) => {
     // Stop any ongoing recognition before changing language
