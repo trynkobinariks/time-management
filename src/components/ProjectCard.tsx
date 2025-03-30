@@ -65,10 +65,10 @@ export default function ProjectCard({ project, onEditClick }: ProjectCardProps) 
 
       {/* Delete Confirmation Modal */}
       {showDeleteConfirm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-sm w-full mx-4">
-            <h3 className="text-lg font-medium text-gray-900 mb-4">Delete Project</h3>
-            <p className="text-sm text-gray-600 mb-6">
+        <div className="fixed inset-0 bg-gray-700/40 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-sm w-full mx-4">
+            <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Delete Project</h3>
+            <p className="text-sm text-gray-600 dark:text-gray-300 mb-6">
               Are you sure you want to delete &ldquo;{project.name}&rdquo;? This action cannot be undone.
             </p>
             <div className="flex justify-end space-x-3">

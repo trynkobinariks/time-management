@@ -58,14 +58,14 @@ export default function ProjectsPage() {
 
         {projects.length === 0 ? (
           <div className="px-6 py-8 text-center">
-            <p className="text-gray-500 dark:text-gray-400 mb-4">{t('projects.noProjects')}</p>
+            <p className="text-gray-600 dark:text-gray-300 mb-4">{t('projects.noProjects')}</p>
             <button
               onClick={handleAddClick}
               onTouchEnd={(e) => {
                 e.preventDefault();
                 handleAddClick();
               }}
-              className="px-4 py-2 text-sm font-medium text-white bg-gray-800 rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 cursor-pointer transition-colors active:bg-gray-600 touch-action-manipulation"
+              className="px-4 py-2 text-sm font-medium text-white bg-gray-800 dark:bg-gray-700 rounded-md hover:bg-gray-700 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 cursor-pointer transition-colors active:bg-gray-600 touch-action-manipulation"
               aria-label={t('projects.addProject')}
               role="button"
             >
@@ -83,10 +83,10 @@ export default function ProjectsPage() {
               </div>
             ))}
 
-            <div className="px-6 py-4 flex items-center justify-between bg-gray-50 dark:bg-gray-700">
+            <div className="px-6 py-4 flex items-center justify-between bg-gray-50 dark:bg-gray-800">
               <div className="flex items-center space-x-4">
                 <span className="w-8"></span>
-                <span className="text-sm font-medium text-gray-900 dark:text-white">
+                <span className="text-sm font-medium text-gray-800 dark:text-gray-100">
                   {t('projects.totalProjects')}
                 </span>
               </div>
@@ -94,7 +94,7 @@ export default function ProjectsPage() {
               <div className="flex-1 mx-8"></div>
 
               <div className="flex items-center space-x-4">
-                <span className="text-lg font-semibold text-gray-900 dark:text-white">
+                <span className="text-lg font-semibold text-gray-800 dark:text-gray-100">
                   {projects.length} {projects.length === 1 ? t('projects.project') : t('projects.projects')}
                 </span>
                 <span className="w-16"></span>
@@ -106,15 +106,16 @@ export default function ProjectsPage() {
 
       {/* Project Form Modal */}
       {showAddForm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+        <div className="fixed inset-0 bg-gray-700/40 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full mx-4 shadow-xl">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-lg font-medium text-gray-900">
-                {editingProject ? 'Edit Project' : 'Add New Project'}
+              <h2 className="text-lg font-medium text-gray-800 dark:text-gray-100">
+                {editingProject ? t('projects.popup.title') : t('projects.addProject')}
               </h2>
               <button
                 onClick={handleFormCancel}
-                className="text-gray-400 hover:text-gray-500"
+                className="text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200 transition-colors"
+                aria-label={t('common.close')}
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />

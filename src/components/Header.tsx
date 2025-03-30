@@ -63,20 +63,22 @@ export default function Header() {
               </span>
             </Link>
             {/* Desktop navigation */}
-            <nav className="ml-8 hidden md:flex space-x-4">
-              {navItems.map((item) => (
-                <Link
-                  key={item.name}
-                  href={item.href}
-                  className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
-                    pathname === item.href
-                      ? 'bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 shadow-md'
-                      : 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-600'
-                  }`}
-                >
-                  {item.name}
-                </Link>
-              ))}
+            <nav className="ml-8 hidden md:flex">
+              <div className="flex space-x-0">
+                {navItems.map((item) => (
+                  <Link
+                    key={item.name}
+                    href={item.href}
+                    className={`px-6 py-2 text-sm font-medium transition-all rounded-md ${
+                      pathname === item.href
+                        ? 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100'
+                        : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-100'
+                    }`}
+                  >
+                    {item.name}
+                  </Link>
+                ))}
+              </div>
             </nav>
           </div>
           <div className="flex items-center space-x-4">
@@ -207,7 +209,7 @@ export default function Header() {
       
       {/* Backdrop overlay when menu is open */}
       <div 
-        className={`md:hidden fixed inset-0 bg-black transition-opacity duration-300 ease-in-out ${
+        className={`md:hidden fixed inset-0 bg-gray-700 backdrop-blur-sm transition-opacity duration-300 ease-in-out ${
           isMenuOpen ? 'opacity-25 z-10 pointer-events-auto' : 'opacity-0 -z-10 pointer-events-none'
         }`}
         onClick={() => setIsMenuOpen(false)}

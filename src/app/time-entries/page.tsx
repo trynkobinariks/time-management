@@ -3,9 +3,14 @@
 import { useProjectContext } from '@/contexts/ProjectContext';
 import { format } from 'date-fns';
 import { useClientTranslation } from '@/hooks/useClientTranslation';
+import { useState } from 'react';
+import TimeEntryForm from '@/components/TimeEntryForm';
+import { TimeEntry } from '@/lib/types';
+
 export default function TimeEntriesPage() {
-  const { timeEntries, projects, deleteTimeEntry } = useProjectContext();
+  const { timeEntries, projects, deleteTimeEntry, updateTimeEntry } = useProjectContext();
   const { t } = useClientTranslation();
+  const [editingEntry, setEditingEntry] = useState<TimeEntry | null>(null);
 
   // Group time entries by date
   const entriesByDate = timeEntries.reduce((acc, entry) => {
@@ -16,6 +21,19 @@ export default function TimeEntriesPage() {
     acc[date].push(entry);
     return acc;
   }, {} as Record<string, typeof timeEntries>);
+
+  const handleEdit = (entry: TimeEntry) => {
+    setEditingEntry(entry);
+  };
+
+  const handleUpdate = async (entry: TimeEntry) => {
+    await updateTimeEntry(entry);
+    setEditingEntry(null);
+  };
+
+  const handleCancel = () => {
+    setEditingEntry(null);
+  };
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -30,33 +48,42 @@ export default function TimeEntriesPage() {
       ) : (
         <div className="space-y-6">
           {Object.entries(entriesByDate).map(([dateStr, entries]) => (
-            <div key={dateStr} className="border border-gray-200 rounded-md bg-white overflow-hidden">
-              <div className="px-4 py-3 bg-gray-50 border-b border-gray-200">
-                <h2 className="text-base font-medium text-gray-800">
+            <div key={dateStr} className="border border-gray-200 dark:border-gray-700 rounded-md bg-white dark:bg-gray-800 overflow-hidden">
+              <div className="px-4 py-3 bg-gray-50 border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700">
+                <h2 className="text-base font-medium text-gray-800 dark:text-gray-100">
                   {format(new Date(dateStr), 'EEEE, MMMM d, yyyy')}
                 </h2>
               </div>
-              <div className="divide-y divide-gray-100">
+              <div className="divide-y divide-gray-100 dark:divide-gray-700">
                 {entries.map((entry) => (
                   <div key={entry.id} className="px-4 py-3">
                     <div className="flex justify-between items-start">
                       <div>
-                        <h3 className="text-sm font-medium text-gray-900">
+                        <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">
                           {projects.find(p => p.id === entry.project_id)?.name || t('timeEntries.unknownProject')}
                         </h3>
                         {entry.description && (
-                          <p className="mt-1 text-sm text-gray-600">
+                          <p className="mt-1 text-sm text-gray-600 dark:text-gray-300">
                             {entry.description}
                           </p>
                         )}
                       </div>
                       <div className="flex items-center space-x-4">
-                        <span className="text-sm font-medium text-gray-700">
+                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300 whitespace-nowrap">
                           {entry.hours} {entry.hours === 1 ? t('timeEntries.hour') : t('timeEntries.hours')}
                         </span>
                         <button
+                          onClick={() => handleEdit(entry)}
+                          className="p-2 text-blue-500 hover:text-blue-700 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-full cursor-pointer transition-colors"
+                          aria-label={t('timeEntries.editEntry')}
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                          </svg>
+                        </button>
+                        <button
                           onClick={() => deleteTimeEntry(entry.id)}
-                          className="p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-full cursor-pointer transition-colors"
+                          className="p-2 text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-full cursor-pointer transition-colors"
                           aria-label={t('timeEntries.deleteEntry')}
                         >
                           <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -71,6 +98,14 @@ export default function TimeEntriesPage() {
             </div>
           ))}
         </div>
+      )}
+
+      {editingEntry && (
+        <TimeEntryForm
+          editingEntry={editingEntry}
+          onSuccess={() => handleUpdate(editingEntry)}
+          onCancel={handleCancel}
+        />
       )}
     </div>
   );

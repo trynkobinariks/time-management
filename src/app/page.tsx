@@ -50,7 +50,7 @@ export default function Dashboard() {
   return (
     <div className="container mx-auto px-4 py-8 max-w-7xl">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-medium text-gray-800 dark:text-white">{t('welcome.title')}</h1>
+        <h1 className="text-2xl font-medium text-gray-800 dark:text-white text-center w-full lg:text-left lg:w-auto">{t('welcome.title')}</h1>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">

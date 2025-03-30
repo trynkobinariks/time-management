@@ -39,7 +39,29 @@
     "noProjects": "No projects yet. Add your first project to get started.",
     "totalProjects": "Total Projects",
     "project": "project",
-    "projects": "projects"
+    "projects": "projects",
+    "popup": {
+      "title": "Project Details",
+      "name": "Project Name",
+      "namePlaceholder": "Enter project name",
+      "description": "Description (optional)",
+      "descriptionPlaceholder": "Describe the project",
+      "color": "Project Color",
+      "status": "Status",
+      "statusActive": "Active",
+      "statusArchived": "Archived",
+      "save": "Save Project",
+      "cancel": "Cancel",
+      "delete": "Delete Project",
+      "deleteConfirmation": "Are you sure you want to delete this project?",
+      "deleteSuccess": "Project deleted successfully",
+      "deleteError": "Error deleting project",
+      "create": "Create Project",
+      "update": "Update Project",
+      "errors": {
+        "nameRequired": "Project name is required"
+      }
+    }
   },
   "auth": {
     "login": {
@@ -116,5 +138,10 @@
         "sunday": "Sun"
       }
     }
+  },
+  "theme": {
+    "darkMode": "Dark Mode",
+    "lightMode": "Light Mode",
+    "toggleTheme": "Toggle theme"
   }
 }
