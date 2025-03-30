@@ -12,55 +12,12 @@ export async function getProfile(userId: string) {
   return data;
 }
 
-export async function getUserSettings(userId: string) {
-  // First try to get existing settings
-  const { data: existingSettings, error: selectError } = await supabase
-    .from('user_settings')
-    .select('*')
-    .eq('user_id', userId)
-    .single();
-
-  // If settings exist, return them
-  if (existingSettings) {
-    return existingSettings;
-  }
-
-  // If no settings exist (and it's not another type of error), create default settings
-  if (selectError?.code === 'PGRST116') {
-    const defaultSettings = {
-      user_id: userId,
-      internal_hours_limit: 20
-    };
-
-    const { data: newSettings, error: insertError } = await supabase
-      .from('user_settings')
-      .insert([defaultSettings])
-      .select()
-      .single();
-
-    if (insertError) throw insertError;
-    return newSettings;
-  }
-
-  // If it was a different error, throw it
-  if (selectError) throw selectError;
-}
-
-export async function updateUserSettings(userId: string, settings: { internal_hours_limit: number }) {
-  const { error } = await supabase
-    .from('user_settings')
-    .update(settings)
-    .eq('user_id', userId);
-
-  if (error) throw error;
-}
-
 export async function getProjects(userId: string) {
   const { data, error } = await supabase
     .from('projects')
     .select('*')
     .eq('user_id', userId)
-    .order('created_at', { ascending: true });
+    .order('created_at', { ascending: false });
 
   if (error) throw error;
   return data;
@@ -77,7 +34,7 @@ export async function createProject(userId: string, project: Omit<Project, 'id' 
   return data;
 }
 
-export async function updateProject(userId: string, projectId: string, project: Partial<Project>) {
+export async function updateProject(userId: string, projectId: string, project: Project) {
   const { data, error } = await supabase
     .from('projects')
     .update(project)
@@ -124,7 +81,7 @@ export async function createTimeEntry(userId: string, entry: Omit<TimeEntry, 'id
   return data;
 }
 
-export async function updateTimeEntry(userId: string, entryId: string, entry: Partial<TimeEntry>) {
+export async function updateTimeEntry(userId: string, entryId: string, entry: TimeEntry) {
   const { data, error } = await supabase
     .from('time_entries')
     .update(entry)
@@ -145,58 +102,4 @@ export async function deleteTimeEntry(userId: string, entryId: string) {
     .eq('user_id', userId);
 
   if (error) throw error;
-}
-
-export async function getWeeklyLimits(userId: string, startDate: Date) {
-  const { data, error } = await supabase
-    .from('weekly_limits')
-    .select('*')
-    .eq('user_id', userId)
-    .eq('week_start_date', startDate.toISOString().split('T')[0])
-    .single();
-
-  if (error && error.code !== 'PGRST116') throw error; // PGRST116 is "not found"
-  return data;
-}
-
-export async function setWeeklyLimit(userId: string, weekStartDate: Date, maxHours: number) {
-  const { data, error } = await supabase
-    .from('weekly_limits')
-    .upsert([{
-      user_id: userId,
-      week_start_date: weekStartDate.toISOString().split('T')[0],
-      max_hours: maxHours
-    }])
-    .select()
-    .single();
-
-  if (error) throw error;
-  return data;
-}
-
-export async function getDailyLimits(userId: string, date: Date) {
-  const { data, error } = await supabase
-    .from('daily_limits')
-    .select('*')
-    .eq('user_id', userId)
-    .eq('date', date.toISOString().split('T')[0])
-    .single();
-
-  if (error && error.code !== 'PGRST116') throw error; // PGRST116 is "not found"
-  return data;
-}
-
-export async function setDailyLimit(userId: string, date: Date, maxHours: number) {
-  const { data, error } = await supabase
-    .from('daily_limits')
-    .upsert([{
-      user_id: userId,
-      date: date.toISOString().split('T')[0],
-      max_hours: maxHours
-    }])
-    .select()
-    .single();
-
-  if (error) throw error;
-  return data;
 } 

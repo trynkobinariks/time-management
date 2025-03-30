@@ -1,4 +1,4 @@
-import { DailySummary, Project, ProjectWithTimeEntries, TimeEntry, WeeklySummary } from './types';
+import { DailySummary, Project, TimeEntry, WeeklySummary } from './types';
 
 // Get the start of the week (Monday) for a given date
 export function getWeekStartDate(date: Date): Date {
@@ -10,68 +10,50 @@ export function getWeekStartDate(date: Date): Date {
 
 // Get the end of the week (Sunday) for a given date
 export function getWeekEndDate(date: Date): Date {
-  const weekStart = getWeekStartDate(date);
-  const weekEnd = new Date(weekStart);
-  weekEnd.setDate(weekStart.getDate() + 6);
-  return weekEnd;
+  const d = new Date(date);
+  const day = d.getDay();
+  const diff = d.getDate() - day + (day === 0 ? 0 : 7); // Adjust when day is Sunday
+  return new Date(d.setDate(diff));
 }
 
-// Format date as YYYY-MM-DD
+// Get all dates in a week
+export function getWeekDates(startDate: Date): Date[] {
+  const dates: Date[] = [];
+  for (let i = 0; i < 7; i++) {
+    const date = new Date(startDate);
+    date.setDate(startDate.getDate() + i);
+    dates.push(date);
+  }
+  return dates;
+}
+
+// Format a date to a readable string
+export function formatReadableDate(date: Date): string {
+  return date.toLocaleDateString('en-US', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
+}
+
+// Format a date to YYYY-MM-DD
 export function formatDate(date: Date): string {
   return date.toISOString().split('T')[0];
 }
 
-// Format date as readable string (e.g., "Mon, Jan 1")
-export function formatReadableDate(date: Date): string {
-  return date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
-}
-
-// Get an array of dates for the week containing the given date
-export function getWeekDates(date: Date): Date[] {
-  const weekStart = getWeekStartDate(date);
-  const dates: Date[] = [];
-  
-  for (let i = 0; i < 7; i++) {
-    const d = new Date(weekStart);
-    d.setDate(weekStart.getDate() + i);
-    dates.push(d);
-  }
-  
-  return dates;
-}
-
-// Calculate total hours worked for a project in a given time period
-export function calculateProjectHours(
-  project: Project,
-  timeEntries: TimeEntry[],
-  startDate?: Date,
-  endDate?: Date
-): number {
-  const filteredEntries = timeEntries.filter(entry => {
-    if (entry.project_id !== project.id) return false;
-    const entryDate = new Date(entry.date);
-    if (startDate && entryDate < startDate) return false;
-    if (endDate && entryDate > endDate) return false;
-    return true;
-  });
-  
-  return filteredEntries.reduce((total, entry) => total + entry.hours, 0);
-}
-
-// Calculate remaining hours for a project based on its allocation
-export function calculateRemainingHours(
-  project: Project,
-  hoursWorked: number
-): number {
-  return Math.max(0, project.weekly_hours_allocation - hoursWorked);
+// Add days to a date
+export function addDays(date: Date, days: number): Date {
+  const result = new Date(date);
+  result.setDate(result.getDate() + days);
+  return result;
 }
 
 // Generate a weekly summary from projects and time entries
 export function generateWeeklySummary(
   projects: Project[],
   timeEntries: TimeEntry[],
-  weekStartDate: Date,
-  weeklyMaxHours: number = 40
+  weekStartDate: Date
 ): WeeklySummary {
   const weekEndDate = getWeekEndDate(weekStartDate);
   const weekDates = getWeekDates(weekStartDate);
@@ -89,27 +71,11 @@ export function generateWeeklySummary(
     );
     
     const totalHoursWorked = dayEntries.reduce((total, entry) => total + entry.hours, 0);
-    const maxHours = 8; // Default daily limit
     
     return {
       date,
       totalHoursWorked,
-      maxHours,
-      remainingHours: Math.max(0, maxHours - totalHoursWorked),
       entries: dayEntries
-    };
-  });
-  
-  // Calculate project summaries
-  const projectSummaries: ProjectWithTimeEntries[] = projects.map(project => {
-    const projectEntries = weekEntries.filter(entry => entry.project_id === project.id);
-    const totalHoursWorked = projectEntries.reduce((total, entry) => total + entry.hours, 0);
-    
-    return {
-      ...project,
-      timeEntries: projectEntries,
-      totalHoursWorked,
-      remainingHours: calculateRemainingHours(project, totalHoursWorked)
     };
   });
   
@@ -120,10 +86,7 @@ export function generateWeeklySummary(
     weekStartDate,
     weekEndDate,
     totalHoursWorked,
-    maxHours: weeklyMaxHours,
-    remainingHours: Math.max(0, weeklyMaxHours - totalHoursWorked),
     dailySummaries,
-    projectSummaries
   };
 }
 

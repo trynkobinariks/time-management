@@ -1,19 +1,12 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
-import { ProjectProvider } from "@/lib/ProjectContext";
-import { WelcomeProvider } from "@/lib/WelcomeContext";
-import ClientLayout from "@/components/ClientLayout";
+import { ProjectProvider } from "@/contexts/ProjectContext";
+import { WelcomeProvider } from "@/contexts/WelcomeContext";
+import { LanguageProvider } from "@/contexts/LanguageContext";
+import Header from "@/components/Header";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Time Management",
@@ -24,24 +17,27 @@ export const metadata: Metadata = {
 // This root layout will only be used for non-auth routes
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
       </head>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-50 min-h-screen`}
-      >
-        <ProjectProvider>
-          <WelcomeProvider>
-            <ClientLayout>
-              {children}
-            </ClientLayout>
-          </WelcomeProvider>
-        </ProjectProvider>
+      <body className={`${inter.className} bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-200`}>
+        <LanguageProvider>
+          <ProjectProvider>
+            <WelcomeProvider>
+              <div className="min-h-screen">
+                <Header />
+                <main className="pt-16">
+                  {children}
+                </main>
+              </div>
+            </WelcomeProvider>
+          </ProjectProvider>
+        </LanguageProvider>
       </body>
     </html>
   );
