@@ -118,9 +118,25 @@ export default function VoiceTimeEntry() {
       
       <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
         {currentLanguage === 'uk-UA' ? (
-          <p>Спробуйте сказати щось на зразок: &ldquo;Я провів 2 години на Проекті Х вчора, працюючи над документацією&rdquo;</p>
+          <div className="space-y-1">
+            <p>Спробуйте сказати щось на зразок:</p>
+            <ul className="list-disc list-inside">
+              <li>&ldquo;Я провів 2 години на Проекті Х вчора, працюючи над документацією&rdquo;</li>
+              <li>&ldquo;Сьогодні я працював 3.5 години над Проектом Y, розробляючи новий функціонал&rdquo;</li>
+              <li>&ldquo;На Проекті Z я провів 4 години 15.03.2024, тестуючи систему&rdquo;</li>
+              <li>&ldquo;20 березня я працював 5 годин над Проектом W&rdquo;</li>
+            </ul>
+          </div>
         ) : (
-          <p>Try saying something like: &ldquo;I spent 2 hours on Project X yesterday working on documentation&rdquo;</p>
+          <div className="space-y-1">
+            <p>Try saying something like:</p>
+            <ul className="list-disc list-inside">
+              <li>&ldquo;I spent 2 hours on Project X yesterday working on documentation&rdquo;</li>
+              <li>&ldquo;Today I worked 3.5 hours on Project Y developing new features&rdquo;</li>
+              <li>&ldquo;I spent 4 hours on Project Z on 03/15/2024 testing the system&rdquo;</li>
+              <li>&ldquo;On 20th March I worked 5 hours on Project W&rdquo;</li>
+            </ul>
+          </div>
         )}
       </div>
     </div>

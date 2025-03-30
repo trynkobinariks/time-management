@@ -44,6 +44,27 @@ function parseDate(text: string, language: RecognitionLanguage = 'en-US'): strin
       const yesterday = subDays(today, 1);
       return format(yesterday, 'yyyy-MM-dd');
     }
+
+    // Ukrainian ordinal dates (e.g., "20 березня")
+    const ukMonths: Record<string, number> = {
+      'січня': 0, 'лютого': 1, 'березня': 2, 'квітня': 3, 'травня': 4, 'червня': 5,
+      'липня': 6, 'серпня': 7, 'вересня': 8, 'жовтня': 9, 'листопада': 10, 'грудня': 11
+    };
+
+    const ukOrdinalMatch = text.match(/(\d+)\s+(січня|лютого|березня|квітня|травня|червня|липня|серпня|вересня|жовтня|листопада|грудня)/i);
+    if (ukOrdinalMatch) {
+      const day = parseInt(ukOrdinalMatch[1]);
+      const month = ukMonths[ukOrdinalMatch[2].toLowerCase()];
+      const year = today.getFullYear();
+      
+      // If the date is in the future, use previous year
+      const date = new Date(year, month, day);
+      if (date > today) {
+        date.setFullYear(year - 1);
+      }
+      
+      return format(date, 'yyyy-MM-dd');
+    }
   } else {
     // English date references
     if (lowerText.includes('today') || lowerText.includes(' now ')) {
@@ -53,6 +74,27 @@ function parseDate(text: string, language: RecognitionLanguage = 'en-US'): strin
     if (lowerText.includes('yesterday')) {
       const yesterday = subDays(today, 1);
       return format(yesterday, 'yyyy-MM-dd');
+    }
+
+    // English ordinal dates (e.g., "20th March")
+    const enMonths: Record<string, number> = {
+      'january': 0, 'february': 1, 'march': 2, 'april': 3, 'may': 4, 'june': 5,
+      'july': 6, 'august': 7, 'september': 8, 'october': 9, 'november': 10, 'december': 11
+    };
+
+    const enOrdinalMatch = text.match(/(\d+)(?:st|nd|rd|th)?\s+(january|february|march|april|may|june|july|august|september|october|november|december)/i);
+    if (enOrdinalMatch) {
+      const day = parseInt(enOrdinalMatch[1]);
+      const month = enMonths[enOrdinalMatch[2].toLowerCase()];
+      const year = today.getFullYear();
+      
+      // If the date is in the future, use previous year
+      const date = new Date(year, month, day);
+      if (date > today) {
+        date.setFullYear(year - 1);
+      }
+      
+      return format(date, 'yyyy-MM-dd');
     }
   }
   
@@ -245,25 +287,27 @@ export async function POST(request: NextRequest) {
       if (language === 'uk-UA') {
         prompt = `
           Розпізнай наступний голосовий запис про роботу в структуровані дані з такими полями:
-          - date: у форматі YYYY-MM-DD (використовуй сьогоднішню дату "${format(new Date(), 'yyyy-MM-dd')}" якщо користувач каже "сьогодні", "сьогодня", "зараз", "сегодня" або не вказує дату; використовуй вчорашню дату "${format(subDays(new Date(), 1), 'yyyy-MM-dd')}" якщо користувач каже "вчора" або "вчера")
+          - date: у форматі YYYY-MM-DD (використовуй сьогоднішню дату "${format(new Date(), 'yyyy-MM-dd')}" якщо користувач каже "сьогодні", "сьогодня", "зараз", "сегодня" або не вказує дату; використовуй вчорашню дату "${format(subDays(new Date(), 1), 'yyyy-MM-dd')}" якщо користувач каже "вчора" або "вчера"; для дат у форматі "20 березня" використовуй відповідну дату)
           - project_name: має відповідати одному з цих проектів: ${projectNames}
           - hours: числове значення відпрацьованих годин (може бути десяткове)
           - description: над чим працював
 
           Вхідний текст: "${text}"
 
+          Важливо: для дат у форматі "20 березня" перетвори їх у формат YYYY-MM-DD, використовуючи поточний рік.
           Поверни ТІЛЬКИ валідний JSON об'єкт з полями вище, більше нічого.
         `;
       } else {
         prompt = `
           Parse the following spoken time entry into structured data with these fields:
-          - date: in YYYY-MM-DD format (use today's date "${format(new Date(), 'yyyy-MM-dd')}" if the user says "today" or doesn't specify; use yesterday's date "${format(subDays(new Date(), 1), 'yyyy-MM-dd')}" if user says "yesterday")
+          - date: in YYYY-MM-DD format (use today's date "${format(new Date(), 'yyyy-MM-dd')}" if the user says "today" or doesn't specify; use yesterday's date "${format(subDays(new Date(), 1), 'yyyy-MM-dd')}" if user says "yesterday"; for dates like "20th March" convert them to YYYY-MM-DD format using the current year)
           - project_name: must match one of these existing projects: ${projectNames}
           - hours: numerical value representing hours worked (can be decimal)
           - description: what work was done
           
           The input text is: "${text}"
           
+          Important: For dates like "20th March", convert them to YYYY-MM-DD format using the current year.
           Return ONLY a valid JSON object with the fields above, nothing else.
         `;
       }
@@ -310,6 +354,9 @@ export async function POST(request: NextRequest) {
       if (!parsedData.date || !parsedData.project_name || !parsedData.hours) {
         throw new Error('Parsed data is missing required fields');
       }
+
+      // Log the parsed data for debugging
+      console.log('OpenAI parsed data:', parsedData);
       
       // Double-check the date parsing - if it has relative dates, ensure they're handled correctly
       if (language === 'uk-UA') {
@@ -331,26 +378,32 @@ export async function POST(request: NextRequest) {
         ) {
           parsedData.date = format(subDays(new Date(), 1), 'yyyy-MM-dd');
         }
-        // For Ukrainian input with no date reference, default to today if date looks suspicious
-        else if (parsedData.date !== format(new Date(), 'yyyy-MM-dd') && 
-                 parsedData.date !== format(subDays(new Date(), 1), 'yyyy-MM-dd')) {
-          // Check if the parsed date is more than a week in the past or any time in the future
-          const parsedDateObj = new Date(parsedData.date);
-          const today = new Date();
-          const oneWeekAgo = subDays(today, 7);
-          
-          if (parsedDateObj > today || parsedDateObj < oneWeekAgo) {
-            console.log("Ukrainian date out of expected range, defaulting to today", parsedData.date);
-            parsedData.date = format(today, 'yyyy-MM-dd');
+      } else {
+        // For English, only override if explicitly mentioned
+        const lowerCaseText = text.toLowerCase();
+        if (lowerCaseText.includes('today')) {
+          console.log("Explicit 'today' mentioned, setting date to today");
+          parsedData.date = format(new Date(), 'yyyy-MM-dd');
+        } else if (lowerCaseText.includes('yesterday')) {
+          console.log("Explicit 'yesterday' mentioned, setting date to yesterday");
+          parsedData.date = format(subDays(new Date(), 1), 'yyyy-MM-dd');
+        } else {
+          // For ordinal dates, ensure they're in the correct format
+          const dateObj = new Date(parsedData.date);
+          if (!isNaN(dateObj.getTime())) {
+            console.log("Using parsed date from OpenAI:", parsedData.date);
+          } else {
+            console.log("Invalid date from OpenAI, falling back to simple parser");
+            const simpleParsedData = simpleParse(text, projects, language);
+            if (simpleParsedData) {
+              parsedData.date = simpleParsedData.date;
+            }
           }
         }
-      } else {
-        if (text.toLowerCase().includes('today')) {
-          parsedData.date = format(new Date(), 'yyyy-MM-dd');
-        } else if (text.toLowerCase().includes('yesterday')) {
-          parsedData.date = format(subDays(new Date(), 1), 'yyyy-MM-dd');
-        }
       }
+      
+      // Log the final date being used
+      console.log("Final date being used:", parsedData.date);
       
       // Validate project name against actual projects
       const projectMatch = projects.find(p => 
