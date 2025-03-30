@@ -105,6 +105,11 @@ export function useSpeechRecognition(): UseSpeechRecognitionReturn {
     
     recognitionRef.current = recognition;
     
+    // Reset states when language changes
+    setIsListening(false);
+    setStatus('inactive');
+    setText('');
+    
     return () => {
       if (recognitionRef.current) {
         recognitionRef.current.abort();
@@ -113,10 +118,14 @@ export function useSpeechRecognition(): UseSpeechRecognitionReturn {
   }, [isBrowser, hasSupport, currentLanguage]);
 
   const setLanguage = useCallback((language: RecognitionLanguage) => {
-    setCurrentLanguage(language);
+    // Stop any ongoing recognition before changing language
     if (recognitionRef.current) {
-      recognitionRef.current.lang = language;
+      recognitionRef.current.stop();
+      setIsListening(false);
+      setStatus('inactive');
+      setText('');
     }
+    setCurrentLanguage(language);
   }, []);
 
   const startListening = useCallback((language?: RecognitionLanguage) => {
@@ -125,16 +134,26 @@ export function useSpeechRecognition(): UseSpeechRecognitionReturn {
       return;
     }
 
+    // If language is provided and different, update it first
     if (language && language !== currentLanguage) {
       setLanguage(language);
-    }
-    
-    if (recognitionRef.current) {
-      try {
-        recognitionRef.current.start();
-      } catch (err) {
-        // Handle the case where recognition is already started
-        console.error('Speech recognition error:', err);
+      // Wait for the next tick to ensure language is updated
+      setTimeout(() => {
+        if (recognitionRef.current) {
+          try {
+            recognitionRef.current.start();
+          } catch (err) {
+            console.error('Speech recognition error:', err);
+          }
+        }
+      }, 0);
+    } else {
+      if (recognitionRef.current) {
+        try {
+          recognitionRef.current.start();
+        } catch (err) {
+          console.error('Speech recognition error:', err);
+        }
       }
     }
   }, [isBrowser, hasSupport, currentLanguage, setLanguage]);
