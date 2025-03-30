@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { ProjectProvider } from "@/lib/ProjectContext";
 import { WelcomeProvider } from "@/lib/WelcomeContext";
+import { LanguageProvider } from "@/lib/LanguageContext";
 import Header from "@/components/Header";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -25,16 +26,18 @@ export default function RootLayout({
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
       </head>
       <body className={`${inter.className} bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-200`}>
-        <ProjectProvider>
-          <WelcomeProvider>
-            <div className="min-h-screen">
-              <Header />
-              <main className="pt-16">
-                {children}
-              </main>
-            </div>
-          </WelcomeProvider>
-        </ProjectProvider>
+        <LanguageProvider>
+          <ProjectProvider>
+            <WelcomeProvider>
+              <div className="min-h-screen">
+                <Header />
+                <main className="pt-16">
+                  {children}
+                </main>
+              </div>
+            </WelcomeProvider>
+          </ProjectProvider>
+        </LanguageProvider>
       </body>
     </html>
   );

@@ -50,5 +50,4 @@ export interface WeeklySummary {
   weekEndDate: Date;
   totalHoursWorked: number;
   dailySummaries: DailySummary[];
-  projectSummaries: ProjectWithTimeEntries[];
 } 

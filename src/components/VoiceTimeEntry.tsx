@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useSpeechRecognition } from '@/lib/speechRecognition';
 import { parseVoiceInput } from '@/lib/aiParser';
 import { useProjectContext } from '@/lib/ProjectContext';
+import { useLanguage } from '@/lib/LanguageContext';
 
 export default function VoiceTimeEntry() {
   const { 
@@ -14,10 +15,9 @@ export default function VoiceTimeEntry() {
     stopListening, 
     resetText, 
     error: speechError,
-    currentLanguage,
-    setLanguage
   } = useSpeechRecognition();
   
+  const { currentLanguage } = useLanguage();
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { projects, addTimeEntry } = useProjectContext();
@@ -61,40 +61,6 @@ export default function VoiceTimeEntry() {
   
   return (
     <div className="mt-2 space-y-8">
-      <div className="flex justify-center mb-8">
-        <div className="relative inline-flex rounded-lg border border-gray-200 dark:border-gray-700 p-1 bg-gray-100 dark:bg-gray-800">
-          <div 
-            className={`absolute h-[calc(100%-8px)] w-[calc(50%-2px)] bg-white dark:bg-gray-700 rounded-md shadow-sm transition-all duration-300 ease-in-out ${
-              currentLanguage === 'uk-UA' ? 'translate-x-[94%]' : ''
-            }`}
-          />
-          <button
-            type="button"
-            onClick={() => setLanguage('en-US')}
-            className={`relative px-4 py-1.5 text-sm font-medium transition-colors duration-200 cursor-pointer ${
-              currentLanguage === 'en-US'
-                ? 'text-gray-900 dark:text-white'
-                : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
-            }`}
-            disabled={isListening || isProcessing}
-          >
-            EN
-          </button>
-          <button
-            type="button"
-            onClick={() => setLanguage('uk-UA')}
-            className={`relative px-4 py-1.5 text-sm font-medium transition-colors duration-200 cursor-pointer ${
-              currentLanguage === 'uk-UA'
-                ? 'text-gray-900 dark:text-white'
-                : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
-            }`}
-            disabled={isListening || isProcessing}
-          >
-            UA
-          </button>
-        </div>
-      </div>
-    
       <div className="flex flex-col items-center gap-4">
         <button
           type="button"

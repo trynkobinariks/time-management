@@ -58,6 +58,12 @@ export default function Dashboard() {
               <h2 className="text-lg font-medium text-gray-900 dark:text-white">
                 {format(selectedDate, 'MMMM yyyy')}
               </h2>
+              <button
+                onClick={() => setSelectedDate(new Date())}
+                className="px-3 py-1 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md transition-colors cursor-pointer"
+              >
+                Today
+              </button>
             </div>
 
             <div className="grid grid-cols-7 gap-1">
@@ -132,7 +138,7 @@ export default function Dashboard() {
                         )}
                       </div>
                       <div className="flex items-center">
-                        <span className="text-sm font-medium text-gray-700 dark:text-gray-200 mr-4">
+                        <span className="text-sm font-medium text-gray-700 dark:text-gray-200 whitespace-nowrap">
                           {entry.hours} {entry.hours === 1 ? 'hour' : 'hours'}
                         </span>
                         <button

@@ -7,10 +7,13 @@ import { createBrowserClient } from '@supabase/ssr';
 import type { User } from '@supabase/supabase-js';
 import Logo from './Logo';
 import ThemeSwitcher from './ThemeSwitcher';
+import LanguageSwitcher from './LanguageSwitcher';
+import { useLanguage } from '@/lib/LanguageContext';
 
 export default function Header() {
   const pathname = usePathname();
   const router = useRouter();
+  const { currentLanguage, setLanguage } = useLanguage();
   const supabase = createBrowserClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL || '',
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
@@ -75,6 +78,10 @@ export default function Header() {
             </nav>
           </div>
           <div className="flex items-center space-x-4">
+            <LanguageSwitcher 
+              currentLanguage={currentLanguage}
+              setLanguage={setLanguage}
+            />
             <ThemeSwitcher />
             {user && (
               <>
