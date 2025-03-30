@@ -5,7 +5,7 @@ import { useSpeechRecognition, RecognitionLanguage } from '@/lib/speechRecogniti
 import { parseVoiceInput } from '@/lib/aiParser';
 import { useProjectContext } from '@/contexts/ProjectContext';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useTranslation } from 'react-i18next';
+import { useClientTranslation } from '@/hooks/useClientTranslation';
 
 export default function VoiceTimeEntry() {
   const { language } = useLanguage();
@@ -22,7 +22,7 @@ export default function VoiceTimeEntry() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { projects, addTimeEntry } = useProjectContext();
-  const { t } = useTranslation('common');
+  const { t } = useClientTranslation();
   
   // Process voice input when user stops speaking
   useEffect(() => {

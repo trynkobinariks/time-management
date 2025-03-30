@@ -7,10 +7,12 @@ import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, isToday
 import VoiceTimeEntry from '@/components/VoiceTimeEntry';
 import TimeEntriesList from '@/components/TimeEntriesList';
 import { useClientTranslation } from '../hooks/useClientTranslation';
+
 export default function Dashboard() {
   const { projects, timeEntries, selectedDate, setSelectedDate, deleteTimeEntry } = useProjectContext();
   const { setShowWelcomePopup } = useWelcomeContext();
   const { t } = useClientTranslation();
+
   // Get current month's days
   const monthStart = startOfMonth(selectedDate);
   const monthEnd = endOfMonth(selectedDate);
@@ -22,6 +24,12 @@ export default function Dashboard() {
   const selectedDateEntries = timeEntries.filter(entry =>
     isSameDay(new Date(entry.date), selectedDate)
   );
+
+  // Get month name translation
+  const getMonthTranslation = (date: Date) => {
+    const monthKey = format(date, 'MMMM').toLowerCase();
+    return t(`common.calendar.months.${monthKey}`);
+  };
 
   // Check for login flag when dashboard loads
   useEffect(() => {
@@ -42,7 +50,7 @@ export default function Dashboard() {
   return (
     <div className="container mx-auto px-4 py-8 max-w-7xl">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-medium text-gray-800 dark:text-white">Time Management</h1>
+        <h1 className="text-2xl font-medium text-gray-800 dark:text-white">{t('welcome.title')}</h1>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
@@ -51,17 +59,28 @@ export default function Dashboard() {
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-lg font-medium text-gray-900 dark:text-white">
-                {format(selectedDate, 'MMMM yyyy')}
+                {getMonthTranslation(selectedDate)} {format(selectedDate, 'yyyy')}
               </h2>
               <button
                 onClick={() => setSelectedDate(new Date())}
                 className="px-3 py-1 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md transition-colors cursor-pointer"
               >
-                Today
+                {t('common.today')}
               </button>
             </div>
 
             <div className="grid grid-cols-7 gap-1">
+              {/* Day names row */}
+              {['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'].map((day) => (
+                <div
+                  key={day}
+                  className="text-center text-sm font-medium text-gray-500 dark:text-gray-400 mb-2"
+                >
+                  {t(`common.calendar.days.${day}`)}
+                </div>
+              ))}
+              
+              {/* Calendar days */}
               {days.map((day) => {
                 const hasEntries = timeEntries.some(entry =>
                   isSameDay(new Date(entry.date), day)
@@ -98,7 +117,7 @@ export default function Dashboard() {
         <div className="lg:col-span-3">
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
             <h2 className="text-lg text-center font-medium text-gray-900 dark:text-white mb-4">
-              {t('quickTimeEntry')}
+              {t('timeEntries.quickTimeEntry')}
             </h2>
             <VoiceTimeEntry />
           </div>
@@ -117,4 +136,3 @@ export default function Dashboard() {
     </div>
   );
 }
-

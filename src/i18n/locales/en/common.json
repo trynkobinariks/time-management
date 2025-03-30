@@ -15,7 +15,9 @@
     "unknownProject": "Unknown Project",
     "deleteEntry": "Delete Entry",
     "noTimeEntries": "No time entries yet. Add your first entry to get started.",
-    "timeEntry": "Time Entry"
+    "timeEntry": "Time Entry",
+    "hour": "hour",
+    "hours": "hours"
   },
   "projects": {
     "title": "Projects",
@@ -72,6 +74,31 @@
   },
   "common": {
     "today": "Today",
-    "close": "Close"
+    "close": "Close",
+    "calendar": {
+      "months": {
+        "january": "January",
+        "february": "February",
+        "march": "March",
+        "april": "April",
+        "may": "May",
+        "june": "June",
+        "july": "July",
+        "august": "August",
+        "september": "September",
+        "october": "October",
+        "november": "November",
+        "december": "December"
+      },
+      "days": {
+        "monday": "Mon",
+        "tuesday": "Tue",
+        "wednesday": "Wed",
+        "thursday": "Thu",
+        "friday": "Fri",
+        "saturday": "Sat",
+        "sunday": "Sun"
+      }
+    }
   }
 }

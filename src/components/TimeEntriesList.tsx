@@ -32,7 +32,7 @@ export default function TimeEntriesList({ selectedDate, timeEntries, projects, o
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm">
       <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
         <h2 className="text-lg font-medium text-gray-900 dark:text-white">
-          {format(selectedDate, 'EEEE, MMMM d, yyyy')}
+          {t('common.calendar.days.' + format(selectedDate, 'EEEE').toLowerCase())}, {t('common.calendar.months.' + format(selectedDate, 'MMMM').toLowerCase())} {format(selectedDate, 'd, yyyy')}
         </h2>
       </div>
 
@@ -57,7 +57,7 @@ export default function TimeEntriesList({ selectedDate, timeEntries, projects, o
                 </div>
                 <div className="flex items-center">
                   <span className="text-sm font-medium text-gray-700 dark:text-gray-200 whitespace-nowrap">
-                    {entry.hours} {entry.hours === 1 ? 'hour' : 'hours'}
+                    {entry.hours} {entry.hours === 1 ? t('timeEntries.hour') : t('timeEntries.hours')}
                   </span>
                   <button
                     onClick={() => onDeleteEntry(entry.id)}
@@ -86,7 +86,7 @@ export default function TimeEntriesList({ selectedDate, timeEntries, projects, o
 
             <div className="flex items-center space-x-4">
               <span className="text-lg font-semibold text-gray-900 dark:text-white">
-                {timeEntries.reduce((sum, entry) => sum + entry.hours, 0).toFixed(1)} hours
+                {timeEntries.reduce((sum, entry) => sum + entry.hours, 0).toFixed(1)} {t('timeEntries.hours')}
               </span>
               <span className="w-16"></span>
             </div>

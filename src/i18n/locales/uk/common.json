@@ -14,7 +14,10 @@
     "noTimeEntriesForThisDate": "Немає записів для цього дня",
     "unknownProject": "Невідомий проект",
     "deleteEntry": "Видалити запис",
-    "noTimeEntries": "Немає записів часу. Додайте перший запис, щоб почати."
+    "noTimeEntries": "Немає записів часу. Додайте перший запис, щоб почати.",
+    "hour": "година",
+    "hours": "години",
+    "close": "Закрити"
   },
   "projects": {
     "title": "Проекти",
@@ -71,6 +74,31 @@
   },
   "common": {
     "today": "Сьогодні",
-    "close": "Закрити"
+    "close": "Закрити",
+    "calendar": {
+      "months": {
+        "january": "Січень",
+        "february": "Лютий",
+        "march": "Березень",
+        "april": "Квітень",
+        "may": "Травень",
+        "june": "Червень",
+        "july": "Липень",
+        "august": "Серпень",
+        "september": "Вересень",
+        "october": "Жовтень",
+        "november": "Листопад",
+        "december": "Грудень"
+      },
+      "days": {
+        "monday": "Пн",
+        "tuesday": "Вт",
+        "wednesday": "Ср",
+        "thursday": "Чт",
+        "friday": "Пт",
+        "saturday": "Сб",
+        "sunday": "Нд"
+      }
+    }
   }
 }
