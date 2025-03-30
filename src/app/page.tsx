@@ -6,11 +6,11 @@ import { useWelcomeContext } from '@/contexts/WelcomeContext';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, isToday, isSameMonth, startOfWeek, endOfWeek } from 'date-fns';
 import VoiceTimeEntry from '@/components/VoiceTimeEntry';
 import TimeEntriesList from '@/components/TimeEntriesList';
-
+import { useClientTranslation } from '../../hooks/useClientTranslation';
 export default function Dashboard() {
   const { projects, timeEntries, selectedDate, setSelectedDate, deleteTimeEntry } = useProjectContext();
   const { setShowWelcomePopup } = useWelcomeContext();
-
+  const { t } = useClientTranslation();
   // Get current month's days
   const monthStart = startOfMonth(selectedDate);
   const monthEnd = endOfMonth(selectedDate);
@@ -98,7 +98,7 @@ export default function Dashboard() {
         <div className="lg:col-span-3">
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
             <h2 className="text-lg text-center font-medium text-gray-900 dark:text-white mb-4">
-              Quick Time Entry
+              {t('quickTimeEntry')}
             </h2>
             <VoiceTimeEntry />
           </div>

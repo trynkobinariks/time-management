@@ -1,5 +1,5 @@
 import { format } from 'date-fns';
-
+import { useClientTranslation } from '../../hooks/useClientTranslation';
 interface TimeEntry {
   id: string;
   project_id: string;
@@ -21,10 +21,11 @@ interface TimeEntriesListProps {
 }
 
 export default function TimeEntriesList({ selectedDate, timeEntries, projects, onDeleteEntry }: TimeEntriesListProps) {
+  const { t } = useClientTranslation();
   // Get project name by ID
   const getProjectName = (projectId: string) => {
     const project = projects.find(p => p.id === projectId);
-    return project ? project.name : 'Unknown Project';
+    return project ? project.name : t('timeEntries.unknownProject');
   };
 
   return (
@@ -37,7 +38,7 @@ export default function TimeEntriesList({ selectedDate, timeEntries, projects, o
 
       {timeEntries.length === 0 ? (
         <div className="px-6 py-4 text-center text-gray-500 dark:text-gray-400">
-          No time entries for this date
+          {t('timeEntries.noTimeEntriesForThisDate')}
         </div>
       ) : (
         <div className="divide-y divide-gray-100 dark:divide-gray-700">
@@ -77,7 +78,7 @@ export default function TimeEntriesList({ selectedDate, timeEntries, projects, o
             <div className="flex items-center space-x-4">
               <span className="w-8"></span>
               <span className="text-sm font-medium text-gray-900 dark:text-white">
-                Total Hours
+                {t('timeEntries.totalHours')}
               </span>
             </div>
 

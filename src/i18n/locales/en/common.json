@@ -7,5 +7,12 @@
       "timeEntries": "Time Entries",
       "settings": "Settings"
     }
+  },
+  "timeEntries": {
+    "totalHours": "Total Hours",
+    "quickTimeEntry": "Quick Time Entry",
+    "noTimeEntriesForThisDate": "No time entries for this date",
+    "unknownProject": "Unknown Project",
+    "deleteEntry": "Delete Entry"
   }
 }

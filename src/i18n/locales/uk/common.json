@@ -7,5 +7,12 @@
       "timeEntries": "Години",
       "settings": "Налаштування"
     }
+  },
+  "timeEntries": {
+    "totalHours": "Всього годин",
+    "quickTimeEntry": "Швидкий ввід часу",
+    "noTimeEntriesForThisDate": "Немає записів для цього дня",
+    "unknownProject": "Невідомий проект",
+    "deleteEntry": "Видалити запис"
   }
 }
