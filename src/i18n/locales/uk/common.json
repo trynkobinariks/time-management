@@ -17,7 +17,20 @@
     "noTimeEntries": "Немає записів часу. Додайте перший запис, щоб почати.",
     "hour": "година",
     "hours": "години",
-    "close": "Закрити"
+    "close": "Закрити",
+    "edit": "Редагувати",
+    "save": "Зберегти",
+    "cancel": "Скасувати",
+    "dateFormat": "EEEE, MMMM d, yyyy",
+    "project": "Проект",
+    "description": "Опис",
+    "descriptionPlaceholder": "Назва проекту, щоденна задача або інші деталі",
+    "editEntry": "Редагувати запис",
+    "deleteEntryConfirmation": "Ви впевнені, що хочете видалити цей запис?",
+    "deleteEntrySuccess": "Запис успішно видалено.",
+    "deleteEntryError": "Помилка видалення запису.",
+    "deleteEntryCancel": "Скасувати видалення запису",
+    "deleteEntryConfirm": "Видалити запис"
   },
   "projects": {
     "title": "Проекти",
@@ -75,6 +88,9 @@
   "common": {
     "today": "Сьогодні",
     "close": "Закрити",
+    "edit": "Редагувати",
+    "save": "Зберегти",
+    "cancel": "Скасувати",
     "calendar": {
       "months": {
         "january": "Січень",

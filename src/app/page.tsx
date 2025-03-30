@@ -9,7 +9,7 @@ import TimeEntriesList from '@/components/TimeEntriesList';
 import { useClientTranslation } from '../hooks/useClientTranslation';
 
 export default function Dashboard() {
-  const { projects, timeEntries, selectedDate, setSelectedDate, deleteTimeEntry } = useProjectContext();
+  const { projects, timeEntries, selectedDate, setSelectedDate, deleteTimeEntry, updateTimeEntry } = useProjectContext();
   const { setShowWelcomePopup } = useWelcomeContext();
   const { t } = useClientTranslation();
 
@@ -130,6 +130,7 @@ export default function Dashboard() {
             timeEntries={selectedDateEntries}
             projects={projects}
             onDeleteEntry={deleteTimeEntry}
+            onEditEntry={updateTimeEntry}
           />
         </div>
       </div>

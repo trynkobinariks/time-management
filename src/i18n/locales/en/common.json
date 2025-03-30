@@ -17,7 +17,20 @@
     "noTimeEntries": "No time entries yet. Add your first entry to get started.",
     "timeEntry": "Time Entry",
     "hour": "hour",
-    "hours": "hours"
+    "hours": "hours",
+    "dateFormat": "EEEE, MMMM d, yyyy",
+    "project": "Project",
+    "description": "Description",
+    "edit": "Edit",
+    "save": "Save",
+    "cancel": "Cancel",
+    "descriptionPlaceholder": "Project name, daily task, or other details",
+    "editEntry": "Edit Entry",
+    "deleteEntryConfirmation": "Are you sure you want to delete this time entry?",
+    "deleteEntrySuccess": "Time entry deleted successfully.",
+    "deleteEntryError": "Error deleting time entry.",
+    "deleteEntryCancel": "Delete Entry Cancel",
+    "deleteEntryConfirm": "Delete Entry Confirm"
   },
   "projects": {
     "title": "Projects",
@@ -75,6 +88,9 @@
   "common": {
     "today": "Today",
     "close": "Close",
+    "edit": "Edit",
+    "save": "Save",
+    "cancel": "Cancel",
     "calendar": {
       "months": {
         "january": "January",
