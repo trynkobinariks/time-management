@@ -1,24 +1,37 @@
 'use client';
 
-import React, { useState } from 'react';
-import { useProjectContext } from '@/lib/ProjectContext';
+import React, { useState, useEffect } from 'react';
+import { useProjectContext } from '@/contexts/ProjectContext';
 import { format, startOfWeek, endOfWeek } from 'date-fns';
+import { TimeEntry } from '@/lib/types';
 
 interface TimeEntryFormProps {
   projectId?: string;
   onSuccess?: () => void;
   onCancel?: () => void;
+  editingEntry?: TimeEntry | null;
 }
 
-export default function TimeEntryForm({ projectId, onSuccess, onCancel }: TimeEntryFormProps) {
-  const { projects, timeEntries, addTimeEntry } = useProjectContext();
+export default function TimeEntryForm({ projectId, onSuccess, onCancel, editingEntry }: TimeEntryFormProps) {
+  const { projects, timeEntries, addTimeEntry, updateTimeEntry } = useProjectContext();
   
   const [formData, setFormData] = useState({
     project_id: projectId || '',
     date: format(new Date(), 'yyyy-MM-dd'),
     hours: '',
-    notes: '',
+    description: '',
   });
+  
+  useEffect(() => {
+    if (editingEntry) {
+      setFormData({
+        project_id: editingEntry.project_id,
+        date: editingEntry.date,
+        hours: editingEntry.hours.toString(),
+        description: editingEntry.description || '',
+      });
+    }
+  }, [editingEntry]);
   
   const [errors, setErrors] = useState<Record<string, string>>({});
   
@@ -80,109 +93,173 @@ export default function TimeEntryForm({ projectId, onSuccess, onCancel }: TimeEn
     return Object.keys(newErrors).length === 0;
   };
   
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (validateForm()) {
-      addTimeEntry({
-        project_id: formData.project_id,
-        date: formData.date,
-        hours: parseFloat(formData.hours)
-      });
-      
-      if (onSuccess) {
-        onSuccess();
+      try {
+        if (editingEntry) {
+          await updateTimeEntry({
+            ...editingEntry,
+            project_id: formData.project_id,
+            date: formData.date,
+            hours: parseFloat(formData.hours),
+            description: formData.description,
+          });
+        } else {
+          await addTimeEntry({
+            project_id: formData.project_id,
+            date: formData.date,
+            hours: parseFloat(formData.hours),
+            description: formData.description,
+          });
+        }
+        
+        if (onSuccess) {
+          onSuccess();
+        }
+      } catch (error) {
+        console.error('Failed to save time entry:', error);
+        
+        // Show user-friendly error
+        const errorMessage = error instanceof Error 
+          ? error.message 
+          : 'Failed to save time entry. Please try again.';
+          
+        setErrors(prev => ({
+          ...prev,
+          submit: errorMessage
+        }));
       }
     }
   };
   
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div>
-        <label htmlFor="project_id" className="block text-sm font-medium text-gray-700 mb-1">
-          Project
-        </label>
-        <select
-          id="project_id"
-          name="project_id"
-          value={formData.project_id}
-          onChange={handleChange}
-          disabled={!!projectId}
-          className={`w-full rounded-md border ${
-            errors.project_id ? 'border-gray-400' : 'border-gray-300'
-          } px-3 py-2 text-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-500 cursor-pointer`}
-        >
-          <option value="">Select a project</option>
-          {projects.map(project => (
-            <option key={project.id} value={project.id}>
-              {project.name}
-            </option>
-          ))}
-        </select>
-        {errors.project_id && (
-          <p className="mt-1 text-sm text-gray-700">{errors.project_id}</p>
-        )}
-      </div>
-      
-      <div>
-        <label htmlFor="date" className="block text-sm font-medium text-gray-700 mb-1">
-          Date
-        </label>
-        <input
-          type="date"
-          id="date"
-          name="date"
-          value={formData.date}
-          onChange={handleChange}
-          className={`w-full rounded-md border ${
-            errors.date ? 'border-gray-400' : 'border-gray-300'
-          } px-3 py-2 text-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-500 cursor-pointer`}
-        />
-        {errors.date && (
-          <p className="mt-1 text-sm text-gray-700">{errors.date}</p>
-        )}
-      </div>
-      
-      <div>
-        <label htmlFor="hours" className="block text-sm font-medium text-gray-700 mb-1">
-          Hours
-        </label>
-        <input
-          type="number"
-          id="hours"
-          name="hours"
-          value={formData.hours}
-          onChange={handleChange}
-          step="0.25"
-          min="0.25"
-          max="24"
-          className={`w-full rounded-md border ${
-            errors.hours ? 'border-gray-400' : 'border-gray-300'
-          } px-3 py-2 text-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-500`}
-          placeholder="0.0"
-        />
-        {errors.hours && (
-          <p className="mt-1 text-sm text-gray-700">{errors.hours}</p>
-        )}
-      </div>
-      
-      <div className="flex justify-end space-x-3 pt-4">
-        {onCancel && (
+    <div className="fixed inset-0 bg-gray-700/40 backdrop-blur-sm flex items-center justify-center z-50">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 max-w-md w-full mx-4">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-lg font-medium text-gray-900 dark:text-gray-100">
+            {editingEntry ? 'Edit Time Entry' : 'Log Time'}
+          </h2>
           <button
-            type="button"
             onClick={onCancel}
-            className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 cursor-pointer transition-colors"
+            className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
           >
-            Cancel
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 cursor-pointer" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
           </button>
-        )}
-        <button
-          type="submit"
-          className="px-4 py-2 text-sm font-medium text-white bg-gray-800 rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 cursor-pointer transition-colors"
-        >
-          Save Time Entry
-        </button>
+        </div>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label htmlFor="project_id" className="block text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">
+              Project
+            </label>
+            <select
+              id="project_id"
+              name="project_id"
+              value={formData.project_id}
+              onChange={handleChange}
+              disabled={!!projectId}
+              className={`w-full rounded-md border ${
+                errors.project_id ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+              } px-3 py-2 text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-700 focus:outline-none focus:ring-1 focus:ring-gray-500 cursor-pointer`}
+            >
+              <option value="">Select a project</option>
+              {projects.map(project => (
+                <option key={project.id} value={project.id}>
+                  {project.name}
+                </option>
+              ))}
+            </select>
+            {errors.project_id && (
+              <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.project_id}</p>
+            )}
+          </div>
+          
+          <div>
+            <label htmlFor="date" className="block text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">
+              Date
+            </label>
+            <input
+              type="date"
+              id="date"
+              name="date"
+              value={formData.date}
+              onChange={handleChange}
+              className={`w-full rounded-md border ${
+                errors.date ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+              } px-3 py-2 text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-700 focus:outline-none focus:ring-1 focus:ring-gray-500 cursor-pointer`}
+            />
+            {errors.date && (
+              <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.date}</p>
+            )}
+          </div>
+          
+          <div>
+            <label htmlFor="hours" className="block text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">
+              Hours
+            </label>
+            <input
+              type="number"
+              id="hours"
+              name="hours"
+              value={formData.hours}
+              onChange={handleChange}
+              step="0.25"
+              min="0.25"
+              max="24"
+              className={`w-full rounded-md border ${
+                errors.hours ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+              } px-3 py-2 text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-700 focus:outline-none focus:ring-1 focus:ring-gray-500`}
+              placeholder="0.0"
+            />
+            {errors.hours && (
+              <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.hours}</p>
+            )}
+          </div>
+          
+          <div>
+            <label htmlFor="description" className="block text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">
+              Description
+            </label>
+            <textarea
+              id="description"
+              name="description"
+              value={formData.description}
+              onChange={handleChange}
+              rows={3}
+              className={`w-full rounded-md border ${
+                errors.description ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+              } px-3 py-2 text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-700 focus:outline-none focus:ring-1 focus:ring-gray-500`}
+              placeholder="What did you work on?"
+            />
+            {errors.description && (
+              <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.description}</p>
+            )}
+          </div>
+
+          {errors.submit && (
+            <p className="text-sm text-red-600 dark:text-red-400">{errors.submit}</p>
+          )}
+
+          <div className="flex justify-end space-x-3">
+            <button
+              type="button"
+              onClick={onCancel}
+              className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="px-4 py-2 text-sm font-medium text-white bg-gray-900 dark:bg-gray-100 dark:text-gray-900 hover:bg-gray-800 dark:hover:bg-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+            >
+              {editingEntry ? 'Update' : 'Save'}
+            </button>
+          </div>
+        </form>
       </div>
-    </form>
+    </div>
   );
 } 

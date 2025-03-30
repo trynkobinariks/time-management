@@ -64,15 +64,15 @@ function AuthCallbackContent() {
   }, [router, searchParams]);
 
   return (
-    <div className="min-h-[calc(100vh-env(safe-area-inset-top))] flex items-center justify-center bg-gray-50 pb-env(safe-area-inset-bottom) auth-background">
+    <div className="min-h-[calc(100vh-env(safe-area-inset-top))] flex items-center justify-center bg-gray-900 pb-env(safe-area-inset-bottom) auth-background">
       <AuthBackground />
       <div className="p-4 max-w-md w-full auth-card">
         <div className="flex flex-col items-center">
           <Logo size="lg" className="mb-4" />
-          <h2 className="text-center text-3xl font-medium text-gray-900">
+          <h2 className="text-center text-3xl font-medium text-white">
             Verifying your email...
           </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
+          <p className="mt-2 text-center text-sm text-gray-300">
             Please wait while we complete the verification process.
           </p>
         </div>
@@ -84,12 +84,12 @@ function AuthCallbackContent() {
 export default function AuthCallbackPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-[calc(100vh-env(safe-area-inset-top))] flex items-center justify-center bg-gray-50 pb-env(safe-area-inset-bottom) auth-background">
+      <div className="min-h-[calc(100vh-env(safe-area-inset-top))] flex items-center justify-center bg-gray-900 pb-env(safe-area-inset-bottom) auth-background">
         <AuthBackground />
         <div className="p-4 max-w-md w-full auth-card">
           <div className="flex flex-col items-center">
             <Logo size="lg" className="mb-4" />
-            <h2 className="text-center text-3xl font-medium text-gray-900">
+            <h2 className="text-center text-3xl font-medium text-white">
               Loading...
             </h2>
           </div>
