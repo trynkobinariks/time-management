@@ -7,6 +7,7 @@ import { useProjectContext } from '@/lib/ProjectContext';
 import { useLanguage } from '@/lib/LanguageContext';
 
 export default function VoiceTimeEntry() {
+  const { currentLanguage } = useLanguage();
   const { 
     text, 
     isListening, 
@@ -15,9 +16,8 @@ export default function VoiceTimeEntry() {
     stopListening, 
     resetText, 
     error: speechError,
-  } = useSpeechRecognition();
+  } = useSpeechRecognition(currentLanguage);
   
-  const { currentLanguage } = useLanguage();
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { projects, addTimeEntry } = useProjectContext();
@@ -30,7 +30,7 @@ export default function VoiceTimeEntry() {
         setError(null);
         
         try {
-          const parsedData = await parseVoiceInput(text, projects);
+          const parsedData = await parseVoiceInput(text, projects, currentLanguage);
           
           if (parsedData) {
             const project = projects.find(p => p.name === parsedData.project_name);

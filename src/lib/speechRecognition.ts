@@ -56,14 +56,21 @@ export interface UseSpeechRecognitionReturn {
   setLanguage: (language: RecognitionLanguage) => void;
 }
 
-export function useSpeechRecognition(): UseSpeechRecognitionReturn {
+export function useSpeechRecognition(initialLanguage: RecognitionLanguage = 'en-US'): UseSpeechRecognitionReturn {
   const [text, setText] = useState('');
   const [isListening, setIsListening] = useState(false);
   const [status, setStatus] = useState<RecognitionStatus>('inactive');
   const [error, setError] = useState<string | null>(null);
-  const [currentLanguage, setCurrentLanguage] = useState<RecognitionLanguage>('en-US');
+  const [currentLanguage, setCurrentLanguage] = useState<RecognitionLanguage>(initialLanguage);
   const recognitionRef = useRef<SpeechRecognitionInstance | null>(null);
   const silenceTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Log language changes
+  useEffect(() => {
+    if (recognitionRef.current) {
+      recognitionRef.current.lang = currentLanguage;
+    }
+  }, [currentLanguage]);
 
   // This implementation can only be used in the browser
   const isBrowser = typeof window !== 'undefined';
@@ -88,18 +95,24 @@ export function useSpeechRecognition(): UseSpeechRecognitionReturn {
     recognition.interimResults = true;
     recognition.lang = currentLanguage;
     
+    console.log('Initializing speech recognition with language:', recognition.lang);
+    
     recognition.onstart = () => {
       setIsListening(true);
       setStatus('listening');
       setError(null);
+      console.log('Started listening with language:', recognition.lang);
     };
     
     recognition.onresult = (event) => {
-      const transcript = Array.from(event.results)
-        .map(result => result[0].transcript)
-        .join(' ');
+      // Get the last result which is the most complete
+      const lastResult = event.results[event.results.length - 1];
+      const transcript = lastResult[0].transcript;
       
-      setText(prev => prev + ' ' + transcript);
+      // Only update text if it's a final result
+      if (lastResult.isFinal) {
+        setText(transcript);
+      }
       
       // Reset silence detection timer
       if (silenceTimerRef.current) {
@@ -107,7 +120,7 @@ export function useSpeechRecognition(): UseSpeechRecognitionReturn {
       }
       
       // Start or reset the silence timer
-      silenceTimerRef.current = setTimeout(handleSilenceTimeout, 2500);
+      silenceTimerRef.current = setTimeout(handleSilenceTimeout, 2000);
     };
     
     recognition.onerror = (event) => {
@@ -150,6 +163,8 @@ export function useSpeechRecognition(): UseSpeechRecognitionReturn {
       setIsListening(false);
       setStatus('inactive');
       setText('');
+      // Update the recognition instance's language
+      recognitionRef.current.lang = language;
     }
     setCurrentLanguage(language);
   }, []);
