@@ -145,8 +145,8 @@ export default function VoiceTimeEntry() {
           )}
 
           {isListening && text && (
-            <div className="mt-2 p-3 bg-gray-50 dark:bg-gray-800 rounded-md w-full max-w-md">
-              <div className="text-sm text-gray-600 dark:text-gray-300 opacity-50">
+            <div className="mt-2 p-3 bg-gray-50 dark:bg-gray-800 rounded-md w-full max-w-[90vw] shadow-md">
+              <div className="text-sm text-gray-600 dark:text-gray-300">
                 {text}
               </div>
             </div>
@@ -177,6 +177,13 @@ export default function VoiceTimeEntry() {
       {/* Mobile-only fixed button */}
       <div className="md:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-20">
         <div className="flex flex-col items-center gap-2">
+          {(isListening || isProcessing) && (
+            <div className="mt-2 p-3 bg-[var(--card-background)] border border-[var(--card-border)] rounded-md w-full max-w-[90vw] shadow-md">
+              <div className="text-sm text-[var(--text-primary)]">
+                {text}
+              </div>
+            </div>
+          )}
           <button
             type="button"
             onClick={isListening ? handleStopListening : handleStartListening}
@@ -222,13 +229,7 @@ export default function VoiceTimeEntry() {
             </div>
           )}
 
-          {isListening && text && (
-            <div className="mt-2 p-3 bg-gray-50 dark:bg-gray-800 rounded-md w-full max-w-[90vw]">
-              <div className="text-sm text-gray-600 dark:text-gray-300 opacity-50">
-                {text}
-              </div>
-            </div>
-          )}
+         
         </div>
       </div>
     </>
