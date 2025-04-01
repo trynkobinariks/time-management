@@ -2,12 +2,11 @@
 
 import React, { useEffect } from 'react';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import type { User } from '@supabase/supabase-js';
 import Logo from '../Logo';
-import ThemeSwitcher from '../ThemeSwitcher';
+import ThemeSwitcher from '../ThemeSwitcher/ThemeSwitcher';
 import LanguageSwitcher from '../LanguageSwitcher';
-import LogoutIcon from '../icons/LogoutIcon';
 import MenuIcon from '../icons/MenuIcon';
 import CloseIcon from '../icons/CloseIcon';
 import Backdrop from '../Backdrop/Backdrop';
@@ -15,10 +14,13 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useClientTranslation } from '../../hooks/useClientTranslation';
 import { supabase } from '@/lib/supabase';
 import { navItems } from './config';
+import MobileNavigation from './components/MobileNavigation/MobileNavigation';
+import DesktopNavigation from './components/DesktopNavigation/DesktopNavigation';
+import LogoutButton from './components/LogoutButton/LogoutButton';
+
 export default function Header() {
   const pathname = usePathname();
   const { t } = useClientTranslation();
-  const router = useRouter();
   const { language, setLanguage } = useLanguage();
   const [user, setUser] = React.useState<User | null>(null);
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
@@ -39,12 +41,6 @@ export default function Header() {
     };
   }, []);
 
-  const signOut = async () => {
-    await supabase.auth.signOut();
-    router.refresh();
-  };
-
-
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-[var(--card-background)] border-b border-[var(--card-border)]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -58,23 +54,7 @@ export default function Header() {
             </Link>
             {/* Desktop navigation */}
             {user && (
-              <nav className="ml-8 hidden md:flex">
-                <div className="flex space-x-0">
-                  {navItems.map((item) => (
-                    <Link
-                      key={item.name}
-                      href={item.href}
-                      className={`px-6 py-2 text-sm font-medium transition-all rounded-md ${
-                        pathname === item.href
-                          ? 'bg-[var(--card-border)] text-[var(--text-primary)]'
-                          : 'text-[var(--text-secondary)] hover:bg-[var(--card-border)] hover:text-[var(--text-primary)]'
-                      }`}
-                    >
-                      {t(item.name)}
-                    </Link>
-                  ))}
-                </div>
-              </nav>
+              <DesktopNavigation navItems={navItems} />
             )}
           </div>
           <div className="flex items-center space-x-4">
@@ -88,14 +68,7 @@ export default function Header() {
                 <span className="text-sm text-[var(--text-secondary)] hidden md:inline">
                   {user.email}
                 </span>
-                {/* Logout icon button */}
-                <button
-                  onClick={() => signOut()}
-                  className="p-2 rounded-full bg-[var(--card-background)] hover:bg-[var(--card-border)]"
-                  aria-label="Sign out"
-                >
-                  <LogoutIcon />
-                </button>
+                <LogoutButton />
                 
                 {/* Mobile burger menu button */}
                 <button
@@ -118,42 +91,7 @@ export default function Header() {
       
       {/* Mobile navigation menu */}
       {user && (
-        <div className={`md:hidden fixed inset-y-0 right-0 w-64 bg-[var(--card-background)] shadow-lg transform transition-transform duration-300 ease-in-out z-40 ${
-          isMenuOpen ? 'translate-x-0 pointer-events-auto' : 'translate-x-full pointer-events-none'
-        }`}>
-          <div className="h-full flex flex-col pt-16 pb-3 px-3 border-l border-[var(--card-border)]">
-            <button
-              className="absolute top-4 right-4 p-2 rounded-full bg-[var(--card-background)] hover:bg-[var(--card-border)]"
-              onClick={() => setIsMenuOpen(false)}
-              aria-label="Close menu"
-            >
-              <CloseIcon />
-            </button>
-            <div className="space-y-1">
-              {navItems.map((item) => (
-                <Link
-                  key={item.name}
-                  href={item.href}
-                  className={`block px-4 py-2 rounded-md text-base font-medium ${
-                    pathname === item.href
-                      ? 'bg-[var(--text-primary)] text-[var(--background)]'
-                      : 'bg-[var(--card-background)] text-[var(--text-primary)] hover:bg-[var(--card-border)]'
-                  }`}
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  {t(item.name)}
-                </Link>
-              ))}
-            </div>
-            {user && (
-              <div className="mt-auto pt-4 border-t border-[var(--card-border)]">
-                <span className="block px-4 py-2 text-sm text-[var(--text-secondary)]">
-                  {user.email}
-                </span>
-              </div>
-            )}
-          </div>
-        </div>
+        <MobileNavigation user={user} isMenuOpen={isMenuOpen} setIsMenuOpen={setIsMenuOpen} pathname={pathname} />
       )}
       
       <Backdrop 
