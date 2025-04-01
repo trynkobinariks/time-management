@@ -132,6 +132,5 @@
   padding: 2rem;
   position: relative;
   z-index: 1;
-  backdrop-filter: blur(8px);
   border: 1px solid var(--card-border);
 }

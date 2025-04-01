@@ -9,6 +9,9 @@ import { useClientTranslation } from '@/hooks/useClientTranslation';
 
 export default function VoiceTimeEntry() {
   const { language } = useLanguage();
+  const { t } = useClientTranslation();
+  const [isClient, setIsClient] = useState(false);
+  const [isSupported, setIsSupported] = useState(true);
   const { 
     text, 
     isListening, 
@@ -21,14 +24,18 @@ export default function VoiceTimeEntry() {
   
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [recordingDate, setRecordingDate] = useState<string | null>(null);
   const { projects, addTimeEntry } = useProjectContext();
-  const { t } = useClientTranslation();
+
+  // Check if we're on the client side and if speech recognition is supported
+  useEffect(() => {
+    setIsClient(true);
+    setIsSupported('webkitSpeechRecognition' in window || 'SpeechRecognition' in window);
+  }, []);
   
   // Process voice input when user stops speaking
   useEffect(() => {
     const processVoiceInput = async () => {
-      if (status === 'processing' && text.trim() && recordingDate) {
+      if (status === 'processing' && text.trim()) {
         setIsProcessing(true);
         setError(null);
         
@@ -40,12 +47,11 @@ export default function VoiceTimeEntry() {
             if (project) {
               await addTimeEntry({
                 project_id: project.id,
-                date: recordingDate,
+                date: parsedData.date,
                 hours: parsedData.hours,
                 description: parsedData.description || '',
               });
               resetText();
-              setRecordingDate(null);
             } else {
               setError('Project not found. Please try again with a valid project name.');
             }
@@ -61,23 +67,33 @@ export default function VoiceTimeEntry() {
     };
     
     processVoiceInput();
-  }, [status, text, projects, addTimeEntry, resetText, language, recordingDate]);
+  }, [status, text, projects, addTimeEntry, resetText, language]);
 
   // Set the recording date when starting to listen
   const handleStartListening = () => {
-    const today = new Date();
-    const formattedDate = today.toISOString().split('T')[0];
-    setRecordingDate(formattedDate);
     startListening(language as RecognitionLanguage);
   };
 
   // Clear the recording date when stopping
   const handleStopListening = () => {
     stopListening();
-    if (status !== 'processing') {
-      setRecordingDate(null);
-    }
   };
+  
+  if (!isClient) {
+    return null;
+  }
+
+  if (!isSupported) {
+    return (
+      <div className="hidden md:block mt-2">
+        <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+          <div className="space-y-1">
+            <p>Speech recognition is not supported in this browser</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
   
   return (
     <>
@@ -129,8 +145,8 @@ export default function VoiceTimeEntry() {
           )}
 
           {isListening && text && (
-            <div className="mt-2 p-3 bg-gray-50 dark:bg-gray-800 rounded-md w-full max-w-md">
-              <div className="text-sm text-gray-600 dark:text-gray-300 opacity-50">
+            <div className="mt-2 p-3 bg-gray-50 dark:bg-gray-800 rounded-md w-full max-w-[90vw] shadow-md">
+              <div className="text-sm text-gray-600 dark:text-gray-300">
                 {text}
               </div>
             </div>
@@ -161,6 +177,13 @@ export default function VoiceTimeEntry() {
       {/* Mobile-only fixed button */}
       <div className="md:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-20">
         <div className="flex flex-col items-center gap-2">
+          {(isListening || isProcessing) && (
+            <div className="mt-2 p-3 bg-[var(--card-background)] border border-[var(--card-border)] rounded-md w-full max-w-[90vw] shadow-md">
+              <div className="text-sm text-[var(--text-primary)]">
+                {text}
+              </div>
+            </div>
+          )}
           <button
             type="button"
             onClick={isListening ? handleStopListening : handleStartListening}
@@ -206,13 +229,7 @@ export default function VoiceTimeEntry() {
             </div>
           )}
 
-          {isListening && text && (
-            <div className="mt-2 p-3 bg-gray-50 dark:bg-gray-800 rounded-md w-full max-w-[90vw]">
-              <div className="text-sm text-gray-600 dark:text-gray-300 opacity-50">
-                {text}
-              </div>
-            </div>
-          )}
+         
         </div>
       </div>
     </>

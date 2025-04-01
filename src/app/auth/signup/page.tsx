@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { signUp } from '@/lib/auth';
 import Logo from '@/components/Logo';
 import PasswordInput from '@/components/PasswordInput';
+import { useClientTranslation } from '@/hooks/useClientTranslation';
 
 // Background component for auth pages
 function AuthBackground() {
@@ -20,6 +21,7 @@ function AuthBackground() {
 }
 
 export default function SignUpPage() {
+  const { t } = useClientTranslation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -53,24 +55,23 @@ export default function SignUpPage() {
           <div className="flex flex-col items-center">
             <Logo size="lg" className="mb-4" />
             <h2 className="text-center text-3xl font-medium text-[var(--text-primary)]">
-              Check your email
+              {t('auth.signup.checkEmail')}
             </h2>
             <div className="mt-4 text-center text-sm text-[var(--text-secondary)] space-y-4">
               <p>
-                We&apos;ve sent you an email with a link to verify your account.
-                Please check your inbox (and spam folder) and click the link to continue.
+                {t('auth.signup.verificationSent')}
               </p>
               <p className="font-medium">
-                After verifying your email, you&apos;ll be automatically redirected to the dashboard.
+                {t('auth.signup.autoRedirect')}
               </p>
               <p className="text-xs">
-                If you don&apos;t see the email, please wait a few minutes and check your spam folder.
+                {t('auth.signup.spamNote')}
               </p>
             </div>
           </div>
           <div className="text-center">
             <Link href="/auth/login" className="font-medium text-[var(--text-primary)] hover:text-[var(--text-secondary)]">
-              Return to login
+              {t('auth.signup.returnToLogin')}
             </Link>
           </div>
         </div>
@@ -85,12 +86,12 @@ export default function SignUpPage() {
         <div className="flex flex-col items-center">
           <Logo size="lg" className="mb-4" />
           <h2 className="text-center text-3xl font-medium text-[var(--text-primary)]">
-            Create a new account
+            {t('auth.signup.title')}
           </h2>
           <p className="mt-2 text-center text-sm text-[var(--text-secondary)]">
-            Or{' '}
+            {t('auth.login.createAccount')}{' '}
             <Link href="/auth/login" className="font-medium text-blue-400 hover:text-blue-300">
-              sign in to your account
+              {t('auth.login.signIn')}
             </Link>
           </p>
         </div>
@@ -98,7 +99,7 @@ export default function SignUpPage() {
           <div className="rounded-md shadow-sm -space-y-px">
             <div>
               <label htmlFor="email-address" className="sr-only">
-                Email address
+                {t('auth.login.email')}
               </label>
               <input
                 id="email-address"
@@ -109,16 +110,16 @@ export default function SignUpPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-[var(--card-border)] bg-[var(--card-background)] placeholder-[var(--text-secondary)] text-[var(--text-primary)] rounded-t-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Email address"
+                placeholder={t('auth.login.email')}
               />
             </div>
             <PasswordInput
               id="password"
-              label="Password"
+              label={t('auth.login.password')}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               autoComplete="new-password"
-              placeholder="Password"
+              placeholder={t('auth.login.password')}
               disabled={loading}
               rounded="bottom"
               className="appearance-none rounded-none relative block w-full px-3 py-2 border border-[var(--card-border)] bg-[var(--card-background)] placeholder-[var(--text-secondary)] text-[var(--text-primary)] rounded-b-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -143,7 +144,7 @@ export default function SignUpPage() {
                 loading ? 'bg-[var(--card-border)]' : 'bg-blue-600 hover:bg-blue-700'
               }`}
             >
-              {loading ? 'Creating account...' : 'Create account'}
+              {loading ? t('auth.loading') : t('auth.signup.createAccount')}
             </button>
           </div>
         </form>
