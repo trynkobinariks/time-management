@@ -110,7 +110,7 @@ export default function Dashboard() {
                       }
                       ${hasEntries ? `after:content-[''] after:absolute after:bottom-1 after:w-1.5 after:h-1.5 after:rounded-full ${
                         isSameDay(day, selectedDate) 
-                          ? 'bg-white' 
+                          ? 'bg-green-700 text-white' 
                           : 'bg-[var(--background)]'
                       }` : ''}
                     `}
