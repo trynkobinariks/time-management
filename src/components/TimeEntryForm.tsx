@@ -135,15 +135,15 @@ export default function TimeEntryForm({ projectId, onSuccess, onCancel, editingE
   };
   
   return (
-    <div className="fixed inset-0 bg-gray-700/40 backdrop-blur-sm flex items-center justify-center z-50">
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 max-w-md w-full mx-4">
+    <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
+      <div className="bg-[var(--card-background)] rounded-lg shadow-xl p-6 max-w-md w-full mx-4">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-lg font-medium text-gray-900 dark:text-gray-100">
+          <h2 className="text-lg font-medium text-[var(--text-primary)]">
             {editingEntry ? 'Edit Time Entry' : 'Log Time'}
           </h2>
           <button
             onClick={onCancel}
-            className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+            className="text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 cursor-pointer" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -152,7 +152,7 @@ export default function TimeEntryForm({ projectId, onSuccess, onCancel, editingE
         </div>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label htmlFor="project_id" className="block text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">
+            <label htmlFor="project_id" className="block text-sm font-medium text-[var(--text-primary)] mb-1">
               Project
             </label>
             <select
@@ -162,8 +162,8 @@ export default function TimeEntryForm({ projectId, onSuccess, onCancel, editingE
               onChange={handleChange}
               disabled={!!projectId}
               className={`w-full rounded-md border ${
-                errors.project_id ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
-              } px-3 py-2 text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-700 focus:outline-none focus:ring-1 focus:ring-gray-500 cursor-pointer`}
+                errors.project_id ? 'border-red-500' : 'border-[var(--card-border)]'
+              } px-3 py-2 text-[var(--text-primary)] bg-[var(--card-background)] focus:outline-none focus:ring-1 focus:ring-[var(--card-border)] cursor-pointer`}
             >
               <option value="">Select a project</option>
               {projects.map(project => (
@@ -178,7 +178,7 @@ export default function TimeEntryForm({ projectId, onSuccess, onCancel, editingE
           </div>
           
           <div>
-            <label htmlFor="date" className="block text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">
+            <label htmlFor="date" className="block text-sm font-medium text-[var(--text-primary)] mb-1">
               Date
             </label>
             <input
@@ -188,8 +188,8 @@ export default function TimeEntryForm({ projectId, onSuccess, onCancel, editingE
               value={formData.date}
               onChange={handleChange}
               className={`w-full rounded-md border ${
-                errors.date ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
-              } px-3 py-2 text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-700 focus:outline-none focus:ring-1 focus:ring-gray-500 cursor-pointer`}
+                errors.date ? 'border-red-500' : 'border-[var(--card-border)]'
+              } px-3 py-2 text-[var(--text-primary)] bg-[var(--card-background)] focus:outline-none focus:ring-1 focus:ring-[var(--card-border)] cursor-pointer`}
             />
             {errors.date && (
               <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.date}</p>
@@ -197,7 +197,7 @@ export default function TimeEntryForm({ projectId, onSuccess, onCancel, editingE
           </div>
           
           <div>
-            <label htmlFor="hours" className="block text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">
+            <label htmlFor="hours" className="block text-sm font-medium text-[var(--text-primary)] mb-1">
               Hours
             </label>
             <input
@@ -210,8 +210,8 @@ export default function TimeEntryForm({ projectId, onSuccess, onCancel, editingE
               min="0.25"
               max="24"
               className={`w-full rounded-md border ${
-                errors.hours ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
-              } px-3 py-2 text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-700 focus:outline-none focus:ring-1 focus:ring-gray-500`}
+                errors.hours ? 'border-red-500' : 'border-[var(--card-border)]'
+              } px-3 py-2 text-[var(--text-primary)] bg-[var(--card-background)] focus:outline-none focus:ring-1 focus:ring-[var(--card-border)]`}
               placeholder="0.0"
             />
             {errors.hours && (
@@ -220,7 +220,7 @@ export default function TimeEntryForm({ projectId, onSuccess, onCancel, editingE
           </div>
           
           <div>
-            <label htmlFor="description" className="block text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">
+            <label htmlFor="description" className="block text-sm font-medium text-[var(--text-primary)] mb-1">
               Description
             </label>
             <textarea
@@ -230,8 +230,8 @@ export default function TimeEntryForm({ projectId, onSuccess, onCancel, editingE
               onChange={handleChange}
               rows={3}
               className={`w-full rounded-md border ${
-                errors.description ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
-              } px-3 py-2 text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-700 focus:outline-none focus:ring-1 focus:ring-gray-500`}
+                errors.description ? 'border-red-500' : 'border-[var(--card-border)]'
+              } px-3 py-2 text-[var(--text-primary)] bg-[var(--card-background)] focus:outline-none focus:ring-1 focus:ring-[var(--card-border)]`}
               placeholder="What did you work on?"
             />
             {errors.description && (
@@ -247,15 +247,15 @@ export default function TimeEntryForm({ projectId, onSuccess, onCancel, editingE
             <button
               type="button"
               onClick={onCancel}
-              className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+              className="px-4 py-2 text-sm font-medium text-[var(--text-primary)] bg-[var(--card-background)] border border-[var(--card-border)] hover:bg-[var(--card-border)] rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--card-border)]"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-4 py-2 text-sm font-medium text-white bg-gray-900 dark:bg-gray-100 dark:text-gray-900 hover:bg-gray-800 dark:hover:bg-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+              className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
             >
-              {editingEntry ? 'Update' : 'Save'}
+              {editingEntry ? 'Save Changes' : 'Log Time'}
             </button>
           </div>
         </form>

@@ -50,7 +50,7 @@
 .auth-background {
   position: relative;
   overflow: hidden;
-  background-color: #111827;
+  background-color: var(--background);
 }
 
 .auth-background::before {
@@ -126,12 +126,12 @@
 
 /* Auth card styling - simplified version without hover effects */
 .auth-card {
-  background: rgba(31, 41, 55, 0.95);
+  background: var(--card-background);
   border-radius: 12px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   padding: 2rem;
   position: relative;
   z-index: 1;
   backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--card-border);
 }
