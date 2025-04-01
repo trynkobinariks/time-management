@@ -1,17 +1,14 @@
 import CloseIcon from '@/components/icons/CloseIcon'
 import React from 'react'
 import { navItems } from '../../config'
-import Link from 'next/link'
-import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { MobileNavigationProps } from './types'
+import MobileNavigationTab from './MobileNavigationTab'
 
 const MobileNavigation = ({
   isMenuOpen,
   setIsMenuOpen,
   user,
-  pathname,
 }: MobileNavigationProps) => {
-  const { t } = useClientTranslation();
 
   return (
     <div className={`md:hidden fixed inset-y-0 right-0 w-64 bg-[var(--card-background)] shadow-lg transform transition-transform duration-300 ease-in-out z-40 ${isMenuOpen ? 'translate-x-0 pointer-events-auto' : 'translate-x-full pointer-events-none'
@@ -26,17 +23,7 @@ const MobileNavigation = ({
         </button>
         <div className="space-y-1">
           {navItems.map((item) => (
-            <Link
-              key={item.name}
-              href={item.href}
-              className={`block px-4 py-2 rounded-md text-base font-medium ${pathname === item.href
-                ? 'bg-[var(--text-primary)] text-[var(--background)]'
-                : 'bg-[var(--card-background)] text-[var(--text-primary)] hover:bg-[var(--card-border)]'
-                }`}
-              onClick={() => setIsMenuOpen(false)}
-            >
-              {t(item.name)}
-            </Link>
+            <MobileNavigationTab key={item.name} item={item} setIsMenuOpen={setIsMenuOpen} />
           ))}
         </div>
         {user && (

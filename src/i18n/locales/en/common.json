@@ -75,6 +75,8 @@
       "error": "Error"
     },
     "signup": {
+      "title": "Create a new account",
+      "createAccount": "Create account",
       "checkEmail": "Check your email",
       "verificationSent": "We've sent you an email with a link to verify your account. Please check your inbox (and spam folder) and click the link to continue.",
       "autoRedirect": "After verifying your email, you'll be automatically redirected to the dashboard.",

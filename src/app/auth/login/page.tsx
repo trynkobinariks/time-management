@@ -67,7 +67,9 @@ function LoginContent() {
             {t('auth.login.title')}
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600 dark:text-[var(--text-secondary)]">
-            {t('auth.login.createAccount')}
+            <Link href="/auth/signup" className="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300">
+              {t('auth.login.createAccount')}
+            </Link>
           </p>
         </div>
 
@@ -126,7 +128,7 @@ function LoginContent() {
             <button
               type="submit"
               disabled={loading}
-              className={`group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white ${
+              className={`group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white cursor-pointer ${
                 loading ? 'bg-gray-400 dark:bg-[var(--card-border)]' : 'bg-blue-600 hover:bg-blue-700'
               }`}
             >

@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState } from 'react';
-import { usePathname } from 'next/navigation';
 import ThemeSwitcher from '../ThemeSwitcher/ThemeSwitcher';
 import LanguageSwitcher from '../LanguageSwitcher';
 import Backdrop from '../Backdrop/Backdrop';
@@ -15,7 +14,6 @@ import BurgerMenuButton from './components/BurgerMenuButton/BurgerMenuButton';
 import LogoLink from './components/LogoLink/LogoLink';
 
 export default function Header() {
-  const pathname = usePathname();
   const { language, setLanguage } = useLanguage();
   const { user } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -53,7 +51,7 @@ export default function Header() {
       </div>
       
       {user && (
-        <MobileNavigation user={user} isMenuOpen={isMenuOpen} setIsMenuOpen={setIsMenuOpen} pathname={pathname} />
+        <MobileNavigation user={user} isMenuOpen={isMenuOpen} setIsMenuOpen={setIsMenuOpen} />
       )}
       
       <Backdrop 

@@ -4,5 +4,4 @@ export interface MobileNavigationProps {
   isMenuOpen: boolean;
   setIsMenuOpen: (isMenuOpen: boolean) => void;
   user: User;
-  pathname: string;
 }
