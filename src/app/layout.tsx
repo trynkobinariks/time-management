@@ -29,8 +29,9 @@ export default function RootLayout({
         <LanguageProvider>
           <ProjectProvider>
             <WelcomeProvider>
-              <div className="min-h-screen">
+              <div className="min-h-[calc(100vh-65px)]">
                 <Header />
+                <div className="h-16" />
                 <main>
                   {children}
                 </main>

@@ -9,6 +9,9 @@ import { useClientTranslation } from '@/hooks/useClientTranslation';
 
 export default function VoiceTimeEntry() {
   const { language } = useLanguage();
+  const { t } = useClientTranslation();
+  const [isClient, setIsClient] = useState(false);
+  const [isSupported, setIsSupported] = useState(true);
   const { 
     text, 
     isListening, 
@@ -23,7 +26,12 @@ export default function VoiceTimeEntry() {
   const [error, setError] = useState<string | null>(null);
   const [recordingDate, setRecordingDate] = useState<string | null>(null);
   const { projects, addTimeEntry } = useProjectContext();
-  const { t } = useClientTranslation();
+
+  // Check if we're on the client side and if speech recognition is supported
+  useEffect(() => {
+    setIsClient(true);
+    setIsSupported('webkitSpeechRecognition' in window || 'SpeechRecognition' in window);
+  }, []);
   
   // Process voice input when user stops speaking
   useEffect(() => {
@@ -78,6 +86,22 @@ export default function VoiceTimeEntry() {
       setRecordingDate(null);
     }
   };
+  
+  if (!isClient) {
+    return null;
+  }
+
+  if (!isSupported) {
+    return (
+      <div className="hidden md:block mt-2">
+        <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+          <div className="space-y-1">
+            <p>Speech recognition is not supported in this browser</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
   
   return (
     <>
