@@ -5,6 +5,7 @@ import { ProjectProvider } from "@/contexts/ProjectContext";
 import { WelcomeProvider } from "@/contexts/WelcomeContext";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import Header from "@/components/Header/Header";
+import { AuthProvider } from '@/contexts/AuthContext';
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -26,19 +27,21 @@ export default function RootLayout({
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
       </head>
       <body className={`${inter.className} bg-[var(--background)] text-[var(--text-primary)] transition-colors duration-200`}>
-        <LanguageProvider>
-          <ProjectProvider>
-            <WelcomeProvider>
-              <div className="min-h-[calc(100vh-65px)]">
-                <Header />
-                <div className="h-16" />
-                <main>
-                  {children}
-                </main>
-              </div>
-            </WelcomeProvider>
-          </ProjectProvider>
-        </LanguageProvider>
+        <AuthProvider>
+          <LanguageProvider>
+            <ProjectProvider>
+              <WelcomeProvider>
+                <div className="min-h-[calc(100vh-65px)]">
+                  <Header />
+                  <div className="h-16" />
+                  <main>
+                    {children}
+                  </main>
+                </div>
+              </WelcomeProvider>
+            </ProjectProvider>
+          </LanguageProvider>
+        </AuthProvider>
       </body>
     </html>
   );
