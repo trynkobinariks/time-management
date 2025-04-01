@@ -9,9 +9,9 @@ interface LanguageSwitcherProps {
 
 export default function LanguageSwitcher({ language, setLanguage, disabled = false }: LanguageSwitcherProps) {
   return (
-    <div className="relative inline-flex rounded-lg border border-gray-200 dark:border-gray-700 p-1 bg-gray-100 dark:bg-gray-800">
+    <div className="relative inline-flex rounded-lg border border-[var(--card-border)] p-1 bg-[var(--card-border)]">
       <div 
-        className={`absolute h-[calc(100%-8px)] w-[calc(50%-2px)] bg-white dark:bg-gray-700 rounded-md shadow-sm transition-all duration-300 ease-in-out ${
+        className={`absolute h-[calc(100%-8px)] w-[calc(50%-2px)] bg-[var(--card-background)] rounded-md shadow-sm transition-all duration-300 ease-in-out ${
           language === 'uk-UA' ? 'translate-x-[94%]' : ''
         }`}
       />
@@ -20,8 +20,8 @@ export default function LanguageSwitcher({ language, setLanguage, disabled = fal
         onClick={() => setLanguage('en-US')}
         className={`relative px-4 py-1.5 text-sm font-medium transition-colors duration-200 cursor-pointer ${
           language === 'en-US'
-            ? 'text-gray-900 dark:text-white'
-            : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+            ? 'text-[var(--text-primary)]'
+            : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
         }`}
         disabled={disabled}
       >
@@ -32,8 +32,8 @@ export default function LanguageSwitcher({ language, setLanguage, disabled = fal
         onClick={() => setLanguage('uk-UA')}
         className={`relative px-4 py-1.5 text-sm font-medium transition-colors duration-200 cursor-pointer ${
           language === 'uk-UA'
-            ? 'text-gray-900 dark:text-white'
-            : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+            ? 'text-[var(--text-primary)]'
+            : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
         }`}
         disabled={disabled}
       >
