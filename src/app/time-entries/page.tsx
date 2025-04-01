@@ -38,38 +38,38 @@ export default function TimeEntriesPage() {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-medium text-gray-800">{t('header.nav.timeEntries')}</h1>
+        <h1 className="text-2xl font-medium text-[var(--text-primary)]">{t('header.nav.timeEntries')}</h1>
       </div>
 
       {Object.keys(entriesByDate).length === 0 ? (
         <div className="text-center py-12">
-          <p className="text-gray-600 mb-4">{t('timeEntries.noTimeEntries')}</p>
+          <p className="text-[var(--text-secondary)] mb-4">{t('timeEntries.noTimeEntries')}</p>
         </div>
       ) : (
         <div className="space-y-6">
           {Object.entries(entriesByDate).map(([dateStr, entries]) => (
-            <div key={dateStr} className="border border-gray-200 dark:border-gray-700 rounded-md bg-white dark:bg-gray-800 overflow-hidden">
-              <div className="px-4 py-3 bg-gray-50 border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700">
-                <h2 className="text-base font-medium text-gray-800 dark:text-gray-100">
+            <div key={dateStr} className="border border-[var(--card-border)] rounded-md bg-[var(--card-background)] overflow-hidden">
+              <div className="px-4 py-3 bg-[var(--card-border)] border-b border-[var(--card-border)]">
+                <h2 className="text-base font-medium text-[var(--text-primary)]">
                   {format(new Date(dateStr), 'EEEE, MMMM d, yyyy')}
                 </h2>
               </div>
-              <div className="divide-y divide-gray-100 dark:divide-gray-700">
+              <div className="divide-y divide-[var(--card-border)]">
                 {entries.map((entry) => (
                   <div key={entry.id} className="px-4 py-3">
                     <div className="flex justify-between items-start">
                       <div>
-                        <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                        <h3 className="text-sm font-medium text-[var(--text-primary)]">
                           {projects.find(p => p.id === entry.project_id)?.name || t('timeEntries.unknownProject')}
                         </h3>
                         {entry.description && (
-                          <p className="mt-1 text-sm text-gray-600 dark:text-gray-300">
+                          <p className="mt-1 text-sm text-[var(--text-secondary)]">
                             {entry.description}
                           </p>
                         )}
                       </div>
                       <div className="flex items-center space-x-4">
-                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300 whitespace-nowrap">
+                        <span className="text-sm font-medium text-[var(--text-primary)] whitespace-nowrap">
                           {entry.hours} {entry.hours === 1 ? t('timeEntries.hour') : t('timeEntries.hours')}
                         </span>
                         <button

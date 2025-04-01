@@ -25,7 +25,7 @@ export default function RootLayout({
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
       </head>
-      <body className={`${inter.className} bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-200`}>
+      <body className={`${inter.className} bg-[var(--background)] text-[var(--text-primary)] transition-colors duration-200`}>
         <LanguageProvider>
           <ProjectProvider>
             <WelcomeProvider>

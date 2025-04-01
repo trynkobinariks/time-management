@@ -36,14 +36,14 @@ export default function ProjectsPage() {
   return (
     <div className="container mx-auto px-4 py-8 max-w-7xl">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-medium text-gray-800 dark:text-white">{t('projects.title')}</h1>
+        <h1 className="text-2xl font-medium text-[var(--text-primary)]">{t('projects.title')}</h1>
         <button
           onClick={handleAddClick}
           onTouchEnd={(e) => {
             e.preventDefault();
             handleAddClick();
           }}
-          className="px-4 py-2 text-sm font-medium text-white bg-gray-800 rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 cursor-pointer transition-colors active:bg-gray-600 touch-action-manipulation relative"
+          className="px-4 py-2 text-sm font-medium text-[var(--background)] bg-[var(--text-primary)] rounded-md hover:bg-[var(--card-border)] focus:outline-none focus:ring-2 focus:ring-[var(--card-border)] cursor-pointer transition-colors active:bg-[var(--card-border)] touch-action-manipulation relative"
           aria-label={t('projects.addProject')}
           role="button"
         >
@@ -51,21 +51,21 @@ export default function ProjectsPage() {
         </button>
       </div>
 
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm">
-        <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-          <h2 className="text-lg font-medium text-gray-900 dark:text-white">{t('projects.allProjects')}</h2>
+      <div className="bg-[var(--card-background)] rounded-lg shadow-sm">
+        <div className="px-6 py-4 border-b border-[var(--card-border)]">
+          <h2 className="text-lg font-medium text-[var(--text-primary)]">{t('projects.allProjects')}</h2>
         </div>
 
         {projects.length === 0 ? (
           <div className="px-6 py-8 text-center">
-            <p className="text-gray-600 dark:text-gray-300 mb-4">{t('projects.noProjects')}</p>
+            <p className="text-[var(--text-secondary)] mb-4">{t('projects.noProjects')}</p>
             <button
               onClick={handleAddClick}
               onTouchEnd={(e) => {
                 e.preventDefault();
                 handleAddClick();
               }}
-              className="px-4 py-2 text-sm font-medium text-white bg-gray-800 dark:bg-gray-700 rounded-md hover:bg-gray-700 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 cursor-pointer transition-colors active:bg-gray-600 touch-action-manipulation"
+              className="px-4 py-2 text-sm font-medium text-[var(--background)] bg-[var(--text-primary)] rounded-md hover:bg-[var(--card-border)] focus:outline-none focus:ring-2 focus:ring-[var(--card-border)] cursor-pointer transition-colors active:bg-[var(--card-border)] touch-action-manipulation"
               aria-label={t('projects.addProject')}
               role="button"
             >
@@ -73,7 +73,7 @@ export default function ProjectsPage() {
             </button>
           </div>
         ) : (
-          <div className="divide-y divide-gray-100 dark:divide-gray-700">
+          <div className="divide-y divide-[var(--card-border)]">
             {projects.map((project) => (
               <div key={project.id} className="px-6 py-4">
                 <ProjectCard
@@ -83,10 +83,10 @@ export default function ProjectsPage() {
               </div>
             ))}
 
-            <div className="px-6 py-4 flex items-center justify-between bg-gray-50 dark:bg-gray-800">
+            <div className="px-6 py-4 flex items-center justify-between bg-[var(--card-border)]">
               <div className="flex items-center space-x-4">
                 <span className="w-8"></span>
-                <span className="text-sm font-medium text-gray-800 dark:text-gray-100">
+                <span className="text-sm font-medium text-[var(--text-primary)]">
                   {t('projects.totalProjects')}
                 </span>
               </div>
@@ -94,7 +94,7 @@ export default function ProjectsPage() {
               <div className="flex-1 mx-8"></div>
 
               <div className="flex items-center space-x-4">
-                <span className="text-lg font-semibold text-gray-800 dark:text-gray-100">
+                <span className="text-lg font-semibold text-[var(--text-primary)]">
                   {projects.length} {projects.length === 1 ? t('projects.project') : t('projects.projects')}
                 </span>
                 <span className="w-16"></span>
@@ -106,15 +106,15 @@ export default function ProjectsPage() {
 
       {/* Project Form Modal */}
       {showAddForm && (
-        <div className="fixed inset-0 bg-gray-700/40 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full mx-4 shadow-xl">
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-[var(--card-background)] rounded-lg p-6 max-w-md w-full mx-4 shadow-xl">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-lg font-medium text-gray-800 dark:text-gray-100">
+              <h2 className="text-lg font-medium text-[var(--text-primary)]">
                 {editingProject ? t('projects.popup.title') : t('projects.addProject')}
               </h2>
               <button
                 onClick={handleFormCancel}
-                className="text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200 transition-colors"
+                className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
                 aria-label={t('common.close')}
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
