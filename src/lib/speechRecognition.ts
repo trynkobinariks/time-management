@@ -208,6 +208,11 @@ export function useSpeechRecognition(initialLanguage: RecognitionLanguage = 'en-
       return;
     }
 
+    // Update language if provided
+    if (language && language !== currentLanguage) {
+      setLanguage(language);
+    }
+
     // Request microphone permission on mobile before starting
     if (isMobile) {
       navigator.mediaDevices.getUserMedia({ audio: true })
@@ -215,6 +220,9 @@ export function useSpeechRecognition(initialLanguage: RecognitionLanguage = 'en-
           // Permission granted, proceed with starting recognition
           if (recognitionRef.current) {
             try {
+              // Ensure language is set before starting
+              recognitionRef.current.lang = currentLanguage;
+              console.log('Starting mobile recognition with language:', recognitionRef.current.lang);
               recognitionRef.current.start();
             } catch (err) {
               console.error('Speech recognition error:', err);
@@ -227,28 +235,15 @@ export function useSpeechRecognition(initialLanguage: RecognitionLanguage = 'en-
         });
     } else {
       // Desktop flow
-      if (language && language !== currentLanguage) {
-        setLanguage(language);
-        setTimeout(() => {
-          if (recognitionRef.current) {
-            try {
-              recognitionRef.current.start();
-            } catch (err) {
-              console.error('Speech recognition error:', err);
-            }
-          }
-        }, 0);
-      } else {
-        if (recognitionRef.current) {
-          try {
-            recognitionRef.current.start();
-          } catch (err) {
-            console.error('Speech recognition error:', err);
-          }
+      if (recognitionRef.current) {
+        try {
+          recognitionRef.current.start();
+        } catch (err) {
+          console.error('Speech recognition error:', err);
         }
       }
     }
-  }, [isBrowser, hasSupport, currentLanguage, setLanguage, isMobile]);
+  }, [currentLanguage, isBrowser, hasSupport, setLanguage, isMobile]);
 
   const stopListening = useCallback(() => {
     if (recognitionRef.current) {

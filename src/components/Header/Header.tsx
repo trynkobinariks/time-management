@@ -5,11 +5,14 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { createBrowserClient } from '@supabase/ssr';
 import type { User } from '@supabase/supabase-js';
-import Logo from './Logo';
-import ThemeSwitcher from './ThemeSwitcher';
-import LanguageSwitcher from './LanguageSwitcher';
+import Logo from '../Logo';
+import ThemeSwitcher from '../ThemeSwitcher';
+import LanguageSwitcher from '../LanguageSwitcher';
+import LogoutIcon from '../icons/LogoutIcon';
+import MenuIcon from '../icons/MenuIcon';
+import CloseIcon from '../icons/CloseIcon';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useClientTranslation } from '../hooks/useClientTranslation';
+import { useClientTranslation } from '../../hooks/useClientTranslation';
 
 export default function Header() {
   const pathname = usePathname();
@@ -97,20 +100,7 @@ export default function Header() {
                   className="p-2 rounded-full bg-[var(--card-background)] hover:bg-[var(--card-border)]"
                   aria-label="Sign out"
                 >
-                  <svg 
-                    xmlns="http://www.w3.org/2000/svg" 
-                    className="h-5 w-5 text-[var(--text-primary)]"
-                    fill="none" 
-                    viewBox="0 0 24 24" 
-                    stroke="currentColor"
-                  >
-                    <path 
-                      strokeLinecap="round" 
-                      strokeLinejoin="round" 
-                      strokeWidth={2} 
-                      d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" 
-                    />
-                  </svg>
+                  <LogoutIcon className="text-[var(--text-primary)]" />
                 </button>
                 
                 {/* Mobile burger menu button */}
@@ -120,34 +110,11 @@ export default function Header() {
                   aria-expanded={isMenuOpen}
                 >
                   <span className="sr-only">Open main menu</span>
-                  <svg
-                    className={`${isMenuOpen ? 'hidden' : 'block'} h-6 w-6`}
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M4 6h16M4 12h16M4 18h16"
-                    />
-                  </svg>
-                  <svg
-                    className={`${isMenuOpen ? 'block' : 'hidden'} h-6 w-6`}
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
+                  {!isMenuOpen ? (
+                    <MenuIcon className="text-[var(--text-primary)]" />
+                  ) : (
+                    <CloseIcon className="text-[var(--text-primary)]" />
+                  )}
                 </button>
               </>
             )}
@@ -165,20 +132,7 @@ export default function Header() {
             onClick={() => setIsMenuOpen(false)}
             aria-label="Close menu"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-6 w-6 text-[var(--text-primary)]"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
+            <CloseIcon className="text-[var(--text-primary)]" />
           </button>
           <div className="space-y-1">
             {navItems.map((item) => (

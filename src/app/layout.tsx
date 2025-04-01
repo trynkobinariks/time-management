@@ -4,7 +4,7 @@ import "./globals.css";
 import { ProjectProvider } from "@/contexts/ProjectContext";
 import { WelcomeProvider } from "@/contexts/WelcomeContext";
 import { LanguageProvider } from "@/contexts/LanguageContext";
-import Header from "@/components/Header";
+import Header from "@/components/Header/Header";
 
 const inter = Inter({ subsets: ["latin"] });
 
