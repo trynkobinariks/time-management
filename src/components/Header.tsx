@@ -156,7 +156,7 @@ export default function Header() {
       </div>
       
       {/* Mobile navigation menu */}
-      <div className={`md:hidden fixed inset-y-0 right-0 w-64 bg-[var(--card-background)] shadow-lg transform transition-transform duration-300 ease-in-out z-20 ${
+      <div className={`md:hidden fixed inset-y-0 right-0 w-64 bg-[var(--card-background)] shadow-lg transform transition-transform duration-300 ease-in-out z-40 ${
         isMenuOpen ? 'translate-x-0 pointer-events-auto' : 'translate-x-full pointer-events-none'
       }`}>
         <div className="h-full flex flex-col pt-16 pb-3 px-3 border-l border-[var(--card-border)]">

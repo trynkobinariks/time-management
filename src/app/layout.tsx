@@ -31,7 +31,7 @@ export default function RootLayout({
             <WelcomeProvider>
               <div className="min-h-screen">
                 <Header />
-                <main className="pt-16">
+                <main>
                   {children}
                 </main>
               </div>
