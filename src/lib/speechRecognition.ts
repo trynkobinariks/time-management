@@ -25,6 +25,7 @@ interface SpeechRecognitionInstance extends EventTarget {
   continuous: boolean;
   interimResults: boolean;
   lang: string;
+  maxAlternatives?: number;
   start(): void;
   stop(): void;
   abort(): void;
@@ -76,6 +77,9 @@ export function useSpeechRecognition(initialLanguage: RecognitionLanguage = 'en-
   const isBrowser = typeof window !== 'undefined';
   const hasSupport = isBrowser && (window.SpeechRecognition || window.webkitSpeechRecognition);
 
+  // Check if running on mobile
+  const isMobile = isBrowser && /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
   // Function to handle silence timeout
   const handleSilenceTimeout = useCallback(() => {
     if (recognitionRef.current) {
@@ -91,11 +95,24 @@ export function useSpeechRecognition(initialLanguage: RecognitionLanguage = 'en-
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     const recognition = new SpeechRecognition();
     
+    // Configure recognition settings
     recognition.continuous = true;
     recognition.interimResults = true;
     recognition.lang = currentLanguage;
     
-    console.log('Initializing speech recognition with language:', recognition.lang);
+    // Additional mobile-specific settings
+    if (isMobile) {
+      // Increase maxAlternatives for better accuracy on mobile
+      recognition.maxAlternatives = 3;
+      
+      // Set a longer timeout for mobile devices
+      if (silenceTimerRef.current) {
+        clearTimeout(silenceTimerRef.current);
+      }
+      silenceTimerRef.current = setTimeout(handleSilenceTimeout, 5000);
+    }
+    
+    console.log('Initializing speech recognition with language:', recognition.lang, 'on mobile:', isMobile);
     
     recognition.onstart = () => {
       setIsListening(true);
@@ -112,6 +129,7 @@ export function useSpeechRecognition(initialLanguage: RecognitionLanguage = 'en-
       // Only update text if it's a final result
       if (lastResult.isFinal) {
         setText(transcript);
+        console.log('Final transcript:', transcript);
       }
       
       // Reset silence detection timer
@@ -119,12 +137,26 @@ export function useSpeechRecognition(initialLanguage: RecognitionLanguage = 'en-
         clearTimeout(silenceTimerRef.current);
       }
       
-      // Start or reset the silence timer
-      silenceTimerRef.current = setTimeout(handleSilenceTimeout, 2000);
+      // Start or reset the silence timer with different timeouts for mobile/desktop
+      silenceTimerRef.current = setTimeout(handleSilenceTimeout, isMobile ? 5000 : 2000);
     };
     
     recognition.onerror = (event) => {
-      setError(`Speech recognition error: ${event.error}`);
+      console.error('Speech recognition error:', event.error);
+      let errorMessage = `Speech recognition error: ${event.error}`;
+      
+      // Add more specific error messages for common mobile issues
+      if (event.error === 'no-speech') {
+        errorMessage = 'No speech detected. Please try speaking again.';
+      } else if (event.error === 'aborted') {
+        errorMessage = 'Recording was interrupted. Please try again.';
+      } else if (event.error === 'audio-capture') {
+        errorMessage = 'Could not access microphone. Please check your permissions.';
+      } else if (event.error === 'network') {
+        errorMessage = 'Network error occurred. Please check your connection.';
+      }
+      
+      setError(errorMessage);
       setStatus('error');
       if (silenceTimerRef.current) {
         clearTimeout(silenceTimerRef.current);
@@ -137,6 +169,7 @@ export function useSpeechRecognition(initialLanguage: RecognitionLanguage = 'en-
       if (silenceTimerRef.current) {
         clearTimeout(silenceTimerRef.current);
       }
+      console.log('Speech recognition ended');
     };
     
     recognitionRef.current = recognition;
@@ -154,7 +187,7 @@ export function useSpeechRecognition(initialLanguage: RecognitionLanguage = 'en-
         clearTimeout(silenceTimerRef.current);
       }
     };
-  }, [isBrowser, hasSupport, currentLanguage, handleSilenceTimeout]);
+  }, [isBrowser, hasSupport, currentLanguage, handleSilenceTimeout, isMobile]);
 
   const setLanguage = useCallback((language: RecognitionLanguage) => {
     // Stop any ongoing recognition before changing language
@@ -175,11 +208,37 @@ export function useSpeechRecognition(initialLanguage: RecognitionLanguage = 'en-
       return;
     }
 
-    // If language is provided and different, update it first
-    if (language && language !== currentLanguage) {
-      setLanguage(language);
-      // Wait for the next tick to ensure language is updated
-      setTimeout(() => {
+    // Request microphone permission on mobile before starting
+    if (isMobile) {
+      navigator.mediaDevices.getUserMedia({ audio: true })
+        .then(() => {
+          // Permission granted, proceed with starting recognition
+          if (recognitionRef.current) {
+            try {
+              recognitionRef.current.start();
+            } catch (err) {
+              console.error('Speech recognition error:', err);
+            }
+          }
+        })
+        .catch((err) => {
+          console.error('Microphone permission error:', err);
+          setError('Please allow microphone access to use voice recognition');
+        });
+    } else {
+      // Desktop flow
+      if (language && language !== currentLanguage) {
+        setLanguage(language);
+        setTimeout(() => {
+          if (recognitionRef.current) {
+            try {
+              recognitionRef.current.start();
+            } catch (err) {
+              console.error('Speech recognition error:', err);
+            }
+          }
+        }, 0);
+      } else {
         if (recognitionRef.current) {
           try {
             recognitionRef.current.start();
@@ -187,17 +246,9 @@ export function useSpeechRecognition(initialLanguage: RecognitionLanguage = 'en-
             console.error('Speech recognition error:', err);
           }
         }
-      }, 0);
-    } else {
-      if (recognitionRef.current) {
-        try {
-          recognitionRef.current.start();
-        } catch (err) {
-          console.error('Speech recognition error:', err);
-        }
       }
     }
-  }, [isBrowser, hasSupport, currentLanguage, setLanguage]);
+  }, [isBrowser, hasSupport, currentLanguage, setLanguage, isMobile]);
 
   const stopListening = useCallback(() => {
     if (recognitionRef.current) {
