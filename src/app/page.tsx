@@ -95,14 +95,24 @@ export default function Dashboard() {
                     className={`cursor-pointer
                       h-10 w-10 rounded-full flex items-center justify-center text-sm relative
                       ${isSameDay(day, selectedDate)
-                        ? 'bg-[var(--text-primary)] text-[var(--background)]'
+                        ? 'bg-blue-600 text-white hover:bg-blue-700'
                         : isToday(day)
-                          ? 'bg-[var(--card-border)] text-[var(--text-primary)]'
+                          ? hasEntries
+                            ? 'bg-[var(--text-primary)] text-[var(--background)] hover:bg-[var(--text-primary)]'
+                            : 'bg-[var(--card-border)] text-[var(--text-primary)] hover:bg-[var(--card-border)]'
                           : isCurrentMonth
-                            ? 'text-[var(--text-primary)] hover:bg-[var(--card-border)]'
-                            : 'text-[var(--text-secondary)]'
+                            ? hasEntries
+                              ? 'bg-[var(--text-primary)] text-[var(--background)] hover:bg-[var(--text-primary)]'
+                              : 'text-[var(--text-primary)] hover:bg-[var(--card-border)]'
+                            : hasEntries
+                              ? 'bg-[var(--text-primary)] text-[var(--background)] hover:bg-[var(--text-primary)]'
+                              : 'text-[var(--text-secondary)] hover:bg-[var(--card-border)]'
                       }
-                      ${hasEntries ? `after:content-[''] after:absolute after:bottom-1 after:w-1.5 after:h-1.5 after:rounded-full ${isSameDay(day, selectedDate) ? 'bg-[var(--background)]' : 'bg-[var(--text-secondary)]'}` : ''}
+                      ${hasEntries ? `after:content-[''] after:absolute after:bottom-1 after:w-1.5 after:h-1.5 after:rounded-full ${
+                        isSameDay(day, selectedDate) 
+                          ? 'bg-white' 
+                          : 'bg-[var(--background)]'
+                      }` : ''}
                     `}
                   >
                     {format(day, 'd')}
