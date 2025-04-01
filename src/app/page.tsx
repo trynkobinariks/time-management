@@ -48,7 +48,7 @@ export default function Dashboard() {
   }, [setShowWelcomePopup]);
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-7xl">
+    <div className="container mx-auto px-4 py-8 max-w-7xl pb-32">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-medium text-[var(--text-primary)] text-center w-full lg:text-left lg:w-auto">{t('welcome.title')}</h1>
       </div>
