@@ -51,13 +51,13 @@ export default function Header() {
   ];
 
   return (
-    <header className="sticky top-0 z-50 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+    <header className="sticky top-0 z-50 bg-[var(--card-background)] border-b border-[var(--card-border)]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex items-center">
             <Link href="/" className="flex items-center">
               <Logo size="md" className="mr-2" />
-              <span className="text-xl font-bold text-gray-900 dark:text-gray-100 hidden sm:inline">
+              <span className="text-xl font-bold text-[var(--text-primary)] hidden sm:inline">
                 {t('header.appName')}
               </span>
             </Link>
@@ -70,8 +70,8 @@ export default function Header() {
                     href={item.href}
                     className={`px-6 py-2 text-sm font-medium transition-all rounded-md ${
                       pathname === item.href
-                        ? 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100'
-                        : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-100'
+                        ? 'bg-[var(--card-border)] text-[var(--text-primary)]'
+                        : 'text-[var(--text-secondary)] hover:bg-[var(--card-border)] hover:text-[var(--text-primary)]'
                     }`}
                   >
                     {item.name}
@@ -88,18 +88,18 @@ export default function Header() {
             <ThemeSwitcher />
             {user && (
               <>
-                <span className="text-sm text-gray-500 dark:text-gray-400 hidden md:inline">
+                <span className="text-sm text-[var(--text-secondary)] hidden md:inline">
                   {user.email}
                 </span>
                 {/* Logout icon button */}
                 <button
                   onClick={() => signOut()}
-                  className="p-2 rounded-full bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600"
+                  className="p-2 rounded-full bg-[var(--card-background)] hover:bg-[var(--card-border)]"
                   aria-label="Sign out"
                 >
                   <svg 
                     xmlns="http://www.w3.org/2000/svg" 
-                    className="h-5 w-5 text-gray-900 dark:text-gray-100"
+                    className="h-5 w-5 text-[var(--text-primary)]"
                     fill="none" 
                     viewBox="0 0 24 24" 
                     stroke="currentColor"
@@ -115,7 +115,7 @@ export default function Header() {
                 
                 {/* Mobile burger menu button */}
                 <button
-                  className="ml-2 inline-flex items-center justify-center p-2 rounded-md text-gray-900 dark:text-gray-100 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 md:hidden"
+                  className="ml-2 inline-flex items-center justify-center p-2 rounded-md text-[var(--text-primary)] bg-[var(--card-background)] hover:bg-[var(--card-border)] md:hidden"
                   onClick={() => setIsMenuOpen(!isMenuOpen)}
                   aria-expanded={isMenuOpen}
                 >
@@ -156,18 +156,18 @@ export default function Header() {
       </div>
       
       {/* Mobile navigation menu */}
-      <div className={`md:hidden fixed inset-y-0 right-0 w-64 bg-white dark:bg-gray-800 shadow-lg transform transition-transform duration-300 ease-in-out z-20 ${
+      <div className={`md:hidden fixed inset-y-0 right-0 w-64 bg-[var(--card-background)] shadow-lg transform transition-transform duration-300 ease-in-out z-40 ${
         isMenuOpen ? 'translate-x-0 pointer-events-auto' : 'translate-x-full pointer-events-none'
       }`}>
-        <div className="h-full flex flex-col pt-16 pb-3 px-3 border-l border-gray-200 dark:border-gray-700">
+        <div className="h-full flex flex-col pt-16 pb-3 px-3 border-l border-[var(--card-border)]">
           <button
-            className="absolute top-4 right-4 p-2 rounded-full bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600"
+            className="absolute top-4 right-4 p-2 rounded-full bg-[var(--card-background)] hover:bg-[var(--card-border)]"
             onClick={() => setIsMenuOpen(false)}
             aria-label="Close menu"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="h-6 w-6 text-gray-900 dark:text-gray-100"
+              className="h-6 w-6 text-[var(--text-primary)]"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -187,8 +187,8 @@ export default function Header() {
                 href={item.href}
                 className={`block px-4 py-2 rounded-md text-base font-medium ${
                   pathname === item.href
-                    ? 'bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900'
-                    : 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-600'
+                    ? 'bg-[var(--text-primary)] text-[var(--background)]'
+                    : 'bg-[var(--card-background)] text-[var(--text-primary)] hover:bg-[var(--card-border)]'
                 }`}
                 onClick={() => setIsMenuOpen(false)}
               >
@@ -197,8 +197,8 @@ export default function Header() {
             ))}
           </div>
           {user && (
-            <div className="mt-auto pt-4 border-t border-gray-200 dark:border-gray-700">
-              <span className="block px-4 py-2 text-sm text-gray-500 dark:text-gray-400">
+            <div className="mt-auto pt-4 border-t border-[var(--card-border)]">
+              <span className="block px-4 py-2 text-sm text-[var(--text-secondary)]">
                 {user.email}
               </span>
             </div>
@@ -208,7 +208,7 @@ export default function Header() {
       
       {/* Backdrop overlay when menu is open */}
       <div 
-        className={`md:hidden fixed inset-0 bg-gray-700 backdrop-blur-sm transition-opacity duration-300 ease-in-out ${
+        className={`md:hidden fixed inset-0 bg-[var(--text-primary)] backdrop-blur-sm transition-opacity duration-300 ease-in-out ${
           isMenuOpen ? 'opacity-25 z-10 pointer-events-auto' : 'opacity-0 -z-10 pointer-events-none'
         }`}
         onClick={() => setIsMenuOpen(false)}

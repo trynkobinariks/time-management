@@ -30,12 +30,12 @@ export default function ProjectCard({ project, onEditClick }: ProjectCardProps) 
             className="w-3 h-3 rounded-full mr-2 flex-shrink-0"
             style={{ backgroundColor: project.color || '#374151' }}
           />
-          <h3 className="text-sm font-medium text-gray-900 dark:text-white">
+          <h3 className="text-sm font-medium text-[var(--text-primary)]">
             {project.name}
           </h3>
         </div>
         {project.description && (
-          <p className="mt-1 text-sm text-gray-600 dark:text-gray-300">
+          <p className="mt-1 text-sm text-[var(--text-secondary)]">
             {project.description}
           </p>
         )}
@@ -43,7 +43,7 @@ export default function ProjectCard({ project, onEditClick }: ProjectCardProps) 
       <div className="flex items-center space-x-4">
         <button
           onClick={onEditClick}
-          className="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full cursor-pointer transition-colors"
+          className="p-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--card-border)] rounded-full cursor-pointer transition-colors"
           aria-label="Edit project"
           title="Edit project"
         >
@@ -53,7 +53,7 @@ export default function ProjectCard({ project, onEditClick }: ProjectCardProps) 
         </button>
         <button
           onClick={() => setShowDeleteConfirm(true)}
-          className="p-2 text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-full cursor-pointer transition-colors"
+          className="p-2 text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-full cursor-pointer transition-colors"
           aria-label="Delete project"
           title="Delete project"
         >
@@ -65,16 +65,16 @@ export default function ProjectCard({ project, onEditClick }: ProjectCardProps) 
 
       {/* Delete Confirmation Modal */}
       {showDeleteConfirm && (
-        <div className="fixed inset-0 bg-gray-700/40 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-sm w-full mx-4">
-            <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Delete Project</h3>
-            <p className="text-sm text-gray-600 dark:text-gray-300 mb-6">
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-[var(--card-background)] rounded-lg p-6 max-w-sm w-full mx-4">
+            <h3 className="text-lg font-medium text-[var(--text-primary)] mb-4">Delete Project</h3>
+            <p className="text-sm text-[var(--text-secondary)] mb-6">
               Are you sure you want to delete &ldquo;{project.name}&rdquo;? This action cannot be undone.
             </p>
             <div className="flex justify-end space-x-3">
               <button
                 onClick={() => setShowDeleteConfirm(false)}
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+                className="px-4 py-2 text-sm font-medium text-[var(--text-primary)] bg-[var(--card-background)] border border-[var(--card-border)] rounded-md hover:bg-[var(--card-border)] focus:outline-none focus:ring-2 focus:ring-[var(--card-border)]"
               >
                 Cancel
               </button>

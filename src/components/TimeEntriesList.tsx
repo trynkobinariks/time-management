@@ -34,15 +34,15 @@ function EditForm({ entry, projects, onSave, onCancel }: EditFormProps) {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-lg w-full mx-4 transform transition-all">
-        <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+      <div className="bg-[var(--card-background)] rounded-lg shadow-xl max-w-lg w-full mx-4 transform transition-all">
+        <div className="px-6 py-4 border-b border-[var(--card-border)]">
           <div className="flex justify-between items-center">
-            <h2 className="text-lg font-medium text-gray-900 dark:text-white">
+            <h2 className="text-lg font-medium text-[var(--text-primary)]">
               {t('timeEntries.editEntry')}
             </h2>
             <button
               onClick={onCancel}
-              className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
+              className="text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -53,13 +53,13 @@ function EditForm({ entry, projects, onSave, onCancel }: EditFormProps) {
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className="block text-sm font-medium text-[var(--text-primary)] mb-1">
                 {t('timeEntries.project')}
               </label>
               <select
                 value={editedEntry.project_id}
                 onChange={(e) => setEditedEntry({ ...editedEntry, project_id: e.target.value })}
-                className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white sm:text-sm transition-colors px-3 py-2"
+                className="block w-full rounded-md border-[var(--card-border)] shadow-sm focus:border-blue-500 focus:ring-blue-500 bg-[var(--card-background)] text-[var(--text-primary)] sm:text-sm transition-colors px-3 py-2"
               >
                 {projects.map((project) => (
                   <option key={project.id} value={project.id}>
@@ -70,7 +70,7 @@ function EditForm({ entry, projects, onSave, onCancel }: EditFormProps) {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className="block text-sm font-medium text-[var(--text-primary)] mb-1">
                 {t('timeEntries.hours')}
               </label>
               <div className="relative rounded-md shadow-sm">
@@ -80,10 +80,10 @@ function EditForm({ entry, projects, onSave, onCancel }: EditFormProps) {
                   min="0"
                   value={editedEntry.hours}
                   onChange={(e) => setEditedEntry({ ...editedEntry, hours: parseFloat(e.target.value) })}
-                  className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white sm:text-sm transition-colors px-3 py-2 pr-12"
+                  className="block w-full rounded-md border-[var(--card-border)] shadow-sm focus:border-blue-500 focus:ring-blue-500 bg-[var(--card-background)] text-[var(--text-primary)] sm:text-sm transition-colors px-3 py-2 pr-12"
                 />
                 <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                  <span className="text-gray-500 dark:text-gray-400 sm:text-sm">
+                  <span className="text-[var(--text-secondary)] sm:text-sm">
                     {editedEntry.hours === 1 ? t('timeEntries.hour') : t('timeEntries.hours')}
                   </span>
                 </div>
@@ -92,13 +92,13 @@ function EditForm({ entry, projects, onSave, onCancel }: EditFormProps) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label className="block text-sm font-medium text-[var(--text-primary)] mb-1">
               {t('timeEntries.description')}
             </label>
             <textarea
               value={editedEntry.description || ''}
               onChange={(e) => setEditedEntry({ ...editedEntry, description: e.target.value })}
-              className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white sm:text-sm transition-colors px-3 py-2"
+              className="block w-full rounded-md border-[var(--card-border)] shadow-sm focus:border-blue-500 focus:ring-blue-500 bg-[var(--card-background)] text-[var(--text-primary)] sm:text-sm transition-colors px-3 py-2"
               rows={3}
               placeholder={t('timeEntries.descriptionPlaceholder')}
             />
@@ -108,7 +108,7 @@ function EditForm({ entry, projects, onSave, onCancel }: EditFormProps) {
             <button
               type="button"
               onClick={onCancel}
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600 transition-colors"
+              className="px-4 py-2 text-sm font-medium text-[var(--text-primary)] bg-[var(--card-background)] border border-[var(--card-border)] rounded-md hover:bg-[var(--card-border)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
             >
               {t('common.cancel')}
             </button>
@@ -149,34 +149,34 @@ export default function TimeEntriesList({ selectedDate, timeEntries, projects, o
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm">
-      <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-        <h2 className="text-lg font-medium text-gray-900 dark:text-white">
+    <div className="bg-[var(--card-background)] rounded-lg shadow-sm">
+      <div className="px-6 py-4 border-b border-[var(--card-border)]">
+        <h2 className="text-lg font-medium text-[var(--text-primary)]">
           {t('common.calendar.days.' + format(selectedDate, 'EEEE').toLowerCase())}, {t('common.calendar.months.' + format(selectedDate, 'MMMM').toLowerCase())} {format(selectedDate, 'd, yyyy')}
         </h2>
       </div>
 
       {timeEntries.length === 0 ? (
-        <div className="px-6 py-4 text-center text-gray-500 dark:text-gray-400">
+        <div className="px-6 py-4 text-center text-[var(--text-secondary)]">
           {t('timeEntries.noTimeEntriesForThisDate')}
         </div>
       ) : (
-        <div className="divide-y divide-gray-100 dark:divide-gray-700">
+        <div className="divide-y divide-[var(--card-border)]">
           {timeEntries.map(entry => (
             <div key={entry.id} className="px-6 py-4">
               <div className="flex justify-between items-start">
                 <div>
-                  <h3 className="text-sm font-medium text-gray-900 dark:text-white">
+                  <h3 className="text-sm font-medium text-[var(--text-primary)]">
                     {getProjectName(entry.project_id)}
                   </h3>
                   {entry.description && (
-                    <p className="mt-1 text-sm text-gray-600 dark:text-gray-300">
+                    <p className="mt-1 text-sm text-[var(--text-secondary)]">
                       {entry.description}
                     </p>
                   )}
                 </div>
                 <div className="flex items-center space-x-2">
-                  <span className="text-sm font-medium text-gray-700 dark:text-gray-200 whitespace-nowrap">
+                  <span className="text-sm font-medium text-[var(--text-primary)] whitespace-nowrap">
                     {entry.hours} {entry.hours === 1 ? t('timeEntries.hour') : t('timeEntries.hours')}
                   </span>
                   <button
@@ -204,10 +204,10 @@ export default function TimeEntriesList({ selectedDate, timeEntries, projects, o
             </div>
           ))}
 
-          <div className="px-6 py-4 flex items-center justify-between bg-gray-50 dark:bg-gray-700">
+          <div className="px-6 py-4 flex items-center justify-between bg-[var(--card-border)]">
             <div className="flex items-center space-x-4">
               <span className="w-8"></span>
-              <span className="text-sm font-medium text-gray-900 dark:text-white">
+              <span className="text-sm font-medium text-[var(--text-primary)]">
                 {t('timeEntries.totalHours')}
               </span>
             </div>
@@ -215,7 +215,7 @@ export default function TimeEntriesList({ selectedDate, timeEntries, projects, o
             <div className="flex-1 mx-8"></div>
 
             <div className="flex items-center space-x-4">
-              <span className="text-lg font-semibold text-gray-900 dark:text-white">
+              <span className="text-lg font-semibold text-[var(--text-primary)]">
                 {timeEntries.reduce((sum, entry) => sum + entry.hours, 0).toFixed(1)} {t('timeEntries.hours')}
               </span>
               <span className="w-16"></span>

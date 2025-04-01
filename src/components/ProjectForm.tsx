@@ -96,7 +96,7 @@ export default function ProjectForm({ project, onSuccess, onCancel }: ProjectFor
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1 cursor-pointer">
+        <label htmlFor="name" className="block text-sm font-medium text-[var(--text-primary)] mb-1 cursor-pointer">
           {t('projects.popup.name')}
         </label>
         <input
@@ -106,8 +106,8 @@ export default function ProjectForm({ project, onSuccess, onCancel }: ProjectFor
           value={formData.name}
           onChange={handleChange}
           className={`w-full rounded-md border ${
-            errors.name ? 'border-red-500 dark:border-red-400' : 'border-gray-300 dark:border-gray-600'
-          } px-3 py-2 text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-700 focus:outline-none focus:ring-1 focus:ring-gray-500 dark:focus:ring-gray-400 cursor-text`}
+            errors.name ? 'border-red-500' : 'border-[var(--card-border)]'
+          } px-3 py-2 text-[var(--text-primary)] bg-[var(--card-background)] focus:outline-none focus:ring-1 focus:ring-[var(--card-border)] cursor-text`}
           placeholder={t('projects.popup.namePlaceholder')}
         />
         {errors.name && (
@@ -116,7 +116,7 @@ export default function ProjectForm({ project, onSuccess, onCancel }: ProjectFor
       </div>
 
       <div>
-        <label htmlFor="description" className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1 cursor-pointer">
+        <label htmlFor="description" className="block text-sm font-medium text-[var(--text-primary)] mb-1 cursor-pointer">
           {t('projects.popup.description')}
         </label>
         <textarea
@@ -125,13 +125,13 @@ export default function ProjectForm({ project, onSuccess, onCancel }: ProjectFor
           value={formData.description}
           onChange={handleChange}
           rows={3}
-          className="w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-700 focus:outline-none focus:ring-1 focus:ring-gray-500 dark:focus:ring-gray-400 cursor-text"
+          className="w-full rounded-md border border-[var(--card-border)] px-3 py-2 text-[var(--text-primary)] bg-[var(--card-background)] focus:outline-none focus:ring-1 focus:ring-[var(--card-border)] cursor-text"
           placeholder={t('projects.popup.descriptionPlaceholder')}
         />
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1 cursor-pointer">
+        <label className="block text-sm font-medium text-[var(--text-primary)] mb-1 cursor-pointer">
           {t('projects.popup.color')}
         </label>
         <div className="flex flex-wrap gap-2">
@@ -141,7 +141,7 @@ export default function ProjectForm({ project, onSuccess, onCancel }: ProjectFor
               type="button"
               onClick={() => handleColorChange(color)}
               className={`w-8 h-8 rounded-full border-2 transition-all cursor-pointer ${
-                formData.color === color ? 'border-gray-900 dark:border-white scale-110' : 'border-transparent hover:scale-105'
+                formData.color === color ? 'border-[var(--text-primary)] scale-110' : 'border-transparent hover:scale-105'
               }`}
               style={{ backgroundColor: color }}
             />
@@ -153,13 +153,13 @@ export default function ProjectForm({ project, onSuccess, onCancel }: ProjectFor
         <button
           type="button"
           onClick={onCancel}
-          className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 dark:focus:ring-gray-400 cursor-pointer"
+          className="px-4 py-2 text-sm font-medium text-[var(--text-primary)] bg-[var(--card-background)] border border-[var(--card-border)] rounded-md hover:bg-[var(--card-border)] focus:outline-none focus:ring-2 focus:ring-[var(--card-border)] cursor-pointer"
         >
           {t('projects.popup.cancel')}
         </button>
         <button
           type="submit"
-          className="px-4 py-2 text-sm font-medium text-white bg-gray-900 dark:bg-gray-700 border border-transparent rounded-md hover:bg-gray-800 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 dark:focus:ring-gray-400 cursor-pointer"
+          className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 cursor-pointer"
         >
           {project ? t('projects.popup.update') : t('projects.popup.create')}
         </button>

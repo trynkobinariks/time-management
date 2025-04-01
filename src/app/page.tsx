@@ -48,22 +48,22 @@ export default function Dashboard() {
   }, [setShowWelcomePopup]);
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-7xl">
+    <div className="container mx-auto px-4 py-8 max-w-7xl pb-32">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-medium text-gray-800 dark:text-white text-center w-full lg:text-left lg:w-auto">{t('welcome.title')}</h1>
+        <h1 className="text-2xl font-medium text-[var(--text-primary)] text-center w-full lg:text-left lg:w-auto">{t('welcome.title')}</h1>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Calendar Section */}
         <div className="lg:col-span-4">
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
+          <div className="bg-[var(--card-background)] rounded-lg shadow-sm p-6">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-lg font-medium text-gray-900 dark:text-white">
+              <h2 className="text-lg font-medium text-[var(--text-primary)]">
                 {getMonthTranslation(selectedDate)} {format(selectedDate, 'yyyy')}
               </h2>
               <button
                 onClick={() => setSelectedDate(new Date())}
-                className="px-3 py-1 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md transition-colors cursor-pointer"
+                className="px-3 py-1 text-sm font-medium text-[var(--text-primary)] hover:bg-[var(--card-border)] rounded-md transition-colors cursor-pointer"
               >
                 {t('common.today')}
               </button>
@@ -74,7 +74,7 @@ export default function Dashboard() {
               {['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'].map((day) => (
                 <div
                   key={day}
-                  className="text-center text-sm font-medium text-gray-500 dark:text-gray-400 mb-2"
+                  className="text-center text-sm font-medium text-[var(--text-secondary)] mb-2"
                 >
                   {t(`common.calendar.days.${day}`)}
                 </div>
@@ -95,14 +95,24 @@ export default function Dashboard() {
                     className={`cursor-pointer
                       h-10 w-10 rounded-full flex items-center justify-center text-sm relative
                       ${isSameDay(day, selectedDate)
-                        ? 'bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900'
+                        ? 'bg-blue-600 text-white hover:bg-blue-700'
                         : isToday(day)
-                          ? 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100'
+                          ? hasEntries
+                            ? 'bg-[var(--text-primary)] text-[var(--background)] hover:bg-[var(--text-primary)]'
+                            : 'bg-[var(--card-border)] text-[var(--text-primary)] hover:bg-[var(--card-border)]'
                           : isCurrentMonth
-                            ? 'text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700'
-                            : 'text-gray-400 dark:text-gray-500'
+                            ? hasEntries
+                              ? 'bg-[var(--text-primary)] text-[var(--background)] hover:bg-[var(--text-primary)]'
+                              : 'text-[var(--text-primary)] hover:bg-[var(--card-border)]'
+                            : hasEntries
+                              ? 'bg-[var(--text-primary)] text-[var(--background)] hover:bg-[var(--text-primary)]'
+                              : 'text-[var(--text-secondary)] hover:bg-[var(--card-border)]'
                       }
-                      ${hasEntries ? `after:content-[''] after:absolute after:bottom-1 after:w-1.5 after:h-1.5 after:rounded-full ${isSameDay(day, selectedDate) ? 'bg-white dark:bg-gray-300' : 'bg-gray-700 dark:bg-gray-500'}` : ''}
+                      ${hasEntries ? `after:content-[''] after:absolute after:bottom-1 after:w-1.5 after:h-1.5 after:rounded-full ${
+                        isSameDay(day, selectedDate) 
+                          ? 'bg-white' 
+                          : 'bg-[var(--background)]'
+                      }` : ''}
                     `}
                   >
                     {format(day, 'd')}
@@ -115,8 +125,8 @@ export default function Dashboard() {
 
         {/* Voice Entry Section */}
         <div className="lg:col-span-3">
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
-            <h2 className="text-lg text-center font-medium text-gray-900 dark:text-white mb-4">
+          <div className="bg-[var(--card-background)] rounded-lg shadow-sm p-6">
+            <h2 className="text-lg text-center font-medium text-[var(--text-primary)] mb-4">
               {t('timeEntries.quickTimeEntry')}
             </h2>
             <VoiceTimeEntry />

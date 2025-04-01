@@ -58,15 +58,15 @@ function LoginContent() {
   };
 
   return (
-    <div className="min-h-[calc(100vh-53px-env(safe-area-inset-top))] flex items-center justify-center bg-gray-900 px-4 sm:px-6 lg:px-8 pb-env(safe-area-inset-bottom) auth-background">
+    <div className="min-h-[calc(100vh-53px-env(safe-area-inset-top))] flex items-center justify-center bg-white dark:bg-[var(--background)] px-4 sm:px-6 lg:px-8 pb-env(safe-area-inset-bottom) auth-background">
       <AuthBackground />
-      <div className="max-w-md w-full space-y-6 auth-card bg-gray-800 p-8 rounded-lg shadow-xl">
+      <div className="max-w-md w-full space-y-6 auth-card bg-white dark:bg-[var(--card-background)] p-8 rounded-lg shadow-xl border border-gray-200 dark:border-[var(--card-border)]">
         <div className="flex flex-col items-center">
           <Logo size="lg" className="mb-4" />
-          <h2 className="text-center text-3xl font-medium text-white">
+          <h2 className="text-center text-3xl font-medium text-gray-900 dark:text-[var(--text-primary)]">
             {t('auth.login.title')}
           </h2>
-          <p className="mt-2 text-center text-sm text-gray-300">
+          <p className="mt-2 text-center text-sm text-gray-600 dark:text-[var(--text-secondary)]">
             {t('auth.login.createAccount')}
           </p>
         </div>
@@ -96,7 +96,7 @@ function LoginContent() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-600 bg-gray-700 placeholder-gray-400 text-white rounded-t-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 dark:border-[var(--card-border)] bg-white dark:bg-[var(--card-background)] placeholder-gray-500 dark:placeholder-[var(--text-secondary)] text-gray-900 dark:text-[var(--text-primary)] rounded-t-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder={t('auth.login.email')}
                 disabled={loading}
               />
@@ -110,13 +110,13 @@ function LoginContent() {
               placeholder={t('auth.login.password')}
               disabled={loading}
               rounded="bottom"
-              className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-600 bg-gray-700 placeholder-gray-400 text-white rounded-b-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 dark:border-[var(--card-border)] bg-white dark:bg-[var(--card-background)] placeholder-gray-500 dark:placeholder-[var(--text-secondary)] text-gray-900 dark:text-[var(--text-primary)] rounded-b-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
 
           <div className="flex items-center justify-between">
             <div className="text-sm">
-              <Link href="/auth/reset-password" className="font-medium text-blue-400 hover:text-blue-300">
+              <Link href="/auth/reset-password" className="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300">
                 {t('auth.login.forgotPassword')}
               </Link>
             </div>
@@ -127,7 +127,7 @@ function LoginContent() {
               type="submit"
               disabled={loading}
               className={`group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white ${
-                loading ? 'bg-gray-600' : 'bg-blue-600 hover:bg-blue-700'
+                loading ? 'bg-gray-400 dark:bg-[var(--card-border)]' : 'bg-blue-600 hover:bg-blue-700'
               }`}
             >
               {loading ? t('auth.login.signingIn') : t('auth.login.signIn')}
@@ -142,7 +142,7 @@ function LoginContent() {
 export default function LoginPage() {
   const { t } = useClientTranslation();
   return (
-    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">{t('auth.loading')}</div>}>
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center text-[var(--text-primary)]">{t('auth.loading')}</div>}>
       <LoginContent />
     </Suspense>
   );

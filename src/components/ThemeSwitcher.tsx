@@ -1,35 +1,41 @@
 'use client';
-
 import { useEffect, useState } from 'react';
 
 export default function ThemeSwitcher() {
-  const [mounted, setMounted] = useState(false);
+  const [isDark, setIsDark] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
+    // Check initial theme from localStorage or system preference
+    const savedTheme = localStorage.getItem('theme');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    setIsDark(savedTheme === 'dark' || (!savedTheme && prefersDark));
   }, []);
 
+  useEffect(() => {
+    // Update HTML class and localStorage when theme changes
+    if (isDark) {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
+    }
+  }, [isDark]);
+
   const toggleTheme = () => {
-    document.documentElement.classList.toggle('dark');
+    setIsDark(!isDark);
   };
-
-  // Prevent hydration mismatch
-  if (!mounted) {
-    return null;
-  }
-
-  const isDark = document.documentElement.classList.contains('dark');
 
   return (
     <button
       onClick={toggleTheme}
-      className="p-2 rounded-full bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+      className="p-2 rounded-full bg-[var(--card-background)] hover:bg-[var(--card-border)] transition-colors duration-200"
       aria-label={`Switch to ${isDark ? 'light' : 'dark'} theme`}
     >
       {isDark ? (
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          className="h-5 w-5 text-gray-900 dark:text-gray-100"
+          className="h-5 w-5 text-[var(--text-primary)]"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -44,7 +50,7 @@ export default function ThemeSwitcher() {
       ) : (
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          className="h-5 w-5 text-gray-900 dark:text-gray-100"
+          className="h-5 w-5 text-[var(--text-primary)]"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
