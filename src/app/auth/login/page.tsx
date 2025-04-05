@@ -48,7 +48,16 @@ function LoginContent() {
         setError('Failed to sign in. Please check your credentials.');
         return;
       }
-      router.push('/');
+      
+      // Set flag in sessionStorage to indicate successful login
+      if (typeof window !== 'undefined') {
+        sessionStorage.setItem('justLoggedIn', 'true');
+      }
+      
+      // Add a small delay before redirect to ensure auth state is fully propagated
+      setTimeout(() => {
+        router.push('/');
+      }, 500);
     } catch (error) {
       setError('An unexpected error occurred');
       console.error('Login error:', error);
