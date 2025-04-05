@@ -9,9 +9,9 @@ interface LanguageSwitcherProps {
 
 export default function LanguageSwitcher({ language, setLanguage, disabled = false }: LanguageSwitcherProps) {
   return (
-    <div className="relative inline-flex rounded-lg border border-[var(--card-border)] p-1 bg-[var(--card-border)]">
+    <div className="relative inline-flex rounded-2xl border border-[var(--card-border)] p-1 bg-[var(--card-border)]">
       <div 
-        className={`absolute h-[calc(100%-8px)] w-[calc(50%-2px)] bg-[var(--card-background)] rounded-md shadow-sm transition-all duration-300 ease-in-out ${
+        className={`absolute h-[calc(100%-8px)] w-[calc(50%-3px)] bg-[var(--card-background)] rounded-xl shadow-sm transition-all duration-300 ease-in-out ${
           language === 'uk-UA' ? 'translate-x-[94%]' : ''
         }`}
       />

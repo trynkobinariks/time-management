@@ -35,7 +35,7 @@ export default function VoiceTimeEntry() {
   // Process voice input when user stops speaking
   useEffect(() => {
     const processVoiceInput = async () => {
-      if (status === 'processing' && text.trim()) {
+      if (!isListening && text.trim() && !isProcessing && (status === 'inactive' || status === 'processing')) {
         setIsProcessing(true);
         setError(null);
         
@@ -67,16 +67,50 @@ export default function VoiceTimeEntry() {
     };
     
     processVoiceInput();
-  }, [status, text, projects, addTimeEntry, resetText, language]);
+  }, [isListening, text, projects, addTimeEntry, resetText, language, status, isProcessing]);
 
   // Set the recording date when starting to listen
   const handleStartListening = () => {
+    setError(null);
+    // Clear previous text when starting a new recording
+    if (!isListening) {
+      resetText();
+    }
     startListening(language as RecognitionLanguage);
   };
 
-  // Clear the recording date when stopping
+  // Process the text when stopping
   const handleStopListening = () => {
     stopListening();
+    // Force processing by calling it directly to ensure it gets processed
+    if (text.trim() && !isProcessing) {
+      setIsProcessing(true);
+      parseVoiceInput(text, projects, language)
+        .then(parsedData => {
+          if (parsedData) {
+            const project = projects.find(p => p.name === parsedData.project_name);
+            if (project) {
+              addTimeEntry({
+                project_id: project.id,
+                date: parsedData.date,
+                hours: parsedData.hours,
+                description: parsedData.description || '',
+              });
+              resetText();
+            } else {
+              setError('Project not found. Please try again with a valid project name.');
+            }
+          } else {
+            setError('Could not parse your input. Please try again with a clearer description of your time entry.');
+          }
+        })
+        .catch(err => {
+          setError(err instanceof Error ? err.message : 'An unknown error occurred');
+        })
+        .finally(() => {
+          setIsProcessing(false);
+        });
+    }
   };
   
   if (!isClient) {

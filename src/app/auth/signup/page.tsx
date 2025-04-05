@@ -89,7 +89,6 @@ export default function SignUpPage() {
             {t('auth.signup.title')}
           </h2>
           <p className="mt-2 text-center text-sm text-[var(--text-secondary)]">
-            {t('auth.login.createAccount')}{' '}
             <Link href="/auth/login" className="font-medium text-blue-400 hover:text-blue-300">
               {t('auth.login.signIn')}
             </Link>
