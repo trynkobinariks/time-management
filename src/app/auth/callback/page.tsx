@@ -9,11 +9,11 @@ import Logo from '@/components/Logo';
 function AuthBackground() {
   return (
     <>
-      <div className="auth-triangle auth-triangle-1"></div>
-      <div className="auth-triangle auth-triangle-2"></div>
-      <div className="auth-triangle auth-triangle-3"></div>
-      <div className="auth-triangle auth-triangle-4"></div>
-      <div className="auth-triangle auth-triangle-5"></div>
+      <div className="auth-triangle auth-triangle-1 z-0"></div>
+      <div className="auth-triangle auth-triangle-2 z-0"></div>
+      <div className="auth-triangle auth-triangle-3 z-0"></div>
+      <div className="auth-triangle auth-triangle-4 z-0"></div>
+      <div className="auth-triangle auth-triangle-5 z-0"></div>
     </>
   );
 }
@@ -70,7 +70,7 @@ function AuthCallbackContent() {
   return (
     <div className="min-h-[calc(100vh-env(safe-area-inset-top))] flex items-center justify-center bg-gray-900 pb-env(safe-area-inset-bottom) auth-background">
       <AuthBackground />
-      <div className="p-4 max-w-md w-full auth-card">
+      <div className="p-4 max-w-md w-full auth-card relative z-10">
         <div className="flex flex-col items-center">
           <Logo size="lg" className="mb-4" />
           <h2 className="text-center text-3xl font-medium text-white">
@@ -91,7 +91,7 @@ export default function AuthCallbackPage() {
       fallback={
         <div className="min-h-[calc(100vh-env(safe-area-inset-top))] flex items-center justify-center bg-gray-900 pb-env(safe-area-inset-bottom) auth-background">
           <AuthBackground />
-          <div className="p-4 max-w-md w-full auth-card">
+          <div className="p-4 max-w-md w-full auth-card relative z-10">
             <div className="flex flex-col items-center">
               <Logo size="lg" className="mb-4" />
               <h2 className="text-center text-3xl font-medium text-white">
