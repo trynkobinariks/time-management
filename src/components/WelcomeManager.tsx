@@ -29,8 +29,6 @@ export default function WelcomeManager() {
   }, [showWelcomePopup, setShowWelcomePopup]);
 
   return (
-    <>
-      {showWelcomePopup && <WelcomePopup onClose={handleCloseWelcome} />}
-    </>
+    <>{showWelcomePopup && <WelcomePopup onClose={handleCloseWelcome} />}</>
   );
-} 
+}

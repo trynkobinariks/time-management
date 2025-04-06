@@ -1,7 +1,8 @@
 import React, { useState, InputHTMLAttributes } from 'react';
 import PasswordToggle from './PasswordToggle';
 
-interface PasswordInputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'type'> {
+interface PasswordInputProps
+  extends Omit<InputHTMLAttributes<HTMLInputElement>, 'type'> {
   id: string;
   label: string;
   value: string;
@@ -54,7 +55,7 @@ export default function PasswordInput({
       <input
         id={id}
         name={id}
-        type={showPassword ? "text" : "password"}
+        type={showPassword ? 'text' : 'password'}
         autoComplete={autoComplete}
         required
         value={value}
@@ -64,10 +65,10 @@ export default function PasswordInput({
         disabled={disabled}
         {...props}
       />
-      <PasswordToggle 
-        showPassword={showPassword} 
-        onToggle={togglePasswordVisibility} 
+      <PasswordToggle
+        showPassword={showPassword}
+        onToggle={togglePasswordVisibility}
       />
     </div>
   );
-} 
+}

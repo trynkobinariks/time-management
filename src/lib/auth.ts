@@ -35,8 +35,12 @@ export async function signIn(email: string, password: string) {
     // Enhanced error handling with more specific messages
     if (err instanceof Error) {
       if (err.message === 'Failed to fetch') {
-        console.error('Network error connecting to Supabase. Check your internet connection and Supabase URL.');
-        throw new Error('Network error connecting to authentication service. Please check your internet connection and try again.');
+        console.error(
+          'Network error connecting to Supabase. Check your internet connection and Supabase URL.',
+        );
+        throw new Error(
+          'Network error connecting to authentication service. Please check your internet connection and try again.',
+        );
       }
     }
     throw err;
@@ -74,7 +78,10 @@ export async function updatePassword(password: string) {
 }
 
 export async function getSession() {
-  const { data: { session }, error } = await supabase.auth.getSession();
+  const {
+    data: { session },
+    error,
+  } = await supabase.auth.getSession();
   if (error) {
     console.error('Get session error:', error);
     throw error;
@@ -83,10 +90,13 @@ export async function getSession() {
 }
 
 export async function getUser() {
-  const { data: { user }, error } = await supabase.auth.getUser();
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.getUser();
   if (error) {
     console.error('Get user error:', error);
     throw error;
   }
   return user;
-} 
+}

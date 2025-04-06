@@ -10,10 +10,14 @@ interface ProjectContextType {
   projects: Project[];
   timeEntries: TimeEntry[];
   selectedDate: Date;
-  addProject: (project: Omit<Project, 'id' | 'created_at' | 'updated_at' | 'user_id'>) => Promise<void>;
+  addProject: (
+    project: Omit<Project, 'id' | 'created_at' | 'updated_at' | 'user_id'>,
+  ) => Promise<void>;
   updateProject: (project: Project) => Promise<void>;
   deleteProject: (projectId: string) => Promise<void>;
-  addTimeEntry: (entry: Omit<TimeEntry, 'id' | 'created_at' | 'updated_at' | 'user_id'>) => Promise<void>;
+  addTimeEntry: (
+    entry: Omit<TimeEntry, 'id' | 'created_at' | 'updated_at' | 'user_id'>,
+  ) => Promise<void>;
   updateTimeEntry: (entry: TimeEntry) => Promise<void>;
   deleteTimeEntry: (entryId: string) => Promise<void>;
   setSelectedDate: (date: Date) => void;
@@ -40,18 +44,22 @@ export function ProjectProvider({ children }: ProjectProviderProps) {
   const [user, setUser] = useState<User | null>(null);
   const supabase = createBrowserClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '',
   );
 
   // Get and subscribe to auth state
   useEffect(() => {
     const getUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       setUser(user);
     };
     getUser();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
     });
 
@@ -77,7 +85,11 @@ export function ProjectProvider({ children }: ProjectProviderProps) {
         const monthStart = new Date(selectedYear, selectedMonth, 1);
         const monthEnd = new Date(selectedYear, selectedMonth + 1, 0);
 
-        const timeEntriesData = await db.getTimeEntries(user.id, monthStart, monthEnd);
+        const timeEntriesData = await db.getTimeEntries(
+          user.id,
+          monthStart,
+          monthEnd,
+        );
         setTimeEntries(timeEntriesData);
       } catch (error) {
         console.error('Error loading data:', error);
@@ -87,7 +99,9 @@ export function ProjectProvider({ children }: ProjectProviderProps) {
     loadData();
   }, [user, selectedDate]);
 
-  const addProject = async (project: Omit<Project, 'id' | 'created_at' | 'updated_at' | 'user_id'>) => {
+  const addProject = async (
+    project: Omit<Project, 'id' | 'created_at' | 'updated_at' | 'user_id'>,
+  ) => {
     if (!user) return;
 
     try {
@@ -103,8 +117,14 @@ export function ProjectProvider({ children }: ProjectProviderProps) {
     if (!user) return;
 
     try {
-      const updatedProject = await db.updateProject(user.id, project.id, project);
-      setProjects(projects.map(p => p.id === project.id ? updatedProject : p));
+      const updatedProject = await db.updateProject(
+        user.id,
+        project.id,
+        project,
+      );
+      setProjects(
+        projects.map(p => (p.id === project.id ? updatedProject : p)),
+      );
     } catch (error) {
       console.error('Error updating project:', error);
       throw error;
@@ -124,7 +144,9 @@ export function ProjectProvider({ children }: ProjectProviderProps) {
     }
   };
 
-  const addTimeEntry = async (entry: Omit<TimeEntry, 'id' | 'created_at' | 'updated_at' | 'user_id'>) => {
+  const addTimeEntry = async (
+    entry: Omit<TimeEntry, 'id' | 'created_at' | 'updated_at' | 'user_id'>,
+  ) => {
     if (!user) return;
 
     try {
@@ -141,7 +163,9 @@ export function ProjectProvider({ children }: ProjectProviderProps) {
 
     try {
       const updatedEntry = await db.updateTimeEntry(user.id, entry.id, entry);
-      setTimeEntries(timeEntries.map(t => t.id === entry.id ? updatedEntry : t));
+      setTimeEntries(
+        timeEntries.map(t => (t.id === entry.id ? updatedEntry : t)),
+      );
     } catch (error) {
       console.error('Error updating time entry:', error);
       throw error;
@@ -174,8 +198,6 @@ export function ProjectProvider({ children }: ProjectProviderProps) {
   };
 
   return (
-    <ProjectContext.Provider value={value}>
-      {children}
-    </ProjectContext.Provider>
+    <ProjectContext.Provider value={value}>{children}</ProjectContext.Provider>
   );
-} 
+}

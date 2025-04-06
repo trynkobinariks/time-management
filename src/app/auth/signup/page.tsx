@@ -41,7 +41,9 @@ export default function SignUpPage() {
       }
       setSuccess(true);
     } catch (error) {
-      setError(error instanceof Error ? error.message : 'An unexpected error occurred');
+      setError(
+        error instanceof Error ? error.message : 'An unexpected error occurred',
+      );
     } finally {
       setLoading(false);
     }
@@ -58,19 +60,16 @@ export default function SignUpPage() {
               {t('auth.signup.checkEmail')}
             </h2>
             <div className="mt-4 text-center text-sm text-[var(--text-secondary)] space-y-4">
-              <p>
-                {t('auth.signup.verificationSent')}
-              </p>
-              <p className="font-medium">
-                {t('auth.signup.autoRedirect')}
-              </p>
-              <p className="text-xs">
-                {t('auth.signup.spamNote')}
-              </p>
+              <p>{t('auth.signup.verificationSent')}</p>
+              <p className="font-medium">{t('auth.signup.autoRedirect')}</p>
+              <p className="text-xs">{t('auth.signup.spamNote')}</p>
             </div>
           </div>
           <div className="text-center">
-            <Link href="/auth/login" className="font-medium text-[var(--text-primary)] hover:text-[var(--text-secondary)]">
+            <Link
+              href="/auth/login"
+              className="font-medium text-[var(--text-primary)] hover:text-[var(--text-secondary)]"
+            >
               {t('auth.signup.returnToLogin')}
             </Link>
           </div>
@@ -89,7 +88,10 @@ export default function SignUpPage() {
             {t('auth.signup.title')}
           </h2>
           <p className="mt-2 text-center text-sm text-[var(--text-secondary)]">
-            <Link href="/auth/login" className="font-medium text-blue-400 hover:text-blue-300">
+            <Link
+              href="/auth/login"
+              className="font-medium text-blue-400 hover:text-blue-300"
+            >
               {t('auth.login.signIn')}
             </Link>
           </p>
@@ -107,7 +109,7 @@ export default function SignUpPage() {
                 autoComplete="email"
                 required
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={e => setEmail(e.target.value)}
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-[var(--card-border)] bg-[var(--card-background)] placeholder-[var(--text-secondary)] text-[var(--text-primary)] rounded-t-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder={t('auth.login.email')}
               />
@@ -116,7 +118,7 @@ export default function SignUpPage() {
               id="password"
               label={t('auth.login.password')}
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={e => setPassword(e.target.value)}
               autoComplete="new-password"
               placeholder={t('auth.login.password')}
               disabled={loading}
@@ -140,7 +142,9 @@ export default function SignUpPage() {
               type="submit"
               disabled={loading}
               className={`group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white ${
-                loading ? 'bg-[var(--card-border)]' : 'bg-blue-600 hover:bg-blue-700'
+                loading
+                  ? 'bg-[var(--card-border)]'
+                  : 'bg-blue-600 hover:bg-blue-700'
               }`}
             >
               {loading ? t('auth.loading') : t('auth.signup.createAccount')}
@@ -150,4 +154,4 @@ export default function SignUpPage() {
       </div>
     </div>
   );
-} 
+}

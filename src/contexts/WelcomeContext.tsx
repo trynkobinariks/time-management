@@ -30,7 +30,7 @@ export function WelcomeProvider({ children }: WelcomeProviderProps) {
       try {
         // Try to get the flag from session storage first
         let shouldShowPopup = sessionStorage.getItem('justLoggedIn') === 'true';
-        
+
         // If not found in session storage, check localStorage as backup
         if (!shouldShowPopup) {
           const welcomeTimestamp = localStorage.getItem('showWelcome');
@@ -77,4 +77,4 @@ export function WelcomeProvider({ children }: WelcomeProviderProps) {
       {children}
     </WelcomeContext.Provider>
   );
-} 
+}

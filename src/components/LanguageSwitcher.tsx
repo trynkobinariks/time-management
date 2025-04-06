@@ -7,10 +7,14 @@ interface LanguageSwitcherProps {
   disabled?: boolean;
 }
 
-export default function LanguageSwitcher({ language, setLanguage, disabled = false }: LanguageSwitcherProps) {
+export default function LanguageSwitcher({
+  language,
+  setLanguage,
+  disabled = false,
+}: LanguageSwitcherProps) {
   return (
     <div className="relative inline-flex rounded-2xl border border-[var(--card-border)] p-1 bg-[var(--card-border)]">
-      <div 
+      <div
         className={`absolute h-[calc(100%-8px)] w-[calc(50%-3px)] bg-[var(--card-background)] rounded-xl shadow-sm transition-all duration-300 ease-in-out ${
           language === 'uk-UA' ? 'translate-x-[94%]' : ''
         }`}
@@ -41,4 +45,4 @@ export default function LanguageSwitcher({ language, setLanguage, disabled = fal
       </button>
     </div>
   );
-} 
+}

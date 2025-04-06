@@ -48,12 +48,12 @@ function LoginContent() {
         setError('Failed to sign in. Please check your credentials.');
         return;
       }
-      
+
       // Set flag in sessionStorage to indicate successful login
       if (typeof window !== 'undefined') {
         sessionStorage.setItem('justLoggedIn', 'true');
       }
-      
+
       // Add a small delay before redirect to ensure auth state is fully propagated
       setTimeout(() => {
         router.push('/');
@@ -76,7 +76,10 @@ function LoginContent() {
             {t('auth.login.title')}
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600 dark:text-[var(--text-secondary)]">
-            <Link href="/auth/signup" className="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300">
+            <Link
+              href="/auth/signup"
+              className="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300"
+            >
               {t('auth.login.createAccount')}
             </Link>
           </p>
@@ -87,7 +90,9 @@ function LoginContent() {
             <div className="rounded-md bg-red-900/50 p-4">
               <div className="flex">
                 <div className="ml-3">
-                  <h3 className="text-sm font-medium text-red-200">{t('auth.login.error')}</h3>
+                  <h3 className="text-sm font-medium text-red-200">
+                    {t('auth.login.error')}
+                  </h3>
                   <div className="mt-2 text-sm text-red-100">{error}</div>
                 </div>
               </div>
@@ -106,7 +111,7 @@ function LoginContent() {
                 autoComplete="email"
                 required
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={e => setEmail(e.target.value)}
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 dark:border-[var(--card-border)] bg-white dark:bg-[var(--card-background)] placeholder-gray-500 dark:placeholder-[var(--text-secondary)] text-gray-900 dark:text-[var(--text-primary)] rounded-t-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder={t('auth.login.email')}
                 disabled={loading}
@@ -116,7 +121,7 @@ function LoginContent() {
               id="password"
               label={t('auth.login.password')}
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={e => setPassword(e.target.value)}
               autoComplete="current-password"
               placeholder={t('auth.login.password')}
               disabled={loading}
@@ -127,7 +132,10 @@ function LoginContent() {
 
           <div className="flex items-center justify-between">
             <div className="text-sm">
-              <Link href="/auth/reset-password" className="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300">
+              <Link
+                href="/auth/reset-password"
+                className="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300"
+              >
                 {t('auth.login.forgotPassword')}
               </Link>
             </div>
@@ -138,7 +146,9 @@ function LoginContent() {
               type="submit"
               disabled={loading}
               className={`group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white cursor-pointer ${
-                loading ? 'bg-gray-400 dark:bg-[var(--card-border)]' : 'bg-blue-600 hover:bg-blue-700'
+                loading
+                  ? 'bg-gray-400 dark:bg-[var(--card-border)]'
+                  : 'bg-blue-600 hover:bg-blue-700'
               }`}
             >
               {loading ? t('auth.login.signingIn') : t('auth.login.signIn')}
@@ -153,8 +163,14 @@ function LoginContent() {
 export default function LoginPage() {
   const { t } = useClientTranslation();
   return (
-    <Suspense fallback={<div className="min-h-screen flex items-center justify-center text-[var(--text-primary)]">{t('auth.loading')}</div>}>
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center text-[var(--text-primary)]">
+          {t('auth.loading')}
+        </div>
+      }
+    >
       <LoginContent />
     </Suspense>
   );
-} 
+}

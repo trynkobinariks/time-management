@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { RecognitionLanguage } from '@/lib/speechRecognition';
@@ -8,12 +8,16 @@ interface LanguageContextType {
   setLanguage: (lang: RecognitionLanguage) => void;
 }
 
-const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
+const LanguageContext = createContext<LanguageContextType | undefined>(
+  undefined,
+);
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
   const [language, setLanguage] = useState<RecognitionLanguage>(() => {
     if (typeof window !== 'undefined') {
-      return (localStorage.getItem('language') as RecognitionLanguage) || 'en-US';
+      return (
+        (localStorage.getItem('language') as RecognitionLanguage) || 'en-US'
+      );
     }
     return 'en-US';
   });
@@ -35,4 +39,4 @@ export function useLanguage() {
     throw new Error('useLanguage must be used within a LanguageProvider');
   }
   return context;
-} 
+}

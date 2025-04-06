@@ -28,14 +28,15 @@ function AuthCallbackContent() {
         // Get the auth code from the URL
         const code = searchParams.get('code');
         const next = searchParams.get('next') || '/';
-        
+
         if (!code) {
           throw new Error('No code found in URL');
         }
 
         // Exchange the code for a session
-        const { data, error } = await supabase.auth.exchangeCodeForSession(code);
-        
+        const { data, error } =
+          await supabase.auth.exchangeCodeForSession(code);
+
         if (error) {
           throw error;
         }
@@ -47,10 +48,10 @@ function AuthCallbackContent() {
         // Once the session is established, redirect to the destination
         // No need to manually set the session as exchangeCodeForSession already does that
         router.push(next);
-
       } catch (error) {
         console.error('Auth callback error:', error);
-        const errorMessage = error instanceof Error ? error.message : 'Failed to verify email';
+        const errorMessage =
+          error instanceof Error ? error.message : 'Failed to verify email';
         router.push(`/auth/login?error=${encodeURIComponent(errorMessage)}`);
       }
     };
@@ -83,20 +84,22 @@ function AuthCallbackContent() {
 
 export default function AuthCallbackPage() {
   return (
-    <Suspense fallback={
-      <div className="min-h-[calc(100vh-env(safe-area-inset-top))] flex items-center justify-center bg-gray-900 pb-env(safe-area-inset-bottom) auth-background">
-        <AuthBackground />
-        <div className="p-4 max-w-md w-full auth-card">
-          <div className="flex flex-col items-center">
-            <Logo size="lg" className="mb-4" />
-            <h2 className="text-center text-3xl font-medium text-white">
-              Loading...
-            </h2>
+    <Suspense
+      fallback={
+        <div className="min-h-[calc(100vh-env(safe-area-inset-top))] flex items-center justify-center bg-gray-900 pb-env(safe-area-inset-bottom) auth-background">
+          <AuthBackground />
+          <div className="p-4 max-w-md w-full auth-card">
+            <div className="flex flex-col items-center">
+              <Logo size="lg" className="mb-4" />
+              <h2 className="text-center text-3xl font-medium text-white">
+                Loading...
+              </h2>
+            </div>
           </div>
         </div>
-      </div>
-    }>
+      }
+    >
       <AuthCallbackContent />
     </Suspense>
   );
-} 
+}

@@ -44,8 +44,19 @@ function EditForm({ entry, projects, onSave, onCancel }: EditFormProps) {
               onClick={onCancel}
               className="text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
               </svg>
             </button>
           </div>
@@ -58,10 +69,12 @@ function EditForm({ entry, projects, onSave, onCancel }: EditFormProps) {
               </label>
               <select
                 value={editedEntry.project_id}
-                onChange={(e) => setEditedEntry({ ...editedEntry, project_id: e.target.value })}
+                onChange={e =>
+                  setEditedEntry({ ...editedEntry, project_id: e.target.value })
+                }
                 className="block w-full rounded-md border-[var(--card-border)] shadow-sm focus:border-blue-500 focus:ring-blue-500 bg-[var(--card-background)] text-[var(--text-primary)] sm:text-sm transition-colors px-3 py-2"
               >
-                {projects.map((project) => (
+                {projects.map(project => (
                   <option key={project.id} value={project.id}>
                     {project.name}
                   </option>
@@ -79,12 +92,19 @@ function EditForm({ entry, projects, onSave, onCancel }: EditFormProps) {
                   step="0.5"
                   min="0"
                   value={editedEntry.hours}
-                  onChange={(e) => setEditedEntry({ ...editedEntry, hours: parseFloat(e.target.value) })}
+                  onChange={e =>
+                    setEditedEntry({
+                      ...editedEntry,
+                      hours: parseFloat(e.target.value),
+                    })
+                  }
                   className="block w-full rounded-md border-[var(--card-border)] shadow-sm focus:border-blue-500 focus:ring-blue-500 bg-[var(--card-background)] text-[var(--text-primary)] sm:text-sm transition-colors px-3 py-2 pr-12"
                 />
                 <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                   <span className="text-[var(--text-secondary)] sm:text-sm">
-                    {editedEntry.hours === 1 ? t('timeEntries.hour') : t('timeEntries.hours')}
+                    {editedEntry.hours === 1
+                      ? t('timeEntries.hour')
+                      : t('timeEntries.hours')}
                   </span>
                 </div>
               </div>
@@ -97,7 +117,9 @@ function EditForm({ entry, projects, onSave, onCancel }: EditFormProps) {
             </label>
             <textarea
               value={editedEntry.description || ''}
-              onChange={(e) => setEditedEntry({ ...editedEntry, description: e.target.value })}
+              onChange={e =>
+                setEditedEntry({ ...editedEntry, description: e.target.value })
+              }
               className="block w-full rounded-md border-[var(--card-border)] shadow-sm focus:border-blue-500 focus:ring-blue-500 bg-[var(--card-background)] text-[var(--text-primary)] sm:text-sm transition-colors px-3 py-2"
               rows={3}
               placeholder={t('timeEntries.descriptionPlaceholder')}
@@ -125,7 +147,13 @@ function EditForm({ entry, projects, onSave, onCancel }: EditFormProps) {
   );
 }
 
-export default function TimeEntriesList({ selectedDate, timeEntries, projects, onDeleteEntry, onEditEntry }: TimeEntriesListProps) {
+export default function TimeEntriesList({
+  selectedDate,
+  timeEntries,
+  projects,
+  onDeleteEntry,
+  onEditEntry,
+}: TimeEntriesListProps) {
   const { t } = useClientTranslation();
   const [editingEntryId, setEditingEntryId] = useState<string | null>(null);
 
@@ -152,7 +180,16 @@ export default function TimeEntriesList({ selectedDate, timeEntries, projects, o
     <div className="bg-[var(--card-background)] rounded-lg shadow-sm">
       <div className="px-6 py-4 border-b border-[var(--card-border)]">
         <h2 className="text-lg font-medium text-[var(--text-primary)]">
-          {t('common.calendar.days.' + format(selectedDate, 'EEEE').toLowerCase())}, {t('common.calendar.months.' + format(selectedDate, 'MMMM').toLowerCase())} {format(selectedDate, 'd, yyyy')}
+          {t(
+            'common.calendar.days.' +
+              format(selectedDate, 'EEEE').toLowerCase(),
+          )}
+          ,{' '}
+          {t(
+            'common.calendar.months.' +
+              format(selectedDate, 'MMMM').toLowerCase(),
+          )}{' '}
+          {format(selectedDate, 'd, yyyy')}
         </h2>
       </div>
 
@@ -177,7 +214,10 @@ export default function TimeEntriesList({ selectedDate, timeEntries, projects, o
                 </div>
                 <div className="flex items-center space-x-2">
                   <span className="text-sm font-medium text-[var(--text-primary)] whitespace-nowrap">
-                    {entry.hours} {entry.hours === 1 ? t('timeEntries.hour') : t('timeEntries.hours')}
+                    {entry.hours}{' '}
+                    {entry.hours === 1
+                      ? t('timeEntries.hour')
+                      : t('timeEntries.hours')}
                   </span>
                   <button
                     onClick={() => handleEdit(entry)}
@@ -185,8 +225,19 @@ export default function TimeEntriesList({ selectedDate, timeEntries, projects, o
                     aria-label="Edit entry"
                     title="Edit entry"
                   >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={1.5}
+                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                      />
                     </svg>
                   </button>
                   <button
@@ -195,8 +246,19 @@ export default function TimeEntriesList({ selectedDate, timeEntries, projects, o
                     aria-label="Delete entry"
                     title="Delete entry"
                   >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={1.5}
+                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                      />
                     </svg>
                   </button>
                 </div>
@@ -216,7 +278,10 @@ export default function TimeEntriesList({ selectedDate, timeEntries, projects, o
 
             <div className="flex items-center space-x-4">
               <span className="text-lg font-semibold text-[var(--text-primary)]">
-                {timeEntries.reduce((sum, entry) => sum + entry.hours, 0).toFixed(1)} {t('timeEntries.hours')}
+                {timeEntries
+                  .reduce((sum, entry) => sum + entry.hours, 0)
+                  .toFixed(1)}{' '}
+                {t('timeEntries.hours')}
               </span>
               <span className="w-16"></span>
             </div>
@@ -234,4 +299,4 @@ export default function TimeEntriesList({ selectedDate, timeEntries, projects, o
       )}
     </div>
   );
-} 
+}
