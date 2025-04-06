@@ -2,7 +2,6 @@
 
 import { usePathname } from 'next/navigation';
 import Header from '@/components/Header/Header';
-import WelcomeManager from '@/components/WelcomeManager';
 
 export default function ClientLayout({
   children,
@@ -15,7 +14,6 @@ export default function ClientLayout({
   return (
     <div className="flex flex-col min-h-screen">
       {!isAuthPage && <Header />}
-      {!isAuthPage && <WelcomeManager />}
       <main className={`flex-grow ${!isAuthPage ? 'py-6 pt-20' : ''}`}>
         <div
           className={`${!isAuthPage ? 'max-w-7xl mx-auto px-0 sm:px-6 lg:px-8' : ''}`}

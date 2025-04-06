@@ -1,6 +1,6 @@
 import { format } from 'date-fns';
 import { useClientTranslation } from '../../hooks/useClientTranslation';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { TimeEntry } from '@/lib/types';
 import EditTimeEntryForm from '../EditTimeEntryForm';
 import TimeEntryItem from '../TimeEntryItem/TimeEntryItem';
@@ -27,6 +27,29 @@ export default function TimeEntriesList({
 }: TimeEntriesListProps) {
   const { t } = useClientTranslation();
   const [editingEntryId, setEditingEntryId] = useState<string | null>(null);
+  const [highlightedEntryId, setHighlightedEntryId] = useState<string | null>(
+    null,
+  );
+
+  // Sort time entries by created_at (most recent first)
+  const sortedTimeEntries = [...timeEntries].sort(
+    (a, b) =>
+      new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+  );
+
+  // Highlight the most recent entry for 3 seconds
+  useEffect(() => {
+    if (sortedTimeEntries.length > 0) {
+      const mostRecentEntry = sortedTimeEntries[0];
+      setHighlightedEntryId(mostRecentEntry.id);
+
+      const timer = setTimeout(() => {
+        setHighlightedEntryId(null);
+      }, 3000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [sortedTimeEntries.length, sortedTimeEntries[0]?.id]);
 
   // Get project name by ID
   const getProjectName = (projectId: string) => {
@@ -64,21 +87,29 @@ export default function TimeEntriesList({
         </h2>
       </div>
 
-      {timeEntries.length === 0 ? (
+      {sortedTimeEntries.length === 0 ? (
         <div className="px-6 py-4 text-center text-[var(--text-secondary)]">
           {t('timeEntries.noTimeEntriesForThisDate')}
         </div>
       ) : (
         <>
           <div className="divide-y divide-[var(--card-border)] overflow-y-auto max-h-[50vh]">
-            {timeEntries.map(entry => (
-              <TimeEntryItem
+            {sortedTimeEntries.map(entry => (
+              <div
                 key={entry.id}
-                entry={entry}
-                projectName={getProjectName(entry.project_id)}
-                onEdit={handleEdit}
-                onDelete={onDeleteEntry}
-              />
+                className={`transition-colors duration-300 ${
+                  highlightedEntryId === entry.id
+                    ? 'bg-blue-50 dark:bg-blue-900/20'
+                    : ''
+                }`}
+              >
+                <TimeEntryItem
+                  entry={entry}
+                  projectName={getProjectName(entry.project_id)}
+                  onEdit={handleEdit}
+                  onDelete={onDeleteEntry}
+                />
+              </div>
             ))}
           </div>
 
@@ -94,7 +125,7 @@ export default function TimeEntriesList({
 
             <div className="flex items-center space-x-4">
               <span className="text-lg font-semibold text-[var(--text-primary)]">
-                {timeEntries
+                {sortedTimeEntries
                   .reduce((sum, entry) => sum + entry.hours, 0)
                   .toFixed(1)}{' '}
                 {t('timeEntries.hours')}

@@ -36,7 +36,7 @@ const MainPage = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 flex-grow">
-        <div className="lg:col-span-7 order-2 lg:order-2 flex flex-col">
+        <div className="lg:col-span-7 order-2 lg:order-2 flex flex-col mb-40 lg:mb-0">
           <TimeEntriesList
             selectedDate={selectedDate}
             timeEntries={selectedDateEntries}
