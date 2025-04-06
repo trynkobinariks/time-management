@@ -2,7 +2,7 @@ import { useSpeechRecognition } from '@/lib/speechRecognition';
 
 import { useLanguage } from '@/contexts/LanguageContext';
 import { RecognitionLanguage } from '@/lib/speechRecognition';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useProjectContext } from '@/contexts/ProjectContext';
 import { parseVoiceInput } from '@/lib/aiParser';
 
@@ -10,6 +10,7 @@ export const useVoiceTimeEntry = () => {
   const { language } = useLanguage();
   const [isClient, setIsClient] = useState(false);
   const [isSupported, setIsSupported] = useState(true);
+  const prevLanguageRef = useRef<RecognitionLanguage | null>(null);
   const {
     text,
     isListening,
@@ -18,6 +19,7 @@ export const useVoiceTimeEntry = () => {
     stopListening,
     resetText,
     error: speechError,
+    currentLanguage,
   } = useSpeechRecognition(language as RecognitionLanguage);
 
   const [isProcessing, setIsProcessing] = useState(false);
@@ -31,6 +33,28 @@ export const useVoiceTimeEntry = () => {
       'webkitSpeechRecognition' in window || 'SpeechRecognition' in window,
     );
   }, []);
+
+  // Debug language changes
+  useEffect(() => {
+    if (prevLanguageRef.current !== language) {
+      console.log(
+        `[useVoiceTimeEntry] Language changed from ${prevLanguageRef.current} to ${language}`,
+      );
+      prevLanguageRef.current = language;
+    }
+  }, [language]);
+
+  // Debug speech recognition language
+  useEffect(() => {
+    console.log(
+      `[useVoiceTimeEntry] Current speech recognition language: ${currentLanguage}`,
+    );
+    if (currentLanguage !== language) {
+      console.log(
+        `[useVoiceTimeEntry] Language mismatch: context=${language}, speech=${currentLanguage}`,
+      );
+    }
+  }, [currentLanguage, language]);
 
   // Process voice input when user stops speaking
   useEffect(() => {
@@ -98,6 +122,10 @@ export const useVoiceTimeEntry = () => {
     if (!isListening) {
       resetText();
     }
+    console.log(
+      `[useVoiceTimeEntry] Starting listening with language: ${language}`,
+    );
+    // Always pass the current language from context to ensure it matches
     startListening(language as RecognitionLanguage);
   };
 

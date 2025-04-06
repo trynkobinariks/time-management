@@ -72,13 +72,6 @@ export function useSpeechRecognition(
     useState<RecognitionLanguage>(initialLanguage);
   const recognitionRef = useRef<SpeechRecognitionInstance | null>(null);
 
-  // Log language changes
-  useEffect(() => {
-    if (recognitionRef.current) {
-      recognitionRef.current.lang = currentLanguage;
-    }
-  }, [currentLanguage]);
-
   // This implementation can only be used in the browser
   const isBrowser = typeof window !== 'undefined';
   const hasSupport =
@@ -91,9 +84,41 @@ export function useSpeechRecognition(
       navigator.userAgent,
     );
 
+  // Sync the current language with the initial language when it changes
+  useEffect(() => {
+    // When initialLanguage changes from parent component, update our internal state
+    if (initialLanguage !== currentLanguage) {
+      console.log(
+        `Language changed from ${currentLanguage} to ${initialLanguage}`,
+      );
+      setCurrentLanguage(initialLanguage);
+
+      // If we have an active recognition instance, update its language
+      if (recognitionRef.current) {
+        recognitionRef.current.lang = initialLanguage;
+        console.log(
+          `Updated recognition instance language to: ${initialLanguage}`,
+        );
+      }
+    }
+  }, [initialLanguage, currentLanguage]);
+
   // Initialize speech recognition
   useEffect(() => {
     if (!isBrowser || !hasSupport) return;
+
+    // Clean up any existing instance
+    if (recognitionRef.current) {
+      try {
+        recognitionRef.current.onend = () => {};
+        recognitionRef.current.onstart = () => {};
+        recognitionRef.current.onerror = () => {};
+        recognitionRef.current.onresult = () => {};
+        recognitionRef.current.abort();
+      } catch (e) {
+        console.error('Error cleaning up previous recognition instance:', e);
+      }
+    }
 
     const SpeechRecognition =
       window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -171,23 +196,44 @@ export function useSpeechRecognition(
 
     return () => {
       if (recognitionRef.current) {
-        recognitionRef.current.abort();
+        try {
+          recognitionRef.current.abort();
+        } catch (e) {
+          console.error('Error aborting recognition on cleanup:', e);
+        }
       }
     };
   }, [isBrowser, hasSupport, currentLanguage, isMobile]);
 
-  const setLanguage = useCallback((language: RecognitionLanguage) => {
-    // Stop any ongoing recognition before changing language
-    if (recognitionRef.current) {
-      recognitionRef.current.stop();
+  const setLanguage = useCallback(
+    (language: RecognitionLanguage) => {
+      console.log(`Setting language to: ${language}`);
+
+      // Stop any ongoing recognition before changing language
+      if (recognitionRef.current && isListening) {
+        try {
+          recognitionRef.current.stop();
+        } catch (e) {
+          console.error(
+            'Error stopping recognition during language change:',
+            e,
+          );
+        }
+      }
+
       setIsListening(false);
       setStatus('inactive');
       setText('');
-      // Update the recognition instance's language
-      recognitionRef.current.lang = language;
-    }
-    setCurrentLanguage(language);
-  }, []);
+      setCurrentLanguage(language);
+
+      // Directly update recognition instance if it exists
+      if (recognitionRef.current) {
+        recognitionRef.current.lang = language;
+        console.log(`Updated recognition language to: ${language}`);
+      }
+    },
+    [isListening],
+  );
 
   const startListening = useCallback(
     (language?: RecognitionLanguage) => {
@@ -198,7 +244,37 @@ export function useSpeechRecognition(
 
       // Update language if provided
       if (language && language !== currentLanguage) {
+        console.log(
+          `Language param different, changing from ${currentLanguage} to ${language}`,
+        );
         setLanguage(language);
+
+        // Add a small delay before starting to ensure language has been updated
+        setTimeout(() => {
+          if (recognitionRef.current) {
+            console.log(
+              `Starting listening after language change to: ${language}`,
+            );
+            try {
+              recognitionRef.current.start();
+            } catch (err) {
+              console.error(
+                'Error starting speech recognition after language change:',
+                err,
+              );
+            }
+          }
+        }, 100);
+        return;
+      }
+
+      // Ensure language is correctly set before starting
+      if (recognitionRef.current) {
+        // Force update the language to ensure it's correct
+        recognitionRef.current.lang = currentLanguage;
+        console.log(
+          `Ensuring language is set correctly before starting: ${currentLanguage}`,
+        );
       }
 
       // Request microphone permission on mobile before starting
@@ -209,8 +285,14 @@ export function useSpeechRecognition(
             // Permission granted, proceed with starting recognition
             if (recognitionRef.current) {
               try {
-                // Ensure language is set before starting
-                recognitionRef.current.lang = currentLanguage;
+                // Double check language is set before starting
+                if (recognitionRef.current.lang !== currentLanguage) {
+                  recognitionRef.current.lang = currentLanguage;
+                  console.log(
+                    `Fixed language mismatch, now using: ${currentLanguage}`,
+                  );
+                }
+
                 console.log(
                   'Starting mobile recognition with language:',
                   recognitionRef.current.lang,
@@ -229,6 +311,14 @@ export function useSpeechRecognition(
         // Desktop flow
         if (recognitionRef.current) {
           try {
+            // Double check language
+            if (recognitionRef.current.lang !== currentLanguage) {
+              recognitionRef.current.lang = currentLanguage;
+              console.log(
+                `Fixed language mismatch, now using: ${currentLanguage}`,
+              );
+            }
+
             recognitionRef.current.start();
           } catch (err) {
             console.error('Speech recognition error:', err);
@@ -241,8 +331,12 @@ export function useSpeechRecognition(
 
   const stopListening = useCallback(() => {
     if (recognitionRef.current) {
-      recognitionRef.current.stop();
-      setStatus('processing');
+      try {
+        recognitionRef.current.stop();
+        setStatus('processing');
+      } catch (e) {
+        console.error('Error stopping recognition:', e);
+      }
     }
   }, []);
 

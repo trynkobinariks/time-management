@@ -2,9 +2,11 @@
 
 import { useClientTranslation } from '@/hooks/useClientTranslation';
 import { useVoiceTimeEntry } from './useVoiceTimeEntry';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export default function VoiceTimeEntry() {
   const { t } = useClientTranslation();
+  const { language } = useLanguage();
   const {
     isClient,
     isSupported,
@@ -37,6 +39,9 @@ export default function VoiceTimeEntry() {
     <>
       <div className="hidden md:block mt-2 space-y-8">
         <div className="flex flex-col items-center gap-4">
+          <div className="text-xs text-gray-500 dark:text-gray-400">
+            Current language: {language}
+          </div>
           <button
             type="button"
             onClick={isListening ? handleStopListening : handleStartListening}
