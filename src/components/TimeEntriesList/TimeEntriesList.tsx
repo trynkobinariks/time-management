@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import { TimeEntry } from '@/lib/types';
 import EditTimeEntryForm from '../EditTimeEntryForm';
 import TimeEntryItem from '../TimeEntryItem/TimeEntryItem';
+import CreateTimeEntryForm from '../CreateTimeEntryForm';
+import CreateButton from '../CreateButton';
 
 interface Project {
   id: string;
@@ -16,6 +18,9 @@ interface TimeEntriesListProps {
   projects: Project[];
   onDeleteEntry: (id: string) => void;
   onEditEntry: (entry: TimeEntry) => void;
+  onCreateEntry: (
+    entry: Omit<TimeEntry, 'id' | 'created_at' | 'updated_at' | 'user_id'>,
+  ) => void;
 }
 
 export default function TimeEntriesList({
@@ -24,9 +29,11 @@ export default function TimeEntriesList({
   projects,
   onDeleteEntry,
   onEditEntry,
+  onCreateEntry,
 }: TimeEntriesListProps) {
   const { t } = useClientTranslation();
   const [editingEntryId, setEditingEntryId] = useState<string | null>(null);
+  const [isCreating, setIsCreating] = useState<boolean>(false);
   const [highlightedEntryId, setHighlightedEntryId] = useState<string | null>(
     null,
   );
@@ -49,7 +56,7 @@ export default function TimeEntriesList({
 
       return () => clearTimeout(timer);
     }
-  }, [sortedTimeEntries.length, sortedTimeEntries[0]?.id]);
+  }, [sortedTimeEntries.length, sortedTimeEntries[0]?.id,]);
 
   // Get project name by ID
   const getProjectName = (projectId: string) => {
@@ -70,9 +77,24 @@ export default function TimeEntriesList({
     setEditingEntryId(null);
   };
 
+  const handleCreate = () => {
+    setIsCreating(true);
+  };
+
+  const handleCreateSave = (
+    newEntry: Omit<TimeEntry, 'id' | 'created_at' | 'updated_at' | 'user_id'>,
+  ) => {
+    onCreateEntry(newEntry);
+    setIsCreating(false);
+  };
+
+  const handleCreateCancel = () => {
+    setIsCreating(false);
+  };
+
   return (
     <div className="bg-[var(--card-background)] rounded-lg shadow-sm">
-      <div className="px-6 py-4 border-b border-[var(--card-border)]">
+      <div className="px-6 py-4 border-b border-[var(--card-border)] flex justify-between items-center">
         <h2 className="text-lg font-medium text-[var(--text-primary)]">
           {t(
             'common.calendar.days.' +
@@ -85,6 +107,11 @@ export default function TimeEntriesList({
           )}{' '}
           {format(selectedDate, 'd, yyyy')}
         </h2>
+        <CreateButton
+          onClick={handleCreate}
+          variant="icon"
+          label={t('timeEntries.addTimeEntry')}
+        />
       </div>
 
       {sortedTimeEntries.length === 0 ? (
@@ -142,6 +169,15 @@ export default function TimeEntriesList({
           projects={projects}
           onSave={handleSave}
           onCancel={handleCancel}
+        />
+      )}
+
+      {isCreating && (
+        <CreateTimeEntryForm
+          selectedDate={selectedDate}
+          projects={projects}
+          onSave={handleCreateSave}
+          onCancel={handleCreateCancel}
         />
       )}
     </div>
