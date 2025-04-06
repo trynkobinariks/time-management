@@ -7,61 +7,47 @@ export async function middleware(req: NextRequest) {
     return NextResponse.next();
   }
 
-  let response = NextResponse.next({
-    request: {
-      headers: req.headers,
-    },
-  });
+  // Initialize response object that we can modify
+  const res = NextResponse.next();
 
-  const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-  if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-    throw new Error('Missing Supabase environment variables');
-  }
-
-  const supabase = createServerClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-    cookies: {
-      get(name) {
-        return req.cookies.get(name)?.value;
-      },
-      set(name, value, options) {
-        req.cookies.set({
-          name,
-          value,
-          ...options,
-        });
-        response = NextResponse.next({
-          request: {
-            headers: req.headers,
-          },
-        });
-        response.cookies.set({
-          name,
-          value,
-          ...options,
-        });
-      },
-      remove(name, options) {
-        req.cookies.set({
-          name,
-          value: '',
-          ...options,
-        });
-        response = NextResponse.next({
-          request: {
-            headers: req.headers,
-          },
-        });
-        response.cookies.set({
-          name,
-          value: '',
-          ...options,
-        });
+  // Create supabase server client
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        get(name) {
+          return req.cookies.get(name)?.value;
+        },
+        set(name, value, options) {
+          req.cookies.set({
+            name,
+            value,
+            ...options,
+          });
+          res.cookies.set({
+            name,
+            value,
+            ...options,
+          });
+        },
+        remove(name, options) {
+          req.cookies.set({
+            name,
+            value: '',
+            ...options,
+          });
+          res.cookies.set({
+            name,
+            value: '',
+            ...options,
+          });
+        },
       },
     },
-  });
+  );
 
+  // Refresh session if expired & get user info
   const {
     data: { session },
   } = await supabase.auth.getSession();
@@ -74,7 +60,7 @@ export async function middleware(req: NextRequest) {
 
   // Special handling for callback page
   if (req.nextUrl.pathname === '/auth/callback') {
-    return response;
+    return res;
   }
 
   // If there's no user and trying to access a protected route
@@ -90,7 +76,7 @@ export async function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL('/', req.url));
   }
 
-  return response;
+  return res;
 }
 
 export const config = {

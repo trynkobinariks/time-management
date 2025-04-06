@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { signUp } from '@/lib/auth';
+import { createBrowserClient } from '@supabase/ssr';
 import Logo from '@/components/Logo';
 import PasswordInput from '@/components/PasswordInput';
 import { useClientTranslation } from '@/hooks/useClientTranslation';
@@ -27,6 +27,10 @@ export default function SignUpPage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const supabase = createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL || '',
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '',
+  );
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,11 +38,38 @@ export default function SignUpPage() {
     setLoading(true);
 
     try {
-      const result = await signUp(email, password);
-      if (!result.user) {
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/auth/callback`,
+        },
+      });
+
+      if (error) {
+        setError(
+          error.message || 'Failed to create account. Please try again.',
+        );
+        return;
+      }
+
+      // Check if the user already exists (Supabase returns a user with identities=[] for existing emails)
+      if (
+        data.user &&
+        data.user.identities &&
+        data.user.identities.length === 0
+      ) {
+        setError(
+          'An account with this email already exists. Please sign in instead.',
+        );
+        return;
+      }
+
+      if (!data.user) {
         setError('Failed to create account. Please try again.');
         return;
       }
+
       setSuccess(true);
     } catch (error) {
       setError(
@@ -141,7 +172,7 @@ export default function SignUpPage() {
             <button
               type="submit"
               disabled={loading}
-              className={`group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white ${
+              className={`group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white cursor-pointer ${
                 loading
                   ? 'bg-[var(--card-border)]'
                   : 'bg-blue-600 hover:bg-blue-700'

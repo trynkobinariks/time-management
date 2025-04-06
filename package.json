@@ -12,6 +12,7 @@
     "format:all": "./format.sh"
   },
   "dependencies": {
+    "@supabase/auth-helpers-nextjs": "^0.10.0",
     "@supabase/ssr": "^0.5.2",
     "@supabase/supabase-js": "^2.49.1",
     "@types/i18next": "^12.1.0",

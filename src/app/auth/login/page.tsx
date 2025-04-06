@@ -3,7 +3,7 @@
 import React, { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { signIn } from '@/lib/auth';
+import { createBrowserClient } from '@supabase/ssr';
 import Logo from '@/components/Logo';
 import PasswordInput from '@/components/PasswordInput';
 import { useClientTranslation } from '../../../hooks/useClientTranslation';
@@ -29,6 +29,10 @@ function LoginContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { t } = useClientTranslation();
+  const supabase = createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL || '',
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '',
+  );
 
   useEffect(() => {
     const error = searchParams.get('error');
@@ -43,15 +47,29 @@ function LoginContent() {
     setLoading(true);
 
     try {
-      const result = await signIn(email, password);
-      if (!result.user) {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) {
+        setError(
+          error.message || 'Failed to sign in. Please check your credentials.',
+        );
+        return;
+      }
+
+      if (!data.user) {
         setError('Failed to sign in. Please check your credentials.');
         return;
       }
 
+      // Get the redirect path from URL query params or default to homepage
+      const redirectTo = searchParams.get('next') || '/';
+
       // Add a small delay before redirect to ensure auth state is fully propagated
       setTimeout(() => {
-        router.push('/');
+        router.push(redirectTo);
       }, 500);
     } catch (error) {
       setError('An unexpected error occurred');
