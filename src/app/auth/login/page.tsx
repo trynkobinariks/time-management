@@ -49,11 +49,6 @@ function LoginContent() {
         return;
       }
 
-      // Set flag in sessionStorage to indicate successful login
-      if (typeof window !== 'undefined') {
-        sessionStorage.setItem('justLoggedIn', 'true');
-      }
-
       // Add a small delay before redirect to ensure auth state is fully propagated
       setTimeout(() => {
         router.push('/');

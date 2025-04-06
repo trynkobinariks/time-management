@@ -2,7 +2,6 @@ import type { Metadata } from 'next';
 import { Nunito_Sans, Open_Sans } from 'next/font/google';
 import './globals.css';
 import { ProjectProvider } from '@/contexts/ProjectContext';
-import { WelcomeProvider } from '@/contexts/WelcomeContext';
 import { LanguageProvider } from '@/contexts/LanguageContext';
 import Header from '@/components/Header/Header';
 import { AuthProvider } from '@/contexts/AuthContext';
@@ -50,13 +49,11 @@ export default function RootLayout({
         <AuthProvider>
           <LanguageProvider>
             <ProjectProvider>
-              <WelcomeProvider>
-                <div className="min-h-[calc(100vh-65px)]">
-                  <Header />
-                  <div className="h-16" />
-                  <main>{children}</main>
-                </div>
-              </WelcomeProvider>
+              <div className="min-h-[calc(100vh-65px)]">
+                <Header />
+                <div className="h-16" />
+                <main>{children}</main>
+              </div>
             </ProjectProvider>
           </LanguageProvider>
         </AuthProvider>
