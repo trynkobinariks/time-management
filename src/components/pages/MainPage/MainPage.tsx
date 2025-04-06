@@ -1,5 +1,5 @@
 import VoiceTimeEntry from '@/components/VoiceTimeEntry/VoiceTimeEntry';
-import TimeEntriesList from '@/components/TimeEntriesList';
+import TimeEntriesList from '@/components/TimeEntriesList/TimeEntriesList';
 import { useMainPage } from './useMainPage';
 import { useClientTranslation } from '@/hooks/useClientTranslation';
 import Datepicker from './components/DatePicker/Datepicker';
@@ -20,7 +20,6 @@ const MainPage = () => {
     getMonthTranslation,
   } = useMainPage();
 
-  // Use the voice entry hook
   const {
     isListening,
     isProcessing,
@@ -29,16 +28,15 @@ const MainPage = () => {
   } = useVoiceTimeEntry();
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-7xl pb-32 relative">
+    <div className="container mx-auto px-4 py-8 max-w-7xl relative flex flex-col h-[calc(100vh-64px)]">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-medium text-[var(--text-primary)] text-center w-full lg:text-left lg:w-auto">
           {t('welcome.title')}
         </h1>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* On mobile, TimeEntriesList comes first */}
-        <div className="lg:col-span-7 order-2 lg:order-2">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 flex-grow">
+        <div className="lg:col-span-7 order-2 lg:order-2 flex flex-col">
           <TimeEntriesList
             selectedDate={selectedDate}
             timeEntries={selectedDateEntries}
@@ -50,6 +48,7 @@ const MainPage = () => {
 
         <div className="lg:col-span-5 order-1 lg:order-1">
           <div className="grid grid-cols-1 gap-6">
+            <VoiceTimeEntry showRecordButton={false} />
             <Datepicker
               t={t}
               getMonthTranslation={getMonthTranslation}
@@ -58,13 +57,10 @@ const MainPage = () => {
               days={days}
               timeEntries={timeEntries}
             />
-
-            <VoiceTimeEntry showRecordButton={false} />
           </div>
         </div>
       </div>
 
-      {/* Fixed record button at the bottom center of the screen */}
       <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 z-10">
         <RecordButton
           isListening={isListening}
