@@ -56,7 +56,7 @@ export default function TimeEntriesList({
 
       return () => clearTimeout(timer);
     }
-  }, [sortedTimeEntries.length, sortedTimeEntries[0]?.id]);
+  }, [sortedTimeEntries.length, sortedTimeEntries[0]?.id,]);
 
   // Get project name by ID
   const getProjectName = (projectId: string) => {

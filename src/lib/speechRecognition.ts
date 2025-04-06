@@ -135,18 +135,10 @@ export function useSpeechRecognition(
       recognition.maxAlternatives = 3;
     }
 
-    console.log(
-      'Initializing speech recognition with language:',
-      recognition.lang,
-      'on mobile:',
-      isMobile,
-    );
-
     recognition.onstart = () => {
       setIsListening(true);
       setStatus('listening');
       setError(null);
-      console.log('Started listening with language:', recognition.lang);
     };
 
     recognition.onresult = event => {
@@ -157,7 +149,6 @@ export function useSpeechRecognition(
       // Only update text if it's a final result
       if (lastResult.isFinal) {
         setText(transcript);
-        console.log('Final transcript:', transcript);
       }
     };
 
@@ -184,7 +175,6 @@ export function useSpeechRecognition(
     recognition.onend = () => {
       setIsListening(false);
       setStatus('inactive');
-      console.log('Speech recognition ended');
     };
 
     recognitionRef.current = recognition;
@@ -272,9 +262,6 @@ export function useSpeechRecognition(
       if (recognitionRef.current) {
         // Force update the language to ensure it's correct
         recognitionRef.current.lang = currentLanguage;
-        console.log(
-          `Ensuring language is set correctly before starting: ${currentLanguage}`,
-        );
       }
 
       // Request microphone permission on mobile before starting
@@ -288,15 +275,8 @@ export function useSpeechRecognition(
                 // Double check language is set before starting
                 if (recognitionRef.current.lang !== currentLanguage) {
                   recognitionRef.current.lang = currentLanguage;
-                  console.log(
-                    `Fixed language mismatch, now using: ${currentLanguage}`,
-                  );
                 }
 
-                console.log(
-                  'Starting mobile recognition with language:',
-                  recognitionRef.current.lang,
-                );
                 recognitionRef.current.start();
               } catch (err) {
                 console.error('Speech recognition error:', err);
@@ -314,9 +294,6 @@ export function useSpeechRecognition(
             // Double check language
             if (recognitionRef.current.lang !== currentLanguage) {
               recognitionRef.current.lang = currentLanguage;
-              console.log(
-                `Fixed language mismatch, now using: ${currentLanguage}`,
-              );
             }
 
             recognitionRef.current.start();
