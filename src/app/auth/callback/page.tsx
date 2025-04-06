@@ -34,6 +34,9 @@ function AuthCallbackContent() {
         }
 
         // Exchange the code for a session
+        if (!supabase) {
+          throw new Error('Supabase client not initialized');
+        }
         const { data, error } =
           await supabase.auth.exchangeCodeForSession(code);
 
