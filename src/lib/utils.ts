@@ -33,7 +33,7 @@ export function formatReadableDate(date: Date): string {
     weekday: 'long',
     year: 'numeric',
     month: 'long',
-    day: 'numeric'
+    day: 'numeric',
   });
 }
 
@@ -53,35 +53,41 @@ export function addDays(date: Date, days: number): Date {
 export function generateWeeklySummary(
   projects: Project[],
   timeEntries: TimeEntry[],
-  weekStartDate: Date
+  weekStartDate: Date,
 ): WeeklySummary {
   const weekEndDate = getWeekEndDate(weekStartDate);
   const weekDates = getWeekDates(weekStartDate);
-  
+
   // Filter entries for the current week
   const weekEntries = timeEntries.filter(entry => {
     const entryDate = new Date(entry.date);
     return entryDate >= weekStartDate && entryDate <= weekEndDate;
   });
-  
+
   // Calculate daily summaries
   const dailySummaries: DailySummary[] = weekDates.map(date => {
-    const dayEntries = weekEntries.filter(entry => 
-      formatDate(new Date(entry.date)) === formatDate(date)
+    const dayEntries = weekEntries.filter(
+      entry => formatDate(new Date(entry.date)) === formatDate(date),
     );
-    
-    const totalHoursWorked = dayEntries.reduce((total, entry) => total + entry.hours, 0);
-    
+
+    const totalHoursWorked = dayEntries.reduce(
+      (total, entry) => total + entry.hours,
+      0,
+    );
+
     return {
       date,
       totalHoursWorked,
-      entries: dayEntries
+      entries: dayEntries,
     };
   });
-  
+
   // Calculate total hours worked for the week
-  const totalHoursWorked = weekEntries.reduce((total, entry) => total + entry.hours, 0);
-  
+  const totalHoursWorked = weekEntries.reduce(
+    (total, entry) => total + entry.hours,
+    0,
+  );
+
   return {
     weekStartDate,
     weekEndDate,
@@ -104,6 +110,6 @@ export function generateRandomColor(): string {
     '#F97316', // Orange
     '#8B5CF6', // Purple
   ];
-  
+
   return colors[Math.floor(Math.random() * colors.length)];
-} 
+}

@@ -10,12 +10,12 @@ export interface ParsedTimeEntry {
 }
 
 export async function parseVoiceInput(
-  text: string, 
+  text: string,
   projects: Project[],
-  language: string = 'en-US'
+  language: string = 'en-US',
 ): Promise<ParsedTimeEntry | null> {
   if (!text || !projects.length) return null;
-  
+
   try {
     const response = await fetch('/api/speech-parser', {
       method: 'POST',
@@ -25,18 +25,20 @@ export async function parseVoiceInput(
       body: JSON.stringify({
         text,
         projects,
-        language
-      })
+        language,
+      }),
     });
-    
+
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(errorData.error || `API request failed with status ${response.status}`);
+      throw new Error(
+        errorData.error || `API request failed with status ${response.status}`,
+      );
     }
-    
+
     return await response.json();
   } catch (error) {
     console.error('Error parsing voice input:', error);
     throw error;
   }
-} 
+}

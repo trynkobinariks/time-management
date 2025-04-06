@@ -25,7 +25,11 @@ interface ProjectFormProps {
   onCancel?: () => void;
 }
 
-export default function ProjectForm({ project, onSuccess, onCancel }: ProjectFormProps) {
+export default function ProjectForm({
+  project,
+  onSuccess,
+  onCancel,
+}: ProjectFormProps) {
   const { addProject, updateProject } = useProjectContext();
   const { t } = useClientTranslation();
 
@@ -37,7 +41,11 @@ export default function ProjectForm({ project, onSuccess, onCancel }: ProjectFor
 
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >,
+  ) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
 
@@ -96,7 +104,10 @@ export default function ProjectForm({ project, onSuccess, onCancel }: ProjectFor
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <label htmlFor="name" className="block text-sm font-medium text-[var(--text-primary)] mb-1 cursor-pointer">
+        <label
+          htmlFor="name"
+          className="block text-sm font-medium text-[var(--text-primary)] mb-1 cursor-pointer"
+        >
           {t('projects.popup.name')}
         </label>
         <input
@@ -111,12 +122,17 @@ export default function ProjectForm({ project, onSuccess, onCancel }: ProjectFor
           placeholder={t('projects.popup.namePlaceholder')}
         />
         {errors.name && (
-          <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.name}</p>
+          <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+            {errors.name}
+          </p>
         )}
       </div>
 
       <div>
-        <label htmlFor="description" className="block text-sm font-medium text-[var(--text-primary)] mb-1 cursor-pointer">
+        <label
+          htmlFor="description"
+          className="block text-sm font-medium text-[var(--text-primary)] mb-1 cursor-pointer"
+        >
           {t('projects.popup.description')}
         </label>
         <textarea
@@ -135,13 +151,15 @@ export default function ProjectForm({ project, onSuccess, onCancel }: ProjectFor
           {t('projects.popup.color')}
         </label>
         <div className="flex flex-wrap gap-2">
-          {PROJECT_COLORS.map((color) => (
+          {PROJECT_COLORS.map(color => (
             <button
               key={color}
               type="button"
               onClick={() => handleColorChange(color)}
               className={`w-8 h-8 rounded-full border-2 transition-all cursor-pointer ${
-                formData.color === color ? 'border-[var(--text-primary)] scale-110' : 'border-transparent hover:scale-105'
+                formData.color === color
+                  ? 'border-[var(--text-primary)] scale-110'
+                  : 'border-transparent hover:scale-105'
               }`}
               style={{ backgroundColor: color }}
             />
@@ -166,4 +184,4 @@ export default function ProjectForm({ project, onSuccess, onCancel }: ProjectFor
       </div>
     </form>
   );
-} 
+}

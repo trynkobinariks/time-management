@@ -24,15 +24,10 @@ export default function Header() {
         <div className="flex justify-between h-16">
           <div className="flex items-center">
             <LogoLink />
-            {user && (
-              <DesktopNavigation navItems={navItems} />
-            )}
+            {user && <DesktopNavigation navItems={navItems} />}
           </div>
           <div className="flex items-center space-x-4">
-            <LanguageSwitcher 
-              language={language}
-              setLanguage={setLanguage}
-            />
+            <LanguageSwitcher language={language} setLanguage={setLanguage} />
             <ThemeSwitcher />
             {user && (
               <>
@@ -40,7 +35,7 @@ export default function Header() {
                   {user.email}
                 </span>
                 <LogoutButton />
-                <BurgerMenuButton 
+                <BurgerMenuButton
                   isMenuOpen={isMenuOpen}
                   onClick={() => setIsMenuOpen(!isMenuOpen)}
                 />
@@ -49,16 +44,20 @@ export default function Header() {
           </div>
         </div>
       </div>
-      
+
       {user && (
-        <MobileNavigation user={user} isMenuOpen={isMenuOpen} setIsMenuOpen={setIsMenuOpen} />
+        <MobileNavigation
+          user={user}
+          isMenuOpen={isMenuOpen}
+          setIsMenuOpen={setIsMenuOpen}
+        />
       )}
-      
-      <Backdrop 
+
+      <Backdrop
         isOpen={isMenuOpen}
         onClick={() => setIsMenuOpen(false)}
         className="md:hidden"
       />
     </header>
   );
-} 
+}

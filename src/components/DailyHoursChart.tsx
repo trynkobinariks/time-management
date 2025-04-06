@@ -22,28 +22,33 @@ interface DailySummaryWithBreakdown extends DailySummary {
   projectBreakdown: ProjectHours[];
 }
 
-export default function DailyHoursChart({ weekStartDate }: DailyHoursChartProps) {
+export default function DailyHoursChart({
+  weekStartDate,
+}: DailyHoursChartProps) {
   const { timeEntries, projects } = useProjectContext();
-  
+
   // Generate daily summaries for the week with project breakdown
   const dailySummaries = useMemo(() => {
     const result: DailySummaryWithBreakdown[] = [];
-    
+
     // Create a summary for each day of the week
     for (let i = 0; i < 7; i++) {
       const date = addDays(new Date(weekStartDate), i);
       date.setHours(0, 0, 0, 0);
-      
+
       // Find time entries for this day
       const dayEntries = timeEntries.filter(entry => {
         const entryDate = new Date(entry.date);
         entryDate.setHours(0, 0, 0, 0);
         return entryDate.getTime() === date.getTime();
       });
-      
+
       // Calculate total hours worked
-      const totalHoursWorked = dayEntries.reduce((sum, entry) => sum + entry.hours, 0);
-      
+      const totalHoursWorked = dayEntries.reduce(
+        (sum, entry) => sum + entry.hours,
+        0,
+      );
+
       // Group entries by project
       const projectHours: Record<string, number> = {};
       dayEntries.forEach(entry => {
@@ -52,24 +57,24 @@ export default function DailyHoursChart({ weekStartDate }: DailyHoursChartProps)
         }
         projectHours[entry.project_id] += entry.hours;
       });
-      
+
       // Convert to array and calculate percentages
       const projectBreakdown: ProjectHours[] = Object.entries(projectHours)
         .map(([projectId, hours]) => {
           const project = projects.find(p => p.id === projectId);
           if (!project) return null;
-          
+
           return {
             projectId,
             projectName: project.name,
             color: project.color || '#6B7280',
             hours,
             startPercent: 0, // Will be calculated below
-            endPercent: 0 // Will be calculated below
+            endPercent: 0, // Will be calculated below
           };
         })
         .filter((p): p is ProjectHours => p !== null);
-      
+
       // Calculate percentages
       let currentPercent = 0;
       projectBreakdown.forEach((project: ProjectHours) => {
@@ -77,21 +82,23 @@ export default function DailyHoursChart({ weekStartDate }: DailyHoursChartProps)
         currentPercent += (project.hours / totalHoursWorked) * 100;
         project.endPercent = currentPercent;
       });
-      
+
       result.push({
         date,
         totalHoursWorked,
         entries: dayEntries,
-        projectBreakdown
+        projectBreakdown,
       });
     }
-    
+
     return result;
   }, [timeEntries, projects, weekStartDate]);
-  
+
   return (
     <div className="bg-white border border-gray-200 rounded-md p-4">
-      <h3 className="text-sm font-medium text-gray-700 mb-4">Daily Hours Breakdown</h3>
+      <h3 className="text-sm font-medium text-gray-700 mb-4">
+        Daily Hours Breakdown
+      </h3>
       <div className="space-y-4">
         {dailySummaries.map(day => (
           <div key={day.date.toISOString()} className="space-y-2">
@@ -111,14 +118,17 @@ export default function DailyHoursChart({ weekStartDate }: DailyHoursChartProps)
                   style={{
                     width: `${project.endPercent - project.startPercent}%`,
                     backgroundColor: project.color,
-                    marginLeft: project.startPercent === 0 ? '0' : '-100%'
+                    marginLeft: project.startPercent === 0 ? '0' : '-100%',
                   }}
                 />
               ))}
             </div>
             <div className="flex flex-wrap gap-2">
               {day.projectBreakdown.map((project: ProjectHours) => (
-                <div key={project.projectId} className="flex items-center space-x-1">
+                <div
+                  key={project.projectId}
+                  className="flex items-center space-x-1"
+                >
                   <div
                     className="w-2 h-2 rounded-full"
                     style={{ backgroundColor: project.color }}
@@ -134,4 +144,4 @@ export default function DailyHoursChart({ weekStartDate }: DailyHoursChartProps)
       </div>
     </div>
   );
-} 
+}

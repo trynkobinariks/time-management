@@ -33,7 +33,9 @@ export default function ResetPasswordPage() {
       await resetPassword(email);
       setSuccess(true);
     } catch (error) {
-      setError(error instanceof Error ? error.message : 'An unexpected error occurred');
+      setError(
+        error instanceof Error ? error.message : 'An unexpected error occurred',
+      );
     } finally {
       setLoading(false);
     }
@@ -43,7 +45,7 @@ export default function ResetPasswordPage() {
     return (
       <div className="min-h-[calc(100vh-env(safe-area-inset-top))] flex items-center justify-center bg-[var(--background)] py-12 px-4 sm:px-6 lg:px-8 pb-env(safe-area-inset-bottom) auth-background">
         <AuthBackground />
-        <div className="max-w-md w-full space-y-6 auth-card">
+        <div className="max-w-md w-full space-y-6">
           <div className="flex flex-col items-center">
             <Logo size="lg" className="mb-4" />
             <h2 className="text-center text-3xl font-medium text-[var(--text-primary)]">
@@ -55,7 +57,10 @@ export default function ResetPasswordPage() {
             </p>
           </div>
           <div className="text-center">
-            <Link href="/auth/login" className="font-medium text-[var(--text-primary)] hover:text-[var(--text-secondary)]">
+            <Link
+              href="/auth/login"
+              className="font-medium text-[var(--text-primary)] hover:text-[var(--text-secondary)]"
+            >
               Return to login
             </Link>
           </div>
@@ -67,14 +72,15 @@ export default function ResetPasswordPage() {
   return (
     <div className="min-h-[calc(100vh-env(safe-area-inset-top))] flex items-center justify-center bg-[var(--background)] py-12 px-4 sm:px-6 lg:px-8 pb-env(safe-area-inset-bottom) auth-background">
       <AuthBackground />
-      <div className="max-w-md w-full space-y-6 auth-card">
+      <div className="max-w-md w-full space-y-6">
         <div className="flex flex-col items-center">
           <Logo size="lg" className="mb-4" />
           <h2 className="text-center text-3xl font-medium text-[var(--text-primary)]">
             Reset your password
           </h2>
           <p className="mt-2 text-center text-sm text-[var(--text-secondary)]">
-            Enter your email address and we&apos;ll send you a link to reset your password.
+            Enter your email address and we&apos;ll send you a link to reset
+            your password.
           </p>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
@@ -89,7 +95,7 @@ export default function ResetPasswordPage() {
               autoComplete="email"
               required
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={e => setEmail(e.target.value)}
               className="appearance-none relative block w-full px-3 py-2 border border-[var(--card-border)] bg-[var(--card-background)] placeholder-[var(--text-secondary)] text-[var(--text-primary)] rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               placeholder="Email address"
             />
@@ -116,7 +122,9 @@ export default function ResetPasswordPage() {
               type="submit"
               disabled={loading}
               className={`inline-flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white ${
-                loading ? 'bg-[var(--card-border)]' : 'bg-blue-600 hover:bg-blue-700'
+                loading
+                  ? 'bg-[var(--card-border)]'
+                  : 'bg-blue-600 hover:bg-blue-700'
               }`}
             >
               {loading ? 'Sending...' : 'Send reset link'}
@@ -126,4 +134,4 @@ export default function ResetPasswordPage() {
       </div>
     </div>
   );
-} 
+}

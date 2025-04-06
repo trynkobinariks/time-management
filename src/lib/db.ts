@@ -23,7 +23,10 @@ export async function getProjects(userId: string) {
   return data;
 }
 
-export async function createProject(userId: string, project: Omit<Project, 'id' | 'created_at' | 'updated_at' | 'user_id'>) {
+export async function createProject(
+  userId: string,
+  project: Omit<Project, 'id' | 'created_at' | 'updated_at' | 'user_id'>,
+) {
   const { data, error } = await supabase
     .from('projects')
     .insert([{ ...project, user_id: userId }])
@@ -34,7 +37,11 @@ export async function createProject(userId: string, project: Omit<Project, 'id' 
   return data;
 }
 
-export async function updateProject(userId: string, projectId: string, project: Project) {
+export async function updateProject(
+  userId: string,
+  projectId: string,
+  project: Project,
+) {
   const { data, error } = await supabase
     .from('projects')
     .update(project)
@@ -57,7 +64,11 @@ export async function deleteProject(userId: string, projectId: string) {
   if (error) throw error;
 }
 
-export async function getTimeEntries(userId: string, startDate: Date, endDate: Date) {
+export async function getTimeEntries(
+  userId: string,
+  startDate: Date,
+  endDate: Date,
+) {
   const { data, error } = await supabase
     .from('time_entries')
     .select('*')
@@ -70,7 +81,10 @@ export async function getTimeEntries(userId: string, startDate: Date, endDate: D
   return data;
 }
 
-export async function createTimeEntry(userId: string, entry: Omit<TimeEntry, 'id' | 'created_at' | 'updated_at' | 'user_id'>) {
+export async function createTimeEntry(
+  userId: string,
+  entry: Omit<TimeEntry, 'id' | 'created_at' | 'updated_at' | 'user_id'>,
+) {
   const { data, error } = await supabase
     .from('time_entries')
     .insert([{ ...entry, user_id: userId }])
@@ -81,7 +95,11 @@ export async function createTimeEntry(userId: string, entry: Omit<TimeEntry, 'id
   return data;
 }
 
-export async function updateTimeEntry(userId: string, entryId: string, entry: TimeEntry) {
+export async function updateTimeEntry(
+  userId: string,
+  entryId: string,
+  entry: TimeEntry,
+) {
   const { data, error } = await supabase
     .from('time_entries')
     .update(entry)
@@ -102,4 +120,4 @@ export async function deleteTimeEntry(userId: string, entryId: string) {
     .eq('user_id', userId);
 
   if (error) throw error;
-} 
+}

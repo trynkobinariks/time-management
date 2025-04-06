@@ -21,4 +21,4 @@ export default function CloseIcon({ className = 'h-6 w-6' }: CloseIconProps) {
       />
     </svg>
   );
-} 
+}

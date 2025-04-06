@@ -15,29 +15,43 @@ export default function Logo({ className = '', size = 'md' }: LogoProps) {
   const { width, height } = dimensions[size];
 
   return (
-    <svg 
-      width={width} 
-      height={height} 
-      viewBox="0 0 120 120" 
-      fill="none" 
+    <svg
+      width={width}
+      height={height}
+      viewBox="0 0 120 120"
+      fill="none"
       xmlns="http://www.w3.org/2000/svg"
       className={className}
     >
-      {/* The letters P, H, and T */}
-      <g stroke="#4B6A97" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-        {/* P */}
-        <path d="M35 40V80" stroke="#4B6A97" strokeWidth="4" />
-        <path d="M35 40H48C53 40 58 45 53 50C48 55 35 55 35 55" stroke="#4B6A97" strokeWidth="4" />
-        
-        {/* H */}
-        <path d="M60 40V80" stroke="#4B6A97" strokeWidth="4" />
-        <path d="M60 60H80" stroke="#4B6A97" strokeWidth="4" />
-        <path d="M80 40V80" stroke="#4B6A97" strokeWidth="4" />
-        
-        {/* T */}
-        <path d="M85 40H110" stroke="#4B6A97" strokeWidth="4" />
-        <path d="M97.5 40V80" stroke="#4B6A97" strokeWidth="4" />
+      {/* The letters V and T - wide, not tall */}
+      <g
+        stroke="#4B6A97"
+        strokeWidth="6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        {/* V - wide version */}
+        <path
+          d="M20 50L45 70L70 50"
+          stroke="#4B6A97"
+          strokeWidth="9"
+          strokeLinecap="round"
+        />
+
+        {/* T - wide version */}
+        <path
+          d="M75 50H105"
+          stroke="#4B6A97"
+          strokeWidth="9"
+          strokeLinecap="round"
+        />
+        <path
+          d="M90 50V70"
+          stroke="#4B6A97"
+          strokeWidth="9"
+          strokeLinecap="round"
+        />
       </g>
     </svg>
   );
-} 
+}

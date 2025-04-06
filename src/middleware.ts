@@ -1,5 +1,5 @@
-import { createServerClient } from "@supabase/ssr";
-import { type NextRequest, NextResponse } from "next/server";
+import { createServerClient } from '@supabase/ssr';
+import { type NextRequest, NextResponse } from 'next/server';
 
 export async function middleware(req: NextRequest) {
   // Skip middleware for RSC requests
@@ -7,22 +7,13 @@ export async function middleware(req: NextRequest) {
     return NextResponse.next();
   }
 
-  let response = NextResponse.next({
-    request: {
-      headers: req.headers,
-    },
-  });
+  // Initialize response object that we can modify
+  const res = NextResponse.next();
 
-  const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-  if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-    throw new Error("Missing Supabase environment variables");
-  }
-
+  // Create supabase server client
   const supabase = createServerClient(
-    SUPABASE_URL,
-    SUPABASE_ANON_KEY,
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
         get(name) {
@@ -34,12 +25,7 @@ export async function middleware(req: NextRequest) {
             value,
             ...options,
           });
-          response = NextResponse.next({
-            request: {
-              headers: req.headers,
-            },
-          });
-          response.cookies.set({
+          res.cookies.set({
             name,
             value,
             ...options,
@@ -51,22 +37,20 @@ export async function middleware(req: NextRequest) {
             value: '',
             ...options,
           });
-          response = NextResponse.next({
-            request: {
-              headers: req.headers,
-            },
-          });
-          response.cookies.set({
+          res.cookies.set({
             name,
             value: '',
             ...options,
           });
         },
       },
-    }
+    },
   );
 
-  const { data: { session } } = await supabase.auth.getSession();
+  // Refresh session if expired & get user info
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
   const user = session?.user;
 
   // Define auth pages that should be accessible without a session
@@ -76,7 +60,7 @@ export async function middleware(req: NextRequest) {
 
   // Special handling for callback page
   if (req.nextUrl.pathname === '/auth/callback') {
-    return response;
+    return res;
   }
 
   // If there's no user and trying to access a protected route
@@ -92,7 +76,7 @@ export async function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL('/', req.url));
   }
 
-  return response;
+  return res;
 }
 
 export const config = {
@@ -106,4 +90,4 @@ export const config = {
      */
     '/((?!_next/static|_next/image|favicon.ico|public/).*)',
   ],
-}; 
+};

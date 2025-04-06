@@ -36,10 +36,12 @@ export default function ProjectsPage() {
   return (
     <div className="container mx-auto px-4 py-8 max-w-7xl">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-medium text-[var(--text-primary)]">{t('projects.title')}</h1>
+        <h1 className="text-2xl font-medium text-[var(--text-primary)]">
+          {t('projects.title')}
+        </h1>
         <button
           onClick={handleAddClick}
-          onTouchEnd={(e) => {
+          onTouchEnd={e => {
             e.preventDefault();
             handleAddClick();
           }}
@@ -53,15 +55,19 @@ export default function ProjectsPage() {
 
       <div className="bg-[var(--card-background)] rounded-lg shadow-sm">
         <div className="px-6 py-4 border-b border-[var(--card-border)]">
-          <h2 className="text-lg font-medium text-[var(--text-primary)]">{t('projects.allProjects')}</h2>
+          <h2 className="text-lg font-medium text-[var(--text-primary)]">
+            {t('projects.allProjects')}
+          </h2>
         </div>
 
         {projects.length === 0 ? (
           <div className="px-6 py-8 text-center">
-            <p className="text-[var(--text-secondary)] mb-4">{t('projects.noProjects')}</p>
+            <p className="text-[var(--text-secondary)] mb-4">
+              {t('projects.noProjects')}
+            </p>
             <button
               onClick={handleAddClick}
-              onTouchEnd={(e) => {
+              onTouchEnd={e => {
                 e.preventDefault();
                 handleAddClick();
               }}
@@ -74,7 +80,7 @@ export default function ProjectsPage() {
           </div>
         ) : (
           <div className="divide-y divide-[var(--card-border)]">
-            {projects.map((project) => (
+            {projects.map(project => (
               <div key={project.id} className="px-6 py-4">
                 <ProjectCard
                   project={project}
@@ -95,7 +101,10 @@ export default function ProjectsPage() {
 
               <div className="flex items-center space-x-4">
                 <span className="text-lg font-semibold text-[var(--text-primary)]">
-                  {projects.length} {projects.length === 1 ? t('projects.project') : t('projects.projects')}
+                  {projects.length}{' '}
+                  {projects.length === 1
+                    ? t('projects.project')
+                    : t('projects.projects')}
                 </span>
                 <span className="w-16"></span>
               </div>
@@ -110,15 +119,28 @@ export default function ProjectsPage() {
           <div className="bg-[var(--card-background)] rounded-lg p-6 max-w-md w-full mx-4 shadow-xl">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-lg font-medium text-[var(--text-primary)]">
-                {editingProject ? t('projects.popup.title') : t('projects.addProject')}
+                {editingProject
+                  ? t('projects.popup.title')
+                  : t('projects.addProject')}
               </h2>
               <button
                 onClick={handleFormCancel}
                 className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
                 aria-label={t('common.close')}
               >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
                 </svg>
               </button>
             </div>
@@ -132,4 +154,4 @@ export default function ProjectsPage() {
       )}
     </div>
   );
-} 
+}

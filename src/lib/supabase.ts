@@ -13,4 +13,4 @@ export type SupabaseUser = {
 
 export type AuthError = {
   message: string;
-}; 
+};

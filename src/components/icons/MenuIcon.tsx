@@ -21,4 +21,4 @@ export default function MenuIcon({ className = 'h-6 w-6' }: MenuIconProps) {
       />
     </svg>
   );
-} 
+}
