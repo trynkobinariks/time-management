@@ -7,6 +7,10 @@ export default function LogoutButton() {
   const router = useRouter();
 
   const signOut = async () => {
+    if (!supabase) {
+      console.error('Supabase client not initialized');
+      return;
+    }
     await supabase.auth.signOut();
     router.refresh();
   };
