@@ -53,7 +53,7 @@ export default function SignUpPage() {
     return (
       <div className="min-h-[calc(100vh-env(safe-area-inset-top))] flex items-center justify-center bg-[var(--background)] py-12 px-4 sm:px-6 lg:px-8 pb-env(safe-area-inset-bottom) auth-background">
         <AuthBackground />
-        <div className="max-w-md w-full space-y-6 auth-card">
+        <div className="max-w-md w-full space-y-6">
           <div className="flex flex-col items-center">
             <Logo size="lg" className="mb-4" />
             <h2 className="text-center text-3xl font-medium text-[var(--text-primary)]">
@@ -81,7 +81,7 @@ export default function SignUpPage() {
   return (
     <div className="min-h-[calc(100vh-env(safe-area-inset-top))] flex items-center justify-center bg-[var(--background)] py-12 px-4 sm:px-6 lg:px-8 pb-env(safe-area-inset-bottom) auth-background">
       <AuthBackground />
-      <div className="max-w-md w-full space-y-6 auth-card">
+      <div className="max-w-md w-full space-y-6">
         <div className="flex flex-col items-center">
           <Logo size="lg" className="mb-4" />
           <h2 className="text-center text-3xl font-medium text-[var(--text-primary)]">

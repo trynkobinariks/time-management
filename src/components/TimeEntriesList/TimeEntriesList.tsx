@@ -113,7 +113,7 @@ export default function TimeEntriesList({
             ))}
           </div>
 
-          <div className="px-6 py-4 flex items-center justify-between bg-[var(--card-border)] border-t border-[var(--card-border)]">
+          <div className="px-6 py-4 flex items-center justify-between bg-[var(--card-border)] border-t border-[var(--card-border)] rounded-b-lg">
             <div className="flex items-center space-x-4">
               <span className="w-8"></span>
               <span className="text-sm font-medium text-[var(--text-primary)]">

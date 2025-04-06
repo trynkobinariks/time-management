@@ -64,7 +64,7 @@ function LoginContent() {
   return (
     <div className="min-h-[calc(100vh-53px-env(safe-area-inset-top))] flex items-center justify-center bg-white dark:bg-[var(--background)] px-4 sm:px-6 lg:px-8 pb-env(safe-area-inset-bottom) auth-background">
       <AuthBackground />
-      <div className="max-w-md w-full space-y-6 auth-card bg-white dark:bg-[var(--card-background)] p-8 rounded-lg shadow-xl border border-gray-200 dark:border-[var(--card-border)]">
+      <div className="max-w-md w-full space-y-6">
         <div className="flex flex-col items-center">
           <Logo size="lg" className="mb-4" />
           <h2 className="text-center text-3xl font-medium text-gray-900 dark:text-[var(--text-primary)]">

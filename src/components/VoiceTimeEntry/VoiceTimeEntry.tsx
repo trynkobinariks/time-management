@@ -40,7 +40,7 @@ export default function VoiceTimeEntry({
         <h2 className="text-lg text-center font-medium text-[var(--text-primary)] mb-4">
           {t('timeEntries.quickTimeEntry')}
         </h2>
-        <div className="md:block mt-2 space-y-8">
+        <div className="md:block mt-2">
           <div className="flex flex-col items-center gap-4">
             {showRecordButton && (
               <RecordButton

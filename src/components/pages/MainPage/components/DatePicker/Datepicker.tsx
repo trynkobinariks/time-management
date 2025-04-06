@@ -69,25 +69,25 @@ const Datepicker = ({
                       h-10 w-10 rounded-full flex items-center justify-center text-sm relative
                       ${
                         isSameDay(day, selectedDate)
-                          ? 'bg-blue-600 text-white hover:bg-blue-700'
+                          ? 'bg-violet-600 text-white hover:bg-violet-700'
                           : isToday(day)
                             ? hasEntries
-                              ? 'bg-[var(--text-primary)] text-[var(--background)] hover:bg-[var(--text-primary)]'
-                              : 'bg-[var(--card-border)] text-[var(--text-primary)] hover:bg-[var(--card-border)]'
+                              ? 'bg-slate-600 text-white hover:bg-slate-700'
+                              : 'bg-slate-400 text-black hover:bg-slate-500'
                             : isCurrentMonth
                               ? hasEntries
-                                ? 'bg-[var(--text-primary)] text-[var(--background)] hover:bg-[var(--text-primary)]'
-                                : 'text-[var(--text-primary)] hover:bg-[var(--card-border)]'
+                                ? 'bg-gray-500 text-white hover:bg-gray-600'
+                                : 'text-[var(--text-primary)] hover:bg-gray-700 hover:text-white'
                               : hasEntries
-                                ? 'bg-[var(--text-primary)] text-[var(--background)] hover:bg-[var(--text-primary)]'
-                                : 'text-[var(--text-secondary)] hover:bg-[var(--card-border)]'
+                                ? 'bg-slate-500 text-white hover:bg-slate-600'
+                                : 'text-[var(--text-secondary)] hover:bg-gray-700 hover:text-white'
                       }
                       ${
                         hasEntries
                           ? `after:content-[''] after:absolute after:bottom-1 after:w-1.5 after:h-1.5 after:rounded-full ${
                               isSameDay(day, selectedDate)
-                                ? 'bg-green-700 text-white'
-                                : 'bg-[var(--background)]'
+                                ? 'after:bg-white'
+                                : 'after:bg-slate-200'
                             }`
                           : ''
                       }
