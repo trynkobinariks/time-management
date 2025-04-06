@@ -24,6 +24,14 @@ const config: Config = {
           950: '#030712',
         },
       },
+      fontFamily: {
+        sans: ['var(--font-sans)'],
+        heading: ['var(--font-headings)'],
+      },
+      letterSpacing: {
+        wider: '0.015em',
+        widest: '0.03em',
+      },
     },
   },
   plugins: [],
