@@ -22,6 +22,39 @@
   --text-secondary: #9ca3af;
 }
 
+/* Footer positioning */
+html,
+body {
+  height: 100%;
+}
+
+body>div:first-child {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+main {
+  flex: 1 0 auto;
+}
+
+/* Footer padding for mobile */
+@media (max-width: 767px) {
+  body>div:first-child {
+    padding-bottom: 56px;
+    /* Height of the footer */
+  }
+
+  /* Additional padding for time entries page */
+  .time-entries-page {
+    padding-bottom: 72px;
+  }
+}
+
+/* Ensure content doesn't overflow on time entries page */
+.container {
+  padding-bottom: 4rem;
+}
 @layer base {
   /* Base typography */
   html {

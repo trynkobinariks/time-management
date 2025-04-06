@@ -13,7 +13,7 @@ export default function LanguageSwitcher({
   disabled = false,
 }: LanguageSwitcherProps) {
   return (
-    <div className="relative inline-flex rounded-2xl border border-[var(--card-border)] p-1 bg-[var(--card-border)]">
+    <div className="relative inline-flex rounded-2xl border border-[var(--card-border)] p-1 bg-[var(--card-border)] shadow-inner">
       <div
         className={`absolute h-[calc(100%-8px)] w-[calc(50%-3px)] bg-[var(--card-background)] rounded-xl shadow-sm transition-all duration-300 ease-in-out ${
           language === 'uk-UA' ? 'translate-x-[94%]' : ''

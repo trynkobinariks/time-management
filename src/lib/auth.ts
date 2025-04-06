@@ -1,6 +1,15 @@
-import { supabase } from './supabase';
+import { getSupabase } from './supabase';
+
+// Make sure all auth functions are only called on the client side
+const ensureClientSide = () => {
+  if (typeof window === 'undefined') {
+    throw new Error('Auth functions should only be called on the client side');
+  }
+  return getSupabase();
+};
 
 export async function signUp(email: string, password: string) {
+  const supabase = ensureClientSide();
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
@@ -18,6 +27,7 @@ export async function signUp(email: string, password: string) {
 }
 
 export async function signIn(email: string, password: string) {
+  const supabase = ensureClientSide();
   try {
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
@@ -48,6 +58,7 @@ export async function signIn(email: string, password: string) {
 }
 
 export async function signOut() {
+  const supabase = ensureClientSide();
   const { error } = await supabase.auth.signOut();
   if (error) {
     console.error('Sign out error:', error);
@@ -56,6 +67,7 @@ export async function signOut() {
 }
 
 export async function resetPassword(email: string) {
+  const supabase = ensureClientSide();
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
     redirectTo: `${window.location.origin}/auth/reset-password`,
   });
@@ -67,6 +79,7 @@ export async function resetPassword(email: string) {
 }
 
 export async function updatePassword(password: string) {
+  const supabase = ensureClientSide();
   const { error } = await supabase.auth.updateUser({
     password,
   });
@@ -78,6 +91,7 @@ export async function updatePassword(password: string) {
 }
 
 export async function getSession() {
+  const supabase = ensureClientSide();
   const {
     data: { session },
     error,
@@ -90,6 +104,7 @@ export async function getSession() {
 }
 
 export async function getUser() {
+  const supabase = ensureClientSide();
   const {
     data: { user },
     error,

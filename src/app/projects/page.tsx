@@ -6,6 +6,7 @@ import ProjectCard from '@/components/ProjectCard';
 import ProjectForm from '@/components/ProjectForm';
 import { Project } from '@/lib/types';
 import { useClientTranslation } from '@/hooks/useClientTranslation';
+import CreateButton from '@/components/CreateButton';
 
 export default function ProjectsPage() {
   const { projects } = useProjectContext();
@@ -39,18 +40,11 @@ export default function ProjectsPage() {
         <h1 className="text-2xl font-medium text-[var(--text-primary)]">
           {t('projects.title')}
         </h1>
-        <button
+        <CreateButton
           onClick={handleAddClick}
-          onTouchEnd={e => {
-            e.preventDefault();
-            handleAddClick();
-          }}
-          className="px-4 py-2 text-sm font-medium text-[var(--background)] bg-[var(--text-primary)] rounded-md hover:bg-[var(--card-border)] focus:outline-none focus:ring-2 focus:ring-[var(--card-border)] cursor-pointer transition-colors active:bg-[var(--card-border)] touch-action-manipulation relative"
-          aria-label={t('projects.addProject')}
-          role="button"
-        >
-          {t('projects.addProject')}
-        </button>
+          label={t('projects.addProject')}
+          variant="icon"
+        />
       </div>
 
       <div className="bg-[var(--card-background)] rounded-lg shadow-sm">
@@ -65,18 +59,11 @@ export default function ProjectsPage() {
             <p className="text-[var(--text-secondary)] mb-4">
               {t('projects.noProjects')}
             </p>
-            <button
+            <CreateButton
               onClick={handleAddClick}
-              onTouchEnd={e => {
-                e.preventDefault();
-                handleAddClick();
-              }}
-              className="px-4 py-2 text-sm font-medium text-[var(--background)] bg-[var(--text-primary)] rounded-md hover:bg-[var(--card-border)] focus:outline-none focus:ring-2 focus:ring-[var(--card-border)] cursor-pointer transition-colors active:bg-[var(--card-border)] touch-action-manipulation"
-              aria-label={t('projects.addProject')}
-              role="button"
-            >
-              {t('projects.addProject')}
-            </button>
+              label={t('projects.addProject')}
+              variant="both"
+            />
           </div>
         ) : (
           <div className="divide-y divide-[var(--card-border)]">

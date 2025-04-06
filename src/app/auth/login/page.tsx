@@ -68,9 +68,7 @@ function LoginContent() {
       const redirectTo = searchParams.get('next') || '/';
 
       // Add a small delay before redirect to ensure auth state is fully propagated
-      setTimeout(() => {
-        router.push(redirectTo);
-      }, 500);
+      router.push(redirectTo);
     } catch (error) {
       setError('An unexpected error occurred');
       console.error('Login error:', error);
