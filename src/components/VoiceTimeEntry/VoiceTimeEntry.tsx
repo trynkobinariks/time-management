@@ -3,6 +3,7 @@
 import { useClientTranslation } from '@/hooks/useClientTranslation';
 import { useVoiceTimeEntry } from './useVoiceTimeEntry';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { MicrophoneIcon, StopRecordingIcon } from '@/components/icons';
 
 export default function VoiceTimeEntry() {
   const { t } = useClientTranslation();
@@ -47,49 +48,13 @@ export default function VoiceTimeEntry() {
             onClick={isListening ? handleStopListening : handleStartListening}
             className={`w-20 h-20 rounded-full flex items-center justify-center text-white transition-all duration-200 cursor-pointer ${
               isListening
-                ? 'bg-red-700 hover:bg-red-900 dark:bg-red-600 dark:hover:bg-red-700 shadow-lg shadow-red-500/30'
-                : 'bg-red-600 hover:bg-red-800 dark:bg-red-500 dark:hover:bg-red-600 shadow-lg shadow-red-500/30'
+                ? 'bg-violet-700 hover:bg-violet-900 dark:bg-violet-600 dark:hover:bg-violet-700 shadow-lg shadow-violet-500/30'
+                : 'bg-violet-600 hover:bg-violet-800 dark:bg-violet-500 dark:hover:bg-violet-600 shadow-lg shadow-violet-500/30'
             }`}
             disabled={isProcessing}
             aria-label={isListening ? 'Stop Recording' : 'Start Recording'}
           >
-            {isListening ? (
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-8 w-8"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 10a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z"
-                />
-              </svg>
-            ) : (
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-8 w-8"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"
-                />
-              </svg>
-            )}
+            {isListening ? <StopRecordingIcon /> : <MicrophoneIcon />}
           </button>
 
           {(isListening || isProcessing) && (
