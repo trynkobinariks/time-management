@@ -10,4 +10,5 @@ export { default as ProjectsIcon } from './ProjectsIcon';
 export { default as VoiceEntryIcon } from './VoiceEntryIcon';
 export { default as ReportsIcon } from './ReportsIcon';
 export { default as SettingsIcon } from './SettingsIcon';
+export { default as PlusIcon } from './PlusIcon';
 export * from './ThemeIcons';

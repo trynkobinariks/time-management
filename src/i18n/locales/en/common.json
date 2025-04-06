@@ -26,6 +26,8 @@
     "cancel": "Cancel",
     "descriptionPlaceholder": "Project name, daily task, or other details",
     "editEntry": "Edit Entry",
+    "createEntry": "Create Time Entry",
+    "createNew": "Add Time",
     "deleteEntryConfirmation": "Are you sure you want to delete this time entry?",
     "deleteEntrySuccess": "Time entry deleted successfully.",
     "deleteEntryError": "Error deleting time entry.",

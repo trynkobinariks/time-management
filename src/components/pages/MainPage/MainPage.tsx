@@ -15,6 +15,7 @@ const MainPage = () => {
     setSelectedDate,
     deleteTimeEntry,
     updateTimeEntry,
+    addTimeEntry,
     days,
     selectedDateEntries,
     getMonthTranslation,
@@ -28,7 +29,7 @@ const MainPage = () => {
   } = useVoiceTimeEntry();
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-7xl relative flex flex-col h-[calc(100vh-64px-52px)]">
+    <div className="container mx-auto px-4 py-8 max-w-7xl relative flex flex-col h-[calc(100vh-64px-54px)]">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-medium text-[var(--text-primary)] text-center w-full lg:text-left lg:w-auto">
           {t('welcome.title')}
@@ -43,6 +44,7 @@ const MainPage = () => {
             projects={projects}
             onDeleteEntry={deleteTimeEntry}
             onEditEntry={updateTimeEntry}
+            onCreateEntry={addTimeEntry}
           />
         </div>
 

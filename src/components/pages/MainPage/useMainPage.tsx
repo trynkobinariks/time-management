@@ -11,6 +11,7 @@ export const useMainPage = () => {
     setSelectedDate,
     deleteTimeEntry,
     updateTimeEntry,
+    addTimeEntry,
   } = useProjectContext();
 
   // Get current month's days
@@ -38,6 +39,7 @@ export const useMainPage = () => {
     setSelectedDate,
     deleteTimeEntry,
     updateTimeEntry,
+    addTimeEntry,
     days,
     selectedDateEntries,
     getMonthTranslation,
