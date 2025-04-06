@@ -146,5 +146,32 @@
     "lightMode": "Light Mode",
     "toggleTheme": "Toggle theme"
   },
-  "notSupported": "Speech recognition is not supported in this browser"
+  "notSupported": "Speech recognition is not supported in this browser",
+  "help": {
+    "title": "How to use this app",
+    "close": "Close",
+    "button": "Help",
+    "sections": {
+      "timeTracking": {
+        "title": "Time Tracking",
+        "content": "Track your working hours by adding time entries. You can add entries manually or use voice recognition to log your time."
+      },
+      "projects": {
+        "title": "Projects",
+        "content": "Create and manage projects to organize your time entries. Assign colors to projects for easy identification."
+      },
+      "voiceEntry": {
+        "title": "Voice Entry",
+        "content": "Use voice commands to quickly add time entries. Just say what you worked on, for how long, and when."
+      },
+      "reports": {
+        "title": "Reports",
+        "content": "View summaries of your time entries by day, week, or project to analyze your productivity."
+      },
+      "settings": {
+        "title": "Settings",
+        "content": "Customize the app to your needs, including theme preferences and language settings."
+      }
+    }
+  }
 }
