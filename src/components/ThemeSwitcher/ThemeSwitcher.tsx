@@ -14,4 +14,4 @@ export default function ThemeSwitcher() {
       {isDark ? <SunIcon /> : <MoonIcon />}
     </button>
   );
-} 
+}

@@ -7,7 +7,10 @@ interface BurgerMenuButtonProps {
   onClick: () => void;
 }
 
-export default function BurgerMenuButton({ isMenuOpen, onClick }: BurgerMenuButtonProps) {
+export default function BurgerMenuButton({
+  isMenuOpen,
+  onClick,
+}: BurgerMenuButtonProps) {
   return (
     <button
       className="ml-2 inline-flex items-center justify-center p-2 rounded-md text-[var(--text-primary)] bg-[var(--card-background)] hover:bg-[var(--card-border)] md:hidden"
@@ -15,11 +18,7 @@ export default function BurgerMenuButton({ isMenuOpen, onClick }: BurgerMenuButt
       aria-expanded={isMenuOpen}
     >
       <span className="sr-only">Open main menu</span>
-      {!isMenuOpen ? (
-        <MenuIcon />
-      ) : (
-        <CloseIcon />
-      )}
+      {!isMenuOpen ? <MenuIcon /> : <CloseIcon />}
     </button>
   );
-} 
+}

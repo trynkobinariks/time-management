@@ -5,7 +5,9 @@ export const useThemeSwitcher = () => {
 
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme');
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const prefersDark = window.matchMedia(
+      '(prefers-color-scheme: dark)',
+    ).matches;
     setIsDark(savedTheme === 'dark' || (!savedTheme && prefersDark));
   }, []);
 

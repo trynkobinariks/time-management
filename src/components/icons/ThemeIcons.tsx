@@ -38,4 +38,4 @@ export function MoonIcon(props: SVGProps<SVGSVGElement>) {
       />
     </svg>
   );
-} 
+}

@@ -9,7 +9,10 @@ interface ProjectCardProps {
   onEditClick: () => void;
 }
 
-export default function ProjectCard({ project, onEditClick }: ProjectCardProps) {
+export default function ProjectCard({
+  project,
+  onEditClick,
+}: ProjectCardProps) {
   const { deleteProject } = useProjectContext();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
@@ -47,8 +50,19 @@ export default function ProjectCard({ project, onEditClick }: ProjectCardProps) 
           aria-label="Edit project"
           title="Edit project"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-5 w-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={1.5}
+              d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+            />
           </svg>
         </button>
         <button
@@ -57,8 +71,19 @@ export default function ProjectCard({ project, onEditClick }: ProjectCardProps) 
           aria-label="Delete project"
           title="Delete project"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-5 w-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={1.5}
+              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+            />
           </svg>
         </button>
       </div>
@@ -67,9 +92,12 @@ export default function ProjectCard({ project, onEditClick }: ProjectCardProps) 
       {showDeleteConfirm && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
           <div className="bg-[var(--card-background)] rounded-lg p-6 max-w-sm w-full mx-4">
-            <h3 className="text-lg font-medium text-[var(--text-primary)] mb-4">Delete Project</h3>
+            <h3 className="text-lg font-medium text-[var(--text-primary)] mb-4">
+              Delete Project
+            </h3>
             <p className="text-sm text-[var(--text-secondary)] mb-6">
-              Are you sure you want to delete &ldquo;{project.name}&rdquo;? This action cannot be undone.
+              Are you sure you want to delete &ldquo;{project.name}&rdquo;? This
+              action cannot be undone.
             </p>
             <div className="flex justify-end space-x-3">
               <button
@@ -90,4 +118,4 @@ export default function ProjectCard({ project, onEditClick }: ProjectCardProps) 
       )}
     </div>
   );
-} 
+}

@@ -46,7 +46,9 @@ export default function UpdatePasswordPage() {
       await updatePassword(password);
       router.push('/');
     } catch (error) {
-      setError(error instanceof Error ? error.message : 'An unexpected error occurred');
+      setError(
+        error instanceof Error ? error.message : 'An unexpected error occurred',
+      );
     } finally {
       setLoading(false);
     }
@@ -71,7 +73,7 @@ export default function UpdatePasswordPage() {
               id="password"
               label="New password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={e => setPassword(e.target.value)}
               autoComplete="new-password"
               placeholder="New password"
               disabled={loading}
@@ -82,7 +84,7 @@ export default function UpdatePasswordPage() {
               id="confirm-password"
               label="Confirm new password"
               value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
+              onChange={e => setConfirmPassword(e.target.value)}
               autoComplete="new-password"
               placeholder="Confirm new password"
               disabled={loading}
@@ -116,4 +118,4 @@ export default function UpdatePasswordPage() {
       </div>
     </div>
   );
-} 
+}

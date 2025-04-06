@@ -12,16 +12,22 @@ interface TimeEntryFormProps {
   editingEntry?: TimeEntry | null;
 }
 
-export default function TimeEntryForm({ projectId, onSuccess, onCancel, editingEntry }: TimeEntryFormProps) {
-  const { projects, timeEntries, addTimeEntry, updateTimeEntry } = useProjectContext();
-  
+export default function TimeEntryForm({
+  projectId,
+  onSuccess,
+  onCancel,
+  editingEntry,
+}: TimeEntryFormProps) {
+  const { projects, timeEntries, addTimeEntry, updateTimeEntry } =
+    useProjectContext();
+
   const [formData, setFormData] = useState({
     project_id: projectId || '',
     date: format(new Date(), 'yyyy-MM-dd'),
     hours: '',
     description: '',
   });
-  
+
   useEffect(() => {
     if (editingEntry) {
       setFormData({
@@ -32,13 +38,17 @@ export default function TimeEntryForm({ projectId, onSuccess, onCancel, editingE
       });
     }
   }, [editingEntry]);
-  
+
   const [errors, setErrors] = useState<Record<string, string>>({});
-  
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >,
+  ) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-    
+
     // Clear error when field is edited
     if (errors[name]) {
       setErrors(prev => {
@@ -48,14 +58,14 @@ export default function TimeEntryForm({ projectId, onSuccess, onCancel, editingE
       });
     }
   };
-  
+
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
-    
+
     if (!formData.project_id) {
       newErrors.project_id = 'Please select a project';
     }
-    
+
     if (!formData.date) {
       newErrors.date = 'Date is required';
     } else {
@@ -63,21 +73,24 @@ export default function TimeEntryForm({ projectId, onSuccess, onCancel, editingE
       const entryDate = new Date(formData.date);
       const weekStart = startOfWeek(entryDate, { weekStartsOn: 1 });
       const weekEnd = endOfWeek(weekStart, { weekStartsOn: 1 });
-      
+
       const weekEntries = timeEntries.filter(entry => {
         const date = new Date(entry.date);
         return date >= weekStart && date <= weekEnd;
       });
-      
-      const weeklyHours = weekEntries.reduce((sum, entry) => sum + entry.hours, 0);
+
+      const weeklyHours = weekEntries.reduce(
+        (sum, entry) => sum + entry.hours,
+        0,
+      );
       const newHours = parseFloat(formData.hours) || 0;
       const totalHours = weeklyHours + newHours;
-      
+
       if (totalHours > 40) {
         newErrors.hours = `Adding ${newHours}h would exceed the 40h weekly limit (${weeklyHours.toFixed(1)}h used)`;
       }
     }
-    
+
     if (!formData.hours) {
       newErrors.hours = 'Hours are required';
     } else {
@@ -88,14 +101,14 @@ export default function TimeEntryForm({ projectId, onSuccess, onCancel, editingE
         newErrors.hours = 'Hours cannot exceed 24 per day';
       }
     }
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-  
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (validateForm()) {
       try {
         if (editingEntry) {
@@ -114,26 +127,27 @@ export default function TimeEntryForm({ projectId, onSuccess, onCancel, editingE
             description: formData.description,
           });
         }
-        
+
         if (onSuccess) {
           onSuccess();
         }
       } catch (error) {
         console.error('Failed to save time entry:', error);
-        
+
         // Show user-friendly error
-        const errorMessage = error instanceof Error 
-          ? error.message 
-          : 'Failed to save time entry. Please try again.';
-          
+        const errorMessage =
+          error instanceof Error
+            ? error.message
+            : 'Failed to save time entry. Please try again.';
+
         setErrors(prev => ({
           ...prev,
-          submit: errorMessage
+          submit: errorMessage,
         }));
       }
     }
   };
-  
+
   return (
     <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
       <div className="bg-[var(--card-background)] rounded-lg shadow-xl p-6 max-w-md w-full mx-4">
@@ -145,14 +159,28 @@ export default function TimeEntryForm({ projectId, onSuccess, onCancel, editingE
             onClick={onCancel}
             className="text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 cursor-pointer" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5 cursor-pointer"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
             </svg>
           </button>
         </div>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label htmlFor="project_id" className="block text-sm font-medium text-[var(--text-primary)] mb-1">
+            <label
+              htmlFor="project_id"
+              className="block text-sm font-medium text-[var(--text-primary)] mb-1"
+            >
               Project
             </label>
             <select
@@ -162,7 +190,9 @@ export default function TimeEntryForm({ projectId, onSuccess, onCancel, editingE
               onChange={handleChange}
               disabled={!!projectId}
               className={`w-full rounded-md border ${
-                errors.project_id ? 'border-red-500' : 'border-[var(--card-border)]'
+                errors.project_id
+                  ? 'border-red-500'
+                  : 'border-[var(--card-border)]'
               } px-3 py-2 text-[var(--text-primary)] bg-[var(--card-background)] focus:outline-none focus:ring-1 focus:ring-[var(--card-border)] cursor-pointer`}
             >
               <option value="">Select a project</option>
@@ -173,12 +203,17 @@ export default function TimeEntryForm({ projectId, onSuccess, onCancel, editingE
               ))}
             </select>
             {errors.project_id && (
-              <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.project_id}</p>
+              <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+                {errors.project_id}
+              </p>
             )}
           </div>
-          
+
           <div>
-            <label htmlFor="date" className="block text-sm font-medium text-[var(--text-primary)] mb-1">
+            <label
+              htmlFor="date"
+              className="block text-sm font-medium text-[var(--text-primary)] mb-1"
+            >
               Date
             </label>
             <input
@@ -192,12 +227,17 @@ export default function TimeEntryForm({ projectId, onSuccess, onCancel, editingE
               } px-3 py-2 text-[var(--text-primary)] bg-[var(--card-background)] focus:outline-none focus:ring-1 focus:ring-[var(--card-border)] cursor-pointer`}
             />
             {errors.date && (
-              <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.date}</p>
+              <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+                {errors.date}
+              </p>
             )}
           </div>
-          
+
           <div>
-            <label htmlFor="hours" className="block text-sm font-medium text-[var(--text-primary)] mb-1">
+            <label
+              htmlFor="hours"
+              className="block text-sm font-medium text-[var(--text-primary)] mb-1"
+            >
               Hours
             </label>
             <input
@@ -215,12 +255,17 @@ export default function TimeEntryForm({ projectId, onSuccess, onCancel, editingE
               placeholder="0.0"
             />
             {errors.hours && (
-              <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.hours}</p>
+              <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+                {errors.hours}
+              </p>
             )}
           </div>
-          
+
           <div>
-            <label htmlFor="description" className="block text-sm font-medium text-[var(--text-primary)] mb-1">
+            <label
+              htmlFor="description"
+              className="block text-sm font-medium text-[var(--text-primary)] mb-1"
+            >
               Description
             </label>
             <textarea
@@ -230,17 +275,23 @@ export default function TimeEntryForm({ projectId, onSuccess, onCancel, editingE
               onChange={handleChange}
               rows={3}
               className={`w-full rounded-md border ${
-                errors.description ? 'border-red-500' : 'border-[var(--card-border)]'
+                errors.description
+                  ? 'border-red-500'
+                  : 'border-[var(--card-border)]'
               } px-3 py-2 text-[var(--text-primary)] bg-[var(--card-background)] focus:outline-none focus:ring-1 focus:ring-[var(--card-border)]`}
               placeholder="What did you work on?"
             />
             {errors.description && (
-              <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.description}</p>
+              <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+                {errors.description}
+              </p>
             )}
           </div>
 
           {errors.submit && (
-            <p className="text-sm text-red-600 dark:text-red-400">{errors.submit}</p>
+            <p className="text-sm text-red-600 dark:text-red-400">
+              {errors.submit}
+            </p>
           )}
 
           <div className="flex justify-end space-x-3">
@@ -262,4 +313,4 @@ export default function TimeEntryForm({ projectId, onSuccess, onCancel, editingE
       </div>
     </div>
   );
-} 
+}
