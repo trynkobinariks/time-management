@@ -1,8 +1,9 @@
-import { supabase } from './supabase';
+import { getSupabase } from './supabase';
 import { Project, TimeEntry } from './types';
 
 export async function getProfile(userId: string) {
-  const { data, error } = await supabase
+  const supabaseClient = getSupabase();
+  const { data, error } = await supabaseClient
     .from('profiles')
     .select('*')
     .eq('id', userId)
@@ -13,7 +14,8 @@ export async function getProfile(userId: string) {
 }
 
 export async function getProjects(userId: string) {
-  const { data, error } = await supabase
+  const supabaseClient = getSupabase();
+  const { data, error } = await supabaseClient
     .from('projects')
     .select('*')
     .eq('user_id', userId)
@@ -27,7 +29,8 @@ export async function createProject(
   userId: string,
   project: Omit<Project, 'id' | 'created_at' | 'updated_at' | 'user_id'>,
 ) {
-  const { data, error } = await supabase
+  const supabaseClient = getSupabase();
+  const { data, error } = await supabaseClient
     .from('projects')
     .insert([{ ...project, user_id: userId }])
     .select()
@@ -42,7 +45,8 @@ export async function updateProject(
   projectId: string,
   project: Project,
 ) {
-  const { data, error } = await supabase
+  const supabaseClient = getSupabase();
+  const { data, error } = await supabaseClient
     .from('projects')
     .update(project)
     .eq('id', projectId)
@@ -55,7 +59,8 @@ export async function updateProject(
 }
 
 export async function deleteProject(userId: string, projectId: string) {
-  const { error } = await supabase
+  const supabaseClient = getSupabase();
+  const { error } = await supabaseClient
     .from('projects')
     .delete()
     .eq('id', projectId)
@@ -69,7 +74,8 @@ export async function getTimeEntries(
   startDate: Date,
   endDate: Date,
 ) {
-  const { data, error } = await supabase
+  const supabaseClient = getSupabase();
+  const { data, error } = await supabaseClient
     .from('time_entries')
     .select('*')
     .eq('user_id', userId)
@@ -85,7 +91,8 @@ export async function createTimeEntry(
   userId: string,
   entry: Omit<TimeEntry, 'id' | 'created_at' | 'updated_at' | 'user_id'>,
 ) {
-  const { data, error } = await supabase
+  const supabaseClient = getSupabase();
+  const { data, error } = await supabaseClient
     .from('time_entries')
     .insert([{ ...entry, user_id: userId }])
     .select()
@@ -100,7 +107,8 @@ export async function updateTimeEntry(
   entryId: string,
   entry: TimeEntry,
 ) {
-  const { data, error } = await supabase
+  const supabaseClient = getSupabase();
+  const { data, error } = await supabaseClient
     .from('time_entries')
     .update(entry)
     .eq('id', entryId)
@@ -113,7 +121,8 @@ export async function updateTimeEntry(
 }
 
 export async function deleteTimeEntry(userId: string, entryId: string) {
-  const { error } = await supabase
+  const supabaseClient = getSupabase();
+  const { error } = await supabaseClient
     .from('time_entries')
     .delete()
     .eq('id', entryId)
