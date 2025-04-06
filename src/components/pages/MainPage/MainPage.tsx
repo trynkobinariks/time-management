@@ -28,7 +28,7 @@ const MainPage = () => {
   } = useVoiceTimeEntry();
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-7xl relative flex flex-col h-[calc(100vh-64px)]">
+    <div className="container mx-auto px-4 py-8 max-w-7xl relative flex flex-col h-[calc(100vh-64px-52px)]">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-medium text-[var(--text-primary)] text-center w-full lg:text-left lg:w-auto">
           {t('welcome.title')}
@@ -61,7 +61,7 @@ const MainPage = () => {
         </div>
       </div>
 
-      <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 z-10">
+      <div className="fixed bottom-12 left-1/2 transform -translate-x-1/2 z-10">
         <RecordButton
           isListening={isListening}
           isProcessing={isProcessing}

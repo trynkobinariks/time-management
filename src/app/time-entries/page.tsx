@@ -41,7 +41,7 @@ export default function TimeEntriesPage() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8 time-entries-page">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-medium text-[var(--text-primary)]">
           {t('header.nav.timeEntries')}

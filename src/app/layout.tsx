@@ -4,6 +4,7 @@ import './globals.css';
 import { ProjectProvider } from '@/contexts/ProjectContext';
 import { LanguageProvider } from '@/contexts/LanguageContext';
 import Header from '@/components/Header/Header';
+import Footer from '@/components/Footer/Footer';
 import { AuthProvider } from '@/contexts/AuthContext';
 
 // Primary font for body text - wider character width
@@ -49,10 +50,11 @@ export default function RootLayout({
         <AuthProvider>
           <LanguageProvider>
             <ProjectProvider>
-              <div className="min-h-[calc(100vh-65px)]">
+              <div className="min-h-screen flex flex-col">
                 <Header />
                 <div className="h-16" />
-                <main>{children}</main>
+                <main className="flex-grow">{children}</main>
+                <Footer appName="Voice Tracker" />
               </div>
             </ProjectProvider>
           </LanguageProvider>
