@@ -145,5 +145,6 @@
     "darkMode": "Dark Mode",
     "lightMode": "Light Mode",
     "toggleTheme": "Toggle theme"
-  }
+  },
+  "notSupported": "Speech recognition is not supported in this browser"
 }
