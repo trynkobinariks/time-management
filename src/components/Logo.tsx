@@ -40,13 +40,13 @@ export default function Logo({ className = '', size = 'md' }: LogoProps) {
 
         {/* T - wide version */}
         <path
-          d="M75 50H105"
+          d="M70 50H120"
           stroke="#4B6A97"
           strokeWidth="9"
           strokeLinecap="round"
         />
         <path
-          d="M90 50V70"
+          d="M95 50V70"
           stroke="#4B6A97"
           strokeWidth="9"
           strokeLinecap="round"

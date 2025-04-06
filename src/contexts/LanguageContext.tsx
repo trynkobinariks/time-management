@@ -13,18 +13,26 @@ const LanguageContext = createContext<LanguageContextType | undefined>(
 );
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
-  const [language, setLanguage] = useState<RecognitionLanguage>(() => {
-    if (typeof window !== 'undefined') {
-      return (
-        (localStorage.getItem('language') as RecognitionLanguage) || 'en-US'
-      );
-    }
-    return 'en-US';
-  });
+  // Always start with a consistent server default
+  const [language, setLanguage] = useState<RecognitionLanguage>('en-US');
+  // Handle client-side hydration separately
+  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
-    localStorage.setItem('language', language);
-  }, [language]);
+    setIsClient(true);
+    const storedLanguage = localStorage.getItem(
+      'language',
+    ) as RecognitionLanguage;
+    if (storedLanguage) {
+      setLanguage(storedLanguage);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (isClient) {
+      localStorage.setItem('language', language);
+    }
+  }, [language, isClient]);
 
   return (
     <LanguageContext.Provider value={{ language, setLanguage }}>
