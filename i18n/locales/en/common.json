@@ -32,7 +32,32 @@
     "deleteEntrySuccess": "Time entry deleted successfully.",
     "deleteEntryError": "Error deleting time entry.",
     "deleteEntryCancel": "Delete Entry Cancel",
-    "deleteEntryConfirm": "Delete Entry Confirm"
+    "deleteEntryConfirm": "Delete Entry Confirm",
+    "title": "Time Entries",
+    "date": "Date",
+    "addEntry": "Add Time Entry",
+    "noEntries": "No time entries for this date",
+    "hoursWorked": "hours worked",
+    "popup": {
+      "editEntry": "Edit Time Entry",
+      "createEntry": "Add Time Entry",
+      "projectLabel": "Project",
+      "selectProject": "Select a project",
+      "date": "Date",
+      "hours": "Hours",
+      "description": "Description (optional)",
+      "descriptionPlaceholder": "What did you work on?",
+      "save": "Save Entry",
+      "cancel": "Cancel",
+      "delete": "Delete Entry",
+      "deleteConfirmation": "Are you sure you want to delete this time entry?",
+      "errors": {
+        "projectRequired": "Project is required",
+        "hoursRequired": "Hours are required",
+        "hoursPositive": "Hours must be positive",
+        "dateRequired": "Date is required"
+      }
+    }
   },
   "projects": {
     "title": "Projects",
@@ -91,7 +116,7 @@
     "loading": "Loading..."
   },
   "welcome": {
-    "title": "Record your work",
+    "title": "Your progress",
     "description": "This application helps you track and manage your time effectively across different projects.",
     "features": "Key Features:",
     "featuresList": {
@@ -102,6 +127,12 @@
       "generateReports": "Generate reports of your time entries"
     },
     "getStarted": "Get started by adding your first project or logging time for existing projects."
+  },
+  "dashboard": {
+    "weeklyHours": "Weekly Hours",
+    "totalHours": "Total Hours",
+    "overtime": "overtime",
+    "remaining": "remaining"
   },
   "voiceEntry": {
     "recording": "Recording...",
