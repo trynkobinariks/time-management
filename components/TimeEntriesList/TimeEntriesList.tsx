@@ -10,6 +10,7 @@ import CreateButton from '../CreateButton';
 interface Project {
   id: string;
   name: string;
+  type: string;
 }
 
 interface TimeEntriesListProps {
@@ -62,6 +63,12 @@ export default function TimeEntriesList({
   const getProjectName = (projectId: string) => {
     const project = projects.find(p => p.id === projectId);
     return project ? project.name : t('timeEntries.unknownProject');
+  };
+
+  // Get project type by ID
+  const getProjectType = (projectId: string) => {
+    const project = projects.find(p => p.id === projectId);
+    return project ? project.type : 'INTERNAL';
   };
 
   const handleEdit = (entry: TimeEntry) => {
@@ -133,6 +140,7 @@ export default function TimeEntriesList({
                 <TimeEntryItem
                   entry={entry}
                   projectName={getProjectName(entry.project_id)}
+                  projectType={getProjectType(entry.project_id)}
                   onEdit={handleEdit}
                   onDelete={onDeleteEntry}
                 />

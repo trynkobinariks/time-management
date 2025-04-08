@@ -1,8 +1,10 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Project } from '../lib/types';
+import { Project, ProjectType } from '../lib/types';
 import { useProjectContext } from '../contexts/ProjectContext';
+import { useClientTranslation } from '../hooks/useClientTranslation';
+import Badge from './Badge';
 
 interface ProjectCardProps {
   project: Project;
@@ -15,6 +17,7 @@ export default function ProjectCard({
 }: ProjectCardProps) {
   const { deleteProject } = useProjectContext();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const { t } = useClientTranslation();
 
   const handleDelete = async () => {
     try {
@@ -36,6 +39,16 @@ export default function ProjectCard({
           <h3 className="text-sm font-medium text-[var(--text-primary)]">
             {project.name}
           </h3>
+          <div className="ml-2">
+            <Badge
+              variant={project.type}
+              label={
+                project.type === ProjectType.INTERNAL
+                  ? t('projects.popup.typeInternal') || 'Internal'
+                  : t('projects.popup.typeCommercial') || 'Commercial'
+              }
+            />
+          </div>
         </div>
         {project.description && (
           <p className="mt-1 text-sm text-[var(--text-secondary)]">

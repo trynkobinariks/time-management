@@ -2,9 +2,8 @@
 
 import { useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { supabase } from '@/lib/supabase';
 import Logo from '@/components/Logo';
-
+import { createClient } from '@/lib/supabase/client';
 // Background component for auth pages
 function AuthBackground() {
   return (
@@ -34,11 +33,11 @@ function AuthCallbackContent() {
         }
 
         // Exchange the code for a session
-        if (!supabase) {
+        if (!createClient) {
           throw new Error('Supabase client not initialized');
         }
         const { data, error } =
-          await supabase.auth.exchangeCodeForSession(code);
+          await createClient().auth.exchangeCodeForSession(code);
 
         if (error) {
           throw error;

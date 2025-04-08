@@ -5,8 +5,9 @@ import { useClientTranslation } from '../../../hooks/useClientTranslation';
 import Datepicker from './components/DatePicker/Datepicker';
 import RecordButton from '../../VoiceTimeEntry/components/RecordButton';
 import { useVoiceTimeEntry } from '../../VoiceTimeEntry/useVoiceTimeEntry';
+import WeeklyProjectHours from '../../WeeklyProjectHours';
 
-const MainPage = () => {
+const Dashboard = () => {
   const { t } = useClientTranslation();
   const {
     projects,
@@ -30,10 +31,15 @@ const MainPage = () => {
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-7xl relative flex flex-col h-[calc(100vh-64px-54px)]">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-medium text-[var(--text-primary)] text-center w-full lg:text-left lg:w-auto">
-          {t('welcome.title')}
-        </h1>
+      <div className="flex flex-col mb-6 space-y-3">
+        <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center">
+          <h1 className="text-2xl font-medium text-[var(--text-primary)]">
+            {t('welcome.title')}
+          </h1>
+          <div className="mt-2 lg:mt-0 lg:w-3/5 xl:w-1/2">
+            <WeeklyProjectHours selectedDate={selectedDate} isCompact={true} />
+          </div>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 flex-grow">
@@ -75,4 +81,4 @@ const MainPage = () => {
   );
 };
 
-export default MainPage;
+export default Dashboard;

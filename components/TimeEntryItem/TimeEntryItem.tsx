@@ -1,10 +1,12 @@
 import { TimeEntry } from '../../lib/types';
 import { EditIcon, DeleteIcon } from '../icons';
 import { useClientTranslation } from '../../hooks/useClientTranslation';
+import Badge from '../Badge';
 
 interface TimeEntryItemProps {
   entry: TimeEntry;
   projectName: string;
+  projectType: string;
   onEdit: (entry: TimeEntry) => void;
   onDelete: (id: string) => void;
 }
@@ -12,6 +14,7 @@ interface TimeEntryItemProps {
 export default function TimeEntryItem({
   entry,
   projectName,
+  projectType,
   onEdit,
   onDelete,
 }: TimeEntryItemProps) {
@@ -21,9 +24,21 @@ export default function TimeEntryItem({
     <div className="px-6 py-4">
       <div className="flex justify-between items-start">
         <div>
-          <h3 className="text-sm font-medium text-[var(--text-primary)]">
-            {projectName}
-          </h3>
+          <div className="flex items-center">
+            <h3 className="text-sm font-medium text-[var(--text-primary)]">
+              {projectName}
+            </h3>
+            <div className="ml-2">
+              <Badge
+                variant={projectType}
+                label={
+                  projectType === 'INTERNAL'
+                    ? t('projects.popup.typeInternal') || 'Internal'
+                    : t('projects.popup.typeCommercial') || 'Commercial'
+                }
+              />
+            </div>
+          </div>
           {entry.description && (
             <p className="mt-1 text-sm text-[var(--text-secondary)]">
               {entry.description}

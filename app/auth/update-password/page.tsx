@@ -1,10 +1,10 @@
 'use client';
 
-import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { updatePassword } from '@/lib/auth';
+import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import Logo from '@/components/Logo';
 import PasswordInput from '@/components/PasswordInput';
+import { updatePasswordAction } from '@/lib/supabase/auth-actions';
 
 // Background component for auth pages
 function AuthBackground() {
@@ -23,36 +23,33 @@ export default function UpdatePasswordPage() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-  const router = useRouter();
+  const [formValid, setFormValid] = useState(false);
+  const searchParams = useSearchParams();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  useEffect(() => {
+    const errorParam = searchParams.get('error');
+    if (errorParam) {
+      setError(errorParam);
+    }
+  }, [searchParams]);
+
+  // Client-side validation
+  useEffect(() => {
     setError(null);
-
-    if (password !== confirmPassword) {
-      setError('Passwords do not match');
-      return;
+    if (password && confirmPassword) {
+      if (password !== confirmPassword) {
+        setError('Passwords do not match');
+        setFormValid(false);
+      } else if (password.length < 6) {
+        setError('Password must be at least 6 characters long');
+        setFormValid(false);
+      } else {
+        setFormValid(true);
+      }
+    } else {
+      setFormValid(false);
     }
-
-    if (password.length < 6) {
-      setError('Password must be at least 6 characters long');
-      return;
-    }
-
-    setLoading(true);
-
-    try {
-      await updatePassword(password);
-      router.push('/');
-    } catch (error) {
-      setError(
-        error instanceof Error ? error.message : 'An unexpected error occurred',
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [password, confirmPassword]);
 
   return (
     <div className="min-h-[calc(100vh-env(safe-area-inset-top))] flex items-center justify-center bg-gray-900 py-12 px-4 sm:px-6 lg:px-8 pb-env(safe-area-inset-bottom) auth-background">
@@ -67,16 +64,16 @@ export default function UpdatePasswordPage() {
             Please enter your new password below.
           </p>
         </div>
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+        <form className="mt-8 space-y-6" action={updatePasswordAction}>
           <div className="rounded-md shadow-sm -space-y-px">
             <PasswordInput
               id="password"
               label="New password"
+              name="password"
               value={password}
               onChange={e => setPassword(e.target.value)}
               autoComplete="new-password"
               placeholder="New password"
-              disabled={loading}
               rounded="top"
               className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-600 bg-gray-700 placeholder-gray-400 text-white rounded-t-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
@@ -87,7 +84,6 @@ export default function UpdatePasswordPage() {
               onChange={e => setConfirmPassword(e.target.value)}
               autoComplete="new-password"
               placeholder="Confirm new password"
-              disabled={loading}
               rounded="bottom"
               className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-600 bg-gray-700 placeholder-gray-400 text-white rounded-b-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
@@ -106,12 +102,12 @@ export default function UpdatePasswordPage() {
           <div>
             <button
               type="submit"
-              disabled={loading}
+              disabled={!formValid}
               className={`group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white ${
-                loading ? 'bg-gray-600' : 'bg-blue-600 hover:bg-blue-700'
+                !formValid ? 'bg-gray-600' : 'bg-blue-600 hover:bg-blue-700'
               }`}
             >
-              {loading ? 'Updating password...' : 'Update password'}
+              Update password
             </button>
           </div>
         </form>

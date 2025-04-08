@@ -67,18 +67,21 @@ export default function TimeEntriesPage() {
                 </h2>
               </div>
               <div className="divide-y divide-[var(--card-border)]">
-                {entries.map(entry => (
-                  <TimeEntryItem
-                    key={entry.id}
-                    entry={entry}
-                    projectName={
-                      projects.find(p => p.id === entry.project_id)?.name ||
-                      t('timeEntries.unknownProject')
-                    }
-                    onEdit={handleEdit}
-                    onDelete={handleDelete}
-                  />
-                ))}
+                {entries.map(entry => {
+                  const project = projects.find(p => p.id === entry.project_id);
+                  return (
+                    <TimeEntryItem
+                      key={entry.id}
+                      entry={entry}
+                      projectName={
+                        project?.name || t('timeEntries.unknownProject')
+                      }
+                      projectType={project?.type || 'INTERNAL'}
+                      onEdit={handleEdit}
+                      onDelete={handleDelete}
+                    />
+                  );
+                })}
               </div>
             </div>
           ))}

@@ -20,6 +20,7 @@ export interface Project extends BaseModel {
   name: string;
   description?: string;
   color?: string;
+  type: ProjectType;
 }
 
 export interface TimeEntry extends BaseModel {
