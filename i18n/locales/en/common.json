@@ -60,6 +60,9 @@
       "deleteError": "Error deleting project",
       "create": "Create Project",
       "update": "Update Project",
+      "type": "Project Type",
+      "typeInternal": "Internal",
+      "typeCommercial": "Commercial",
       "errors": {
         "nameRequired": "Project name is required"
       }

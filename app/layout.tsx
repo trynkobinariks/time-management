@@ -52,9 +52,9 @@ export default async function RootLayout({
       </head>
       <body className="bg-[var(--background)] text-[var(--text-primary)] transition-colors duration-200 font-sans">
         <LanguageProvider>
+          <SessionRefresh />
           <ProjectProvider>
             <div className="min-h-screen flex flex-col">
-              <SessionRefresh />
               <Header session={session} />
               <div className="h-16" />
               <main className="flex-grow">{children}</main>

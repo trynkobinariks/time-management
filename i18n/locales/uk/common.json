@@ -58,6 +58,9 @@
       "deleteConfirmation": "Ви впевнені, що хочете видалити цей проєкт?",
       "deleteSuccess": "Проєкт успішно видалено",
       "deleteError": "Помилка видалення проєкту",
+      "type": "Тип проєкту",
+      "typeInternal": "Внутрішній",
+      "typeCommercial": "Комерційний",
       "create": "Створити проєкт",
       "update": "Оновити проєкт",
       "errors": {

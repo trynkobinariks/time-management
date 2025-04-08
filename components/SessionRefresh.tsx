@@ -15,6 +15,7 @@ export default function SessionRefresh() {
 
     // List of routes that should be protected
     const protectedRoutes = [
+      '/dashboard',
       '/settings',
       '/profile',
       '/projects',
