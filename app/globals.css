@@ -8,6 +8,19 @@
   --text-primary: #111827;
   --text-secondary: #4b5563;
   
+  /* Badge colors - light theme (high contrast) */
+    --badge-internal-bg: #dbeafe;
+    /* blue-200 */
+    --badge-internal-text: #1e3a8a;
+    /* blue-900 */
+    --badge-commercial-bg: #fef3c7;
+    /* amber-200 */
+    --badge-commercial-text: #92400e;
+    /* amber-900 */
+    --badge-default-bg: #e5e7eb;
+    /* gray-200 */
+    --badge-default-text: #111827;
+    /* gray-900 */
   /* Font family variables */
   --font-sans: var(--font-nunito-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
   --font-headings: var(--font-open-sans), var(--font-sans);
@@ -20,6 +33,19 @@
   --card-border: #374151;
   --text-primary: #f9fafb;
   --text-secondary: #9ca3af;
+  /* Badge colors - dark theme */
+    --badge-internal-bg: rgba(37, 99, 235, 0.3);
+    /* blue-900/30 */
+    --badge-internal-text: #93c5fd;
+    /* blue-300 */
+    --badge-commercial-bg: rgba(217, 119, 6, 0.3);
+    /* amber-900/30 */
+    --badge-commercial-text: #fcd34d;
+    /* amber-300 */
+    --badge-default-bg: #374151;
+    /* gray-700 */
+    --badge-default-text: #d1d5db;
+    /* gray-300 */
 }
 
 /* Footer positioning */

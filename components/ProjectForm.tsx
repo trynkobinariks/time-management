@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { useProjectContext } from '../contexts/ProjectContext';
-import { Project } from '../lib/types';
+import { Project, ProjectType } from '../lib/types';
 import { useClientTranslation } from '../hooks/useClientTranslation';
 
 // Project color palette - modern, accessible colors
@@ -36,6 +36,7 @@ export default function ProjectForm({
   const [formData, setFormData] = useState({
     name: project?.name || '',
     description: project?.description || '',
+    type: project?.type || ProjectType.INTERNAL,
     color: project?.color || PROJECT_COLORS[0],
   });
 
@@ -82,6 +83,7 @@ export default function ProjectForm({
         name: formData.name.trim(),
         description: formData.description.trim() || undefined,
         color: formData.color || undefined,
+        type: formData.type,
       };
 
       if (project) {
@@ -144,6 +146,55 @@ export default function ProjectForm({
           className="w-full rounded-md border border-[var(--card-border)] px-3 py-2 text-[var(--text-primary)] bg-[var(--card-background)] focus:outline-none focus:ring-1 focus:ring-[var(--card-border)] cursor-text"
           placeholder={t('projects.popup.descriptionPlaceholder')}
         />
+      </div>
+
+      <div>
+        <label
+          htmlFor="type"
+          className="block text-sm font-medium text-[var(--text-primary)] mb-1 cursor-pointer"
+        >
+          {t('projects.popup.type') || 'Project Type'}
+        </label>
+        <div className="flex gap-4">
+          <label className="flex items-center cursor-pointer">
+            <input
+              type="radio"
+              name="type"
+              value={ProjectType.INTERNAL}
+              checked={formData.type === ProjectType.INTERNAL}
+              onChange={handleChange}
+              className="sr-only"
+            />
+            <span
+              className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                formData.type === ProjectType.INTERNAL
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-[var(--card-background)] text-[var(--text-primary)] border border-[var(--card-border)]'
+              }`}
+            >
+              {t('projects.popup.typeInternal') || 'Internal'}
+            </span>
+          </label>
+          <label className="flex items-center cursor-pointer">
+            <input
+              type="radio"
+              name="type"
+              value={ProjectType.EXTERNAL}
+              checked={formData.type === ProjectType.EXTERNAL}
+              onChange={handleChange}
+              className="sr-only"
+            />
+            <span
+              className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                formData.type === ProjectType.EXTERNAL
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-[var(--card-background)] text-[var(--text-primary)] border border-[var(--card-border)]'
+              }`}
+            >
+              {t('projects.popup.typeCommercial') || 'Commercial'}
+            </span>
+          </label>
+        </div>
       </div>
 
       <div>

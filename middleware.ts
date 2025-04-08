@@ -1,82 +1,77 @@
 import { createServerClient } from '@supabase/ssr';
-import { type NextRequest, NextResponse } from 'next/server';
+import { NextResponse, type NextRequest } from 'next/server';
 
-export async function middleware(req: NextRequest) {
-  // Skip middleware for RSC requests
-  if (req.url.includes('_rsc') || req.url.includes('_next/data')) {
-    return NextResponse.next();
-  }
+export async function middleware(request: NextRequest) {
+  const response = NextResponse.next();
 
-  // Initialize response object that we can modify
-  const res = NextResponse.next();
-
-  // Create supabase server client
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
         get(name) {
-          return req.cookies.get(name)?.value;
+          return request.cookies.get(name)?.value;
         },
         set(name, value, options) {
-          req.cookies.set({
+          request.cookies.set({
             name,
             value,
             ...options,
           });
-          res.cookies.set({
+          response.cookies.set({
             name,
             value,
             ...options,
           });
         },
-        remove(name, options) {
-          req.cookies.set({
-            name,
-            value: '',
-            ...options,
-          });
-          res.cookies.set({
-            name,
-            value: '',
-            ...options,
-          });
+        remove(name) {
+          request.cookies.delete(name);
+          response.cookies.delete(name);
         },
       },
     },
   );
 
-  // Refresh session if expired & get user info
+  // Check auth status
   const {
     data: { session },
   } = await supabase.auth.getSession();
-  const user = session?.user;
 
-  // Define auth pages that should be accessible without a session
-  const PUBLIC_ROUTES = ['/auth/login', '/auth/signup', '/auth/reset-password'];
-  const isAuthPage = req.nextUrl.pathname.startsWith('/auth/');
-  const isPublicRoute = PUBLIC_ROUTES.includes(req.nextUrl.pathname);
+  // Define protected and public routes
+  const protectedRoutes = [
+    '/dashboard',
+    '/settings',
+    '/profile',
+    '/projects',
+    '/time-entries',
+  ];
+  const isProtectedRoute = protectedRoutes.some(route =>
+    request.nextUrl.pathname.startsWith(route),
+  );
 
-  // Special handling for callback page
-  if (req.nextUrl.pathname === '/auth/callback') {
-    return res;
+  const authRoutes = ['/auth/login', '/auth/signup', '/auth/reset-password'];
+  const isAuthRoute = authRoutes.some(
+    route => request.nextUrl.pathname === route,
+  );
+
+  // Handle auth callback route specially
+  if (request.nextUrl.pathname === '/auth/callback') {
+    return response;
   }
 
-  // If there's no user and trying to access a protected route
-  if (!user && !isAuthPage && !isPublicRoute) {
-    const redirectUrl = new URL('/auth/login', req.url);
-    // Preserve the original URL as a "next" parameter
-    redirectUrl.searchParams.set('next', req.nextUrl.pathname);
+  // Redirect authenticated users away from auth pages
+  if (session && isAuthRoute) {
+    return NextResponse.redirect(new URL('/dashboard', request.url));
+  }
+
+  // Redirect unauthenticated users away from protected pages
+  if (!session && isProtectedRoute) {
+    const redirectUrl = new URL('/auth/login', request.url);
+    redirectUrl.searchParams.set('next', request.nextUrl.pathname);
     return NextResponse.redirect(redirectUrl);
   }
 
-  // If there's a user and trying to access auth pages
-  if (user && isAuthPage) {
-    return NextResponse.redirect(new URL('/', req.url));
-  }
-
-  return res;
+  return response;
 }
 
 export const config = {

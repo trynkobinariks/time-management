@@ -1,11 +1,12 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { createBrowserClient } from '@supabase/ssr';
+import { useSearchParams } from 'next/navigation';
 import Logo from '@/components/Logo';
 import PasswordInput from '@/components/PasswordInput';
 import { useClientTranslation } from '@/hooks/useClientTranslation';
+import { signUpAction } from '@/lib/supabase/auth-actions';
 
 // Background component for auth pages
 function AuthBackground() {
@@ -22,63 +23,22 @@ function AuthBackground() {
 
 export default function SignUpPage() {
   const { t } = useClientTranslation();
-  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
-  const supabase = createBrowserClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '',
-  );
+  const searchParams = useSearchParams();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError(null);
-    setLoading(true);
-
-    try {
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          emailRedirectTo: `${window.location.origin}/auth/callback`,
-        },
-      });
-
-      if (error) {
-        setError(
-          error.message || 'Failed to create account. Please try again.',
-        );
-        return;
-      }
-
-      // Check if the user already exists (Supabase returns a user with identities=[] for existing emails)
-      if (
-        data.user &&
-        data.user.identities &&
-        data.user.identities.length === 0
-      ) {
-        setError(
-          'An account with this email already exists. Please sign in instead.',
-        );
-        return;
-      }
-
-      if (!data.user) {
-        setError('Failed to create account. Please try again.');
-        return;
-      }
-
-      setSuccess(true);
-    } catch (error) {
-      setError(
-        error instanceof Error ? error.message : 'An unexpected error occurred',
-      );
-    } finally {
-      setLoading(false);
+  useEffect(() => {
+    const errorParam = searchParams.get('error');
+    if (errorParam) {
+      setError(errorParam);
     }
-  };
+
+    const successParam = searchParams.get('success');
+    if (successParam) {
+      setSuccess(true);
+    }
+  }, [searchParams]);
 
   if (success) {
     return (
@@ -127,7 +87,7 @@ export default function SignUpPage() {
             </Link>
           </p>
         </div>
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+        <form className="mt-8 space-y-6" action={signUpAction}>
           <div className="rounded-md shadow-sm -space-y-px">
             <div>
               <label htmlFor="email-address" className="sr-only">
@@ -139,8 +99,6 @@ export default function SignUpPage() {
                 type="email"
                 autoComplete="email"
                 required
-                value={email}
-                onChange={e => setEmail(e.target.value)}
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-[var(--card-border)] bg-[var(--card-background)] placeholder-[var(--text-secondary)] text-[var(--text-primary)] rounded-t-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder={t('auth.login.email')}
               />
@@ -148,11 +106,11 @@ export default function SignUpPage() {
             <PasswordInput
               id="password"
               label={t('auth.login.password')}
+              name="password"
               value={password}
               onChange={e => setPassword(e.target.value)}
               autoComplete="new-password"
               placeholder={t('auth.login.password')}
-              disabled={loading}
               rounded="bottom"
               className="appearance-none rounded-none relative block w-full px-3 py-2 border border-[var(--card-border)] bg-[var(--card-background)] placeholder-[var(--text-secondary)] text-[var(--text-primary)] rounded-b-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
@@ -171,14 +129,9 @@ export default function SignUpPage() {
           <div>
             <button
               type="submit"
-              disabled={loading}
-              className={`group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white cursor-pointer ${
-                loading
-                  ? 'bg-[var(--card-border)]'
-                  : 'bg-blue-600 hover:bg-blue-700'
-              }`}
+              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white cursor-pointer bg-blue-600 hover:bg-blue-700"
             >
-              {loading ? t('auth.loading') : t('auth.signup.createAccount')}
+              {t('auth.signup.createAccount')}
             </button>
           </div>
         </form>

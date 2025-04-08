@@ -1,9 +1,10 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { resetPassword } from '@/lib/auth';
+import { useSearchParams } from 'next/navigation';
 import Logo from '@/components/Logo';
+import { resetPasswordAction } from '@/lib/supabase/auth-actions';
 
 // Background component for auth pages
 function AuthBackground() {
@@ -21,25 +22,20 @@ function AuthBackground() {
 export default function ResetPasswordPage() {
   const [email, setEmail] = useState('');
   const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const searchParams = useSearchParams();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError(null);
-    setLoading(true);
-
-    try {
-      await resetPassword(email);
-      setSuccess(true);
-    } catch (error) {
-      setError(
-        error instanceof Error ? error.message : 'An unexpected error occurred',
-      );
-    } finally {
-      setLoading(false);
+  useEffect(() => {
+    const errorParam = searchParams.get('error');
+    if (errorParam) {
+      setError(errorParam);
     }
-  };
+
+    const successParam = searchParams.get('success');
+    if (successParam) {
+      setSuccess(true);
+    }
+  }, [searchParams]);
 
   if (success) {
     return (
@@ -83,7 +79,7 @@ export default function ResetPasswordPage() {
             your password.
           </p>
         </div>
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+        <form className="mt-8 space-y-6" action={resetPasswordAction}>
           <div>
             <label htmlFor="email-address" className="sr-only">
               Email address
@@ -120,14 +116,9 @@ export default function ResetPasswordPage() {
             </Link>
             <button
               type="submit"
-              disabled={loading}
-              className={`inline-flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white ${
-                loading
-                  ? 'bg-[var(--card-border)]'
-                  : 'bg-blue-600 hover:bg-blue-700'
-              }`}
+              className="inline-flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
             >
-              {loading ? 'Sending...' : 'Send reset link'}
+              Send reset link
             </button>
           </div>
         </form>

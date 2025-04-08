@@ -1,4 +1,4 @@
-import { DailySummary, Project, TimeEntry, WeeklySummary } from './types';
+import { DailySummary, Project, TimeEntry, WeeklySummary } from '../types';
 
 // Get the start of the week (Monday) for a given date
 export function getWeekStartDate(date: Date): Date {

@@ -2,7 +2,7 @@
 
 import React, { useMemo } from 'react';
 import { useProjectContext } from '../contexts/ProjectContext';
-import { addDays } from '../lib/utils';
+import { addDays } from '../lib/utils/utils';
 import { DailySummary } from '../lib/types';
 
 interface DailyHoursChartProps {

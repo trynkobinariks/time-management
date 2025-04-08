@@ -5,17 +5,16 @@ import { ProjectProvider } from '../contexts/ProjectContext';
 import { LanguageProvider } from '../contexts/LanguageContext';
 import Header from '../components/Header/Header';
 import Footer from '../components/Footer/Footer';
-import { AuthProvider } from '../contexts/AuthContext';
 import { HelpButton } from '../components/InfoHelp';
+import { createClient } from '@/lib/supabase/server';
+import SessionRefresh from '@/components/SessionRefresh';
 
-// Primary font for body text - wider character width
 const nunitoSans = Nunito_Sans({
   subsets: ['latin'],
   variable: '--font-nunito-sans',
   display: 'swap',
 });
 
-// Font for headings and UI elements - wider letter spacing
 const openSans = Open_Sans({
   subsets: ['latin'],
   variable: '--font-open-sans',
@@ -28,13 +27,17 @@ export const metadata: Metadata = {
   description: 'Track and manage your time effectively',
 };
 
-// Auth routes will use their own layout defined in auth/layout.tsx
-// This root layout will only be used for non-auth routes
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  // Get the session directly without caching
+  const supabase = await createClient();
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+
   return (
     <html
       lang="en"
@@ -48,19 +51,18 @@ export default function RootLayout({
         />
       </head>
       <body className="bg-[var(--background)] text-[var(--text-primary)] transition-colors duration-200 font-sans">
-        <AuthProvider>
-          <LanguageProvider>
-            <ProjectProvider>
-              <div className="min-h-screen flex flex-col">
-                <Header />
-                <div className="h-16" />
-                <main className="flex-grow">{children}</main>
-                <Footer appName="Voice Tracker" />
-                <HelpButton />
-              </div>
-            </ProjectProvider>
-          </LanguageProvider>
-        </AuthProvider>
+        <LanguageProvider>
+          <SessionRefresh />
+          <ProjectProvider>
+            <div className="min-h-screen flex flex-col">
+              <Header session={session} />
+              <div className="h-16" />
+              <main className="flex-grow">{children}</main>
+              <Footer appName="Voice Tracker" />
+              <HelpButton />
+            </div>
+          </ProjectProvider>
+        </LanguageProvider>
       </body>
     </html>
   );
