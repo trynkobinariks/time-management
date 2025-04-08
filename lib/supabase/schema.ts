@@ -39,6 +39,7 @@ export type Database = {
           description?: string;
           color?: string;
           user_id: string;
+          type: string;
         };
         Insert: {
           id?: string;
@@ -48,6 +49,7 @@ export type Database = {
           description?: string;
           color?: string;
           user_id: string;
+          type: string;
         };
         Update: {
           id?: string;
@@ -57,6 +59,7 @@ export type Database = {
           description?: string;
           color?: string;
           user_id?: string;
+          type?: string;
         };
         Relationships: [
           {
