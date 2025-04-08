@@ -1,12 +1,10 @@
 'use client';
 
-import React, { useState, useEffect, Suspense } from 'react';
+import React, { Suspense } from 'react';
 import Link from 'next/link';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { createBrowserClient } from '@supabase/ssr';
+import { useSearchParams } from 'next/navigation';
 import Logo from '@/components/Logo';
-import PasswordInput from '@/components/PasswordInput';
-import { useClientTranslation } from '@/hooks/useClientTranslation';
+import { signInAction } from '@/lib/auth-actions';
 
 // Background component for auth pages
 function AuthBackground() {
@@ -22,60 +20,16 @@ function AuthBackground() {
 }
 
 function LoginContent() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-  const router = useRouter();
+  const [error, setError] = React.useState<string | null>(null);
   const searchParams = useSearchParams();
-  const { t } = useClientTranslation();
-  const supabase = createBrowserClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '',
-  );
+  const next = searchParams.get('next') || '/app';
 
-  useEffect(() => {
-    const error = searchParams.get('error');
-    if (error) {
-      setError(error);
+  React.useEffect(() => {
+    const errorParam = searchParams.get('error');
+    if (errorParam) {
+      setError(errorParam);
     }
   }, [searchParams]);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError(null);
-    setLoading(true);
-
-    try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-
-      if (error) {
-        setError(
-          error.message || 'Failed to sign in. Please check your credentials.',
-        );
-        return;
-      }
-
-      if (!data.user) {
-        setError('Failed to sign in. Please check your credentials.');
-        return;
-      }
-
-      // Get the redirect path from URL query params or default to homepage
-      const redirectTo = searchParams.get('next') || '/';
-
-      // Add a small delay before redirect to ensure auth state is fully propagated
-      router.push(redirectTo);
-    } catch (error) {
-      setError('An unexpected error occurred');
-      console.error('Login error:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   return (
     <div className="min-h-[calc(100vh-53px-env(safe-area-inset-top))] flex items-center justify-center bg-white dark:bg-[var(--background)] px-4 sm:px-6 lg:px-8 pb-env(safe-area-inset-bottom) auth-background">
@@ -84,26 +38,24 @@ function LoginContent() {
         <div className="flex flex-col items-center">
           <Logo size="lg" className="mb-4" />
           <h2 className="text-center text-3xl font-medium text-gray-900 dark:text-[var(--text-primary)]">
-            {t('auth.login.title')}
+            Sign in to your account
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600 dark:text-[var(--text-secondary)]">
             <Link
               href="/auth/signup"
               className="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300"
             >
-              {t('auth.login.createAccount')}
+              Create an account
             </Link>
           </p>
         </div>
 
-        <form className="mt-8 space-y-6 z-50" onSubmit={handleSubmit}>
+        <form className="mt-8 space-y-6 z-50" action={signInAction}>
           {error && (
             <div className="rounded-md bg-red-900/50 p-4">
               <div className="flex">
                 <div className="ml-3">
-                  <h3 className="text-sm font-medium text-red-200">
-                    {t('auth.login.error')}
-                  </h3>
+                  <h3 className="text-sm font-medium text-red-200">Error</h3>
                   <div className="mt-2 text-sm text-red-100">{error}</div>
                 </div>
               </div>
@@ -113,7 +65,7 @@ function LoginContent() {
           <div className="rounded-md shadow-sm -space-y-px">
             <div>
               <label htmlFor="email" className="sr-only">
-                {t('auth.login.email')}
+                Email
               </label>
               <input
                 id="email"
@@ -121,24 +73,24 @@ function LoginContent() {
                 type="email"
                 autoComplete="email"
                 required
-                value={email}
-                onChange={e => setEmail(e.target.value)}
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 dark:border-[var(--card-border)] bg-white dark:bg-[var(--card-background)] placeholder-gray-500 dark:placeholder-[var(--text-secondary)] text-gray-900 dark:text-[var(--text-primary)] rounded-t-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder={t('auth.login.email')}
-                disabled={loading}
+                placeholder="Email"
               />
             </div>
-            <PasswordInput
-              id="password"
-              label={t('auth.login.password')}
-              value={password}
-              onChange={e => setPassword(e.target.value)}
-              autoComplete="current-password"
-              placeholder={t('auth.login.password')}
-              disabled={loading}
-              rounded="bottom"
-              className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 dark:border-[var(--card-border)] bg-white dark:bg-[var(--card-background)] placeholder-gray-500 dark:placeholder-[var(--text-secondary)] text-gray-900 dark:text-[var(--text-primary)] rounded-b-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
+            <div className="relative">
+              <label htmlFor="password" className="sr-only">
+                Password
+              </label>
+              <input
+                id="password"
+                name="password"
+                type="password"
+                autoComplete="current-password"
+                required
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 dark:border-[var(--card-border)] bg-white dark:bg-[var(--card-background)] placeholder-gray-500 dark:placeholder-[var(--text-secondary)] text-gray-900 dark:text-[var(--text-primary)] rounded-b-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="Password"
+              />
+            </div>
           </div>
 
           <div className="flex items-center justify-between">
@@ -147,22 +99,19 @@ function LoginContent() {
                 href="/auth/reset-password"
                 className="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300"
               >
-                {t('auth.login.forgotPassword')}
+                Forgot your password?
               </Link>
             </div>
           </div>
 
+          <input type="hidden" name="next" value={next} />
+
           <div>
             <button
               type="submit"
-              disabled={loading}
-              className={`group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white cursor-pointer ${
-                loading
-                  ? 'bg-gray-400 dark:bg-[var(--card-border)]'
-                  : 'bg-blue-600 hover:bg-blue-700'
-              }`}
+              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white cursor-pointer bg-blue-600 hover:bg-blue-700"
             >
-              {loading ? t('auth.login.signingIn') : t('auth.login.signIn')}
+              Sign in
             </button>
           </div>
         </form>
@@ -172,12 +121,11 @@ function LoginContent() {
 }
 
 export default function LoginPage() {
-  const { t } = useClientTranslation();
   return (
     <Suspense
       fallback={
         <div className="min-h-screen flex items-center justify-center text-[var(--text-primary)]">
-          {t('auth.loading')}
+          Loading...
         </div>
       }
     >
