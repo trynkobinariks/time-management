@@ -38,7 +38,13 @@ export async function middleware(request: NextRequest) {
   } = await supabase.auth.getSession();
 
   // Define protected and public routes
-  const protectedRoutes = ['/app', '/settings', '/profile'];
+  const protectedRoutes = [
+    '/dashboard',
+    '/settings',
+    '/profile',
+    '/projects',
+    '/time-entries',
+  ];
   const isProtectedRoute = protectedRoutes.some(route =>
     request.nextUrl.pathname.startsWith(route),
   );
@@ -55,7 +61,7 @@ export async function middleware(request: NextRequest) {
 
   // Redirect authenticated users away from auth pages
   if (session && isAuthRoute) {
-    return NextResponse.redirect(new URL('/app', request.url));
+    return NextResponse.redirect(new URL('/dashboard', request.url));
   }
 
   // Redirect unauthenticated users away from protected pages

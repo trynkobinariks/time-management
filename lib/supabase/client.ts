@@ -1,39 +1,25 @@
 import { createBrowserClient } from '@supabase/ssr';
+import type { SupabaseClient } from '@supabase/supabase-js';
+import { Database } from './schema';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+export type TypedSupabaseClient = SupabaseClient<Database, 'public'>;
 
-// Create a browser client safely
-export const createBrowserSupabaseClient = () => {
-  return createBrowserClient(supabaseUrl, supabaseAnonKey);
-};
-
-// Export a function to get the client that ensures it's only used on the client side
-let browserClient: ReturnType<typeof createBrowserSupabaseClient> | null = null;
-
-export const getSupabase = () => {
-  if (typeof window === 'undefined') {
-    throw new Error('getSupabase should only be called on the client side');
+export const createClient = (): TypedSupabaseClient => {
+  if (
+    !process.env.NEXT_PUBLIC_SUPABASE_URL ||
+    !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  ) {
+    throw new Error(
+      'Missing env variables: NEXT_PUBLIC_SUPABASE_URL or ANON_KEY',
+    );
   }
-  
-  if (!browserClient) {
-    browserClient = createBrowserSupabaseClient();
-  }
-  
-  return browserClient;
-};
-
-// For backward compatibility in existing code
-export const supabase = typeof window !== 'undefined'
-  ? getSupabase()
-  : null;
-
-export type SupabaseUser = {
-  id: string;
-  email?: string;
-  created_at: string;
-};
-
-export type AuthError = {
-  message: string;
+  return createBrowserClient<Database, 'public'>(
+    process.env.NEXT_PUBLIC_SUPABASE_URL,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+    {
+      db: {
+        schema: 'public',
+      },
+    },
+  );
 };

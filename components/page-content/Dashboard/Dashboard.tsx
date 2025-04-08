@@ -6,7 +6,7 @@ import Datepicker from './components/DatePicker/Datepicker';
 import RecordButton from '../../VoiceTimeEntry/components/RecordButton';
 import { useVoiceTimeEntry } from '../../VoiceTimeEntry/useVoiceTimeEntry';
 
-const MainPage = () => {
+const Dashboard = () => {
   const { t } = useClientTranslation();
   const {
     projects,
@@ -75,4 +75,4 @@ const MainPage = () => {
   );
 };
 
-export default MainPage;
+export default Dashboard;

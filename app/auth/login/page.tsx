@@ -22,7 +22,7 @@ function AuthBackground() {
 function LoginContent() {
   const [error, setError] = React.useState<string | null>(null);
   const searchParams = useSearchParams();
-  const next = searchParams.get('next') || '/app';
+  const next = searchParams.get('next') || '/dashboard';
 
   React.useEffect(() => {
     const errorParam = searchParams.get('error');

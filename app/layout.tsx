@@ -5,9 +5,9 @@ import { ProjectProvider } from '../contexts/ProjectContext';
 import { LanguageProvider } from '../contexts/LanguageContext';
 import Header from '../components/Header/Header';
 import Footer from '../components/Footer/Footer';
-import { AuthProvider } from '../contexts/AuthContext';
 import { HelpButton } from '../components/InfoHelp';
 import { createClient } from '@/lib/supabase/server';
+import SessionRefresh from '@/components/SessionRefresh';
 
 const nunitoSans = Nunito_Sans({
   subsets: ['latin'],
@@ -32,6 +32,7 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  // Get the session directly without caching
   const supabase = await createClient();
   const {
     data: { session },
@@ -50,19 +51,18 @@ export default async function RootLayout({
         />
       </head>
       <body className="bg-[var(--background)] text-[var(--text-primary)] transition-colors duration-200 font-sans">
-        <AuthProvider>
-          <LanguageProvider>
-            <ProjectProvider>
-              <div className="min-h-screen flex flex-col">
-                <Header session={session} />
-                <div className="h-16" />
-                <main className="flex-grow">{children}</main>
-                <Footer appName="Voice Tracker" />
-                <HelpButton />
-              </div>
-            </ProjectProvider>
-          </LanguageProvider>
-        </AuthProvider>
+        <LanguageProvider>
+          <ProjectProvider>
+            <div className="min-h-screen flex flex-col">
+              <SessionRefresh />
+              <Header session={session} />
+              <div className="h-16" />
+              <main className="flex-grow">{children}</main>
+              <Footer appName="Voice Tracker" />
+              <HelpButton />
+            </div>
+          </ProjectProvider>
+        </LanguageProvider>
       </body>
     </html>
   );

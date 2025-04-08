@@ -9,22 +9,45 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      profiles: {
+        Row: {
+          id: string;
+          created_at: string;
+          updated_at: string;
+          user_id: string;
+        };
+        Insert: {
+          id?: string;
+          created_at?: string;
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          id?: string;
+          created_at?: string;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
       projects: {
         Row: {
           id: string;
           created_at: string;
           updated_at: string;
           name: string;
-          description: string;
-          color: string;
+          description?: string;
+          color?: string;
+          user_id: string;
         };
         Insert: {
           id?: string;
           created_at?: string;
           updated_at?: string;
           name: string;
-          description: string;
-          color: string;
+          description?: string;
+          color?: string;
+          user_id: string;
         };
         Update: {
           id?: string;
@@ -33,8 +56,17 @@ export type Database = {
           name?: string;
           description?: string;
           color?: string;
+          user_id?: string;
         };
-        Relationships: [];
+        Relationships: [
+          {
+            foreignKeyName: 'projects_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
       };
 
       time_entries: {
@@ -45,7 +77,8 @@ export type Database = {
           project_id: string;
           date: string;
           hours: number;
-          description: string;
+          description?: string;
+          user_id: string;
         };
         Insert: {
           id?: string;
@@ -54,7 +87,8 @@ export type Database = {
           project_id: string;
           date: string;
           hours: number;
-          description: string;
+          description?: string;
+          user_id: string;
         };
         Update: {
           id?: string;
@@ -64,6 +98,7 @@ export type Database = {
           date?: string;
           hours?: number;
           description?: string;
+          user_id?: string;
         };
         Relationships: [
           {
@@ -71,6 +106,13 @@ export type Database = {
             columns: ['project_id'];
             isOneToOne: false;
             referencedRelation: 'projects';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'time_entries_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
             referencedColumns: ['id'];
           },
         ];

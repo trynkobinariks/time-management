@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ThemeSwitcher from '../ThemeSwitcher/ThemeSwitcher';
 import LanguageSwitcher from '../LanguageSwitcher';
 import Backdrop from '../Backdrop/Backdrop';
@@ -18,9 +18,12 @@ export default function Header({ session }: { session: Session | null }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const user = session?.user;
 
-  console.log('====================================');
-  console.log(user);
-  console.log('====================================');
+  // Close mobile menu when session changes
+  useEffect(() => {
+    if (isMenuOpen && !user) {
+      setIsMenuOpen(false);
+    }
+  }, [user, isMenuOpen]);
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-[var(--card-background)] border-b border-[var(--card-border)]">

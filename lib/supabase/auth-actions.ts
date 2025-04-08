@@ -8,7 +8,7 @@ import { encodedRedirect } from '../utils/auth-utils';
 export async function signInAction(formData: FormData) {
   const email = formData.get('email') as string;
   const password = formData.get('password') as string;
-  const nextUrl = (formData.get('next') as string) || '/app';
+  const nextUrl = (formData.get('next') as string) || '/';
 
   const supabase = await createClient();
 
@@ -27,8 +27,15 @@ export async function signInAction(formData: FormData) {
 
 export async function signOutAction() {
   const supabase = await createClient();
-  await supabase.auth.signOut();
-  redirect('/');
+
+  // Sign out the user
+  await supabase.auth.signOut({ scope: 'global' });
+
+  // Revalidate all paths to ensure the UI updates
+  revalidatePath('/', 'layout');
+
+  // Redirect to login page after sign out
+  redirect('/auth/login');
 }
 
 export async function signUpAction(formData: FormData) {
