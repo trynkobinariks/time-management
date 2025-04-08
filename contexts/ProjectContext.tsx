@@ -1,7 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { Project, TimeEntry } from '../lib/types';
+import { Project, TimeEntry, ProjectType } from '../lib/types';
 import { createBrowserClient } from '@supabase/ssr';
 import type { User } from '@supabase/supabase-js';
 import * as db from '../lib/supabase/db';
@@ -79,7 +79,12 @@ export function ProjectProvider({ children }: ProjectProviderProps) {
       try {
         // Load projects
         const projectsData = await db.getProjects(user.id);
-        setProjects(projectsData);
+        setProjects(
+          projectsData.map(p => ({
+            ...p,
+            type: p.type as ProjectType,
+          })),
+        );
 
         // Load time entries for the entire month
         const monthStart = new Date(selectedYear, selectedMonth, 1);
@@ -106,7 +111,10 @@ export function ProjectProvider({ children }: ProjectProviderProps) {
 
     try {
       const newProject = await db.createProject(user.id, project);
-      setProjects([...projects, newProject]);
+      setProjects([
+        ...projects,
+        { ...newProject, type: newProject.type as ProjectType },
+      ]);
     } catch (error) {
       console.error('Error creating project:', error);
       throw error;
@@ -123,7 +131,11 @@ export function ProjectProvider({ children }: ProjectProviderProps) {
         project,
       );
       setProjects(
-        projects.map(p => (p.id === project.id ? updatedProject : p)),
+        projects.map(p =>
+          p.id === project.id
+            ? { ...updatedProject, type: updatedProject.type as ProjectType }
+            : p,
+        ),
       );
     } catch (error) {
       console.error('Error updating project:', error);
