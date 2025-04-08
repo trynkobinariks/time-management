@@ -8,7 +8,7 @@ import { encodedRedirect } from '../utils/auth-utils';
 export async function signInAction(formData: FormData) {
   const email = formData.get('email') as string;
   const password = formData.get('password') as string;
-  const nextUrl = (formData.get('next') as string) || '/';
+  const nextUrl = (formData.get('next') as string) || '/dashboard';
 
   const supabase = await createClient();
 
