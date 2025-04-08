@@ -4,7 +4,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { Project, TimeEntry } from '../lib/types';
 import { createBrowserClient } from '@supabase/ssr';
 import type { User } from '@supabase/supabase-js';
-import * as db from '../lib/db';
+import * as db from '../lib/supabase/db';
 
 interface ProjectContextType {
   projects: Project[];

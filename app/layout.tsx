@@ -7,15 +7,14 @@ import Header from '../components/Header/Header';
 import Footer from '../components/Footer/Footer';
 import { AuthProvider } from '../contexts/AuthContext';
 import { HelpButton } from '../components/InfoHelp';
+import { createClient } from '@/lib/supabase/server';
 
-// Primary font for body text - wider character width
 const nunitoSans = Nunito_Sans({
   subsets: ['latin'],
   variable: '--font-nunito-sans',
   display: 'swap',
 });
 
-// Font for headings and UI elements - wider letter spacing
 const openSans = Open_Sans({
   subsets: ['latin'],
   variable: '--font-open-sans',
@@ -28,13 +27,16 @@ export const metadata: Metadata = {
   description: 'Track and manage your time effectively',
 };
 
-// Auth routes will use their own layout defined in auth/layout.tsx
-// This root layout will only be used for non-auth routes
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const supabase = await createClient();
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+
   return (
     <html
       lang="en"
@@ -52,7 +54,7 @@ export default function RootLayout({
           <LanguageProvider>
             <ProjectProvider>
               <div className="min-h-screen flex flex-col">
-                <Header />
+                <Header session={session} />
                 <div className="h-16" />
                 <main className="flex-grow">{children}</main>
                 <Footer appName="Voice Tracker" />

@@ -4,7 +4,7 @@ import React, { Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import Logo from '@/components/Logo';
-import { signInAction } from '@/lib/auth-actions';
+import { signInAction } from '@/lib/supabase/auth-actions';
 
 // Background component for auth pages
 function AuthBackground() {

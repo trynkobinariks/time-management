@@ -5,18 +5,22 @@ import ThemeSwitcher from '../ThemeSwitcher/ThemeSwitcher';
 import LanguageSwitcher from '../LanguageSwitcher';
 import Backdrop from '../Backdrop/Backdrop';
 import { useLanguage } from '../../contexts/LanguageContext';
-import { useAuth } from '../../contexts/AuthContext';
 import { navItems } from './config';
 import MobileNavigation from './components/MobileNavigation/MobileNavigation';
 import DesktopNavigation from './components/DesktopNavigation/DesktopNavigation';
 import LogoutButton from './components/LogoutButton/LogoutButton';
 import BurgerMenuButton from './components/BurgerMenuButton/BurgerMenuButton';
 import LogoLink from './components/LogoLink/LogoLink';
+import { Session } from '@supabase/supabase-js';
 
-export default function Header() {
+export default function Header({ session }: { session: Session | null }) {
   const { language, setLanguage } = useLanguage();
-  const { user } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const user = session?.user;
+
+  console.log('====================================');
+  console.log(user);
+  console.log('====================================');
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-[var(--card-background)] border-b border-[var(--card-border)]">

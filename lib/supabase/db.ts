@@ -1,5 +1,5 @@
-import { getSupabase } from './supabase';
-import { Project, TimeEntry } from './types';
+import { getSupabase } from './client';
+import { Project, TimeEntry } from '../types';
 
 export async function getProfile(userId: string) {
   const supabaseClient = getSupabase();
