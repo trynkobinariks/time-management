@@ -30,7 +30,7 @@ export default function WeeklyProjectHours({
           </span>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+        <div className="grid grid-cols-1 sm:grid-cols-1 gap-2">
           {/* Total Hours */}
           <div className="space-y-1">
             <div className="flex flex-col">
