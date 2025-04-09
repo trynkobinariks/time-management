@@ -7,7 +7,6 @@ import Header from '../components/Header/Header';
 import Footer from '../components/Footer/Footer';
 import { HelpButton } from '../components/InfoHelp';
 import { createClient } from '@/lib/supabase/server';
-import SessionRefresh from '@/components/SessionRefresh';
 
 const nunitoSans = Nunito_Sans({
   subsets: ['latin'],
@@ -23,8 +22,11 @@ const openSans = Open_Sans({
 });
 
 export const metadata: Metadata = {
-  title: 'Time Management',
+  title: 'Voice Tracker',
   description: 'Track and manage your time effectively',
+  icons: {
+    icon: '/favicon.ico',
+  },
 };
 
 export default async function RootLayout({
@@ -35,34 +37,53 @@ export default async function RootLayout({
   // Get the session directly without caching
   const supabase = await createClient();
   const {
-    data: { session },
-  } = await supabase.auth.getSession();
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  // Add auth data to HTML as a data attribute for hydration
+  const userData = user ? { id: user.id, email: user.email } : null;
 
   return (
     <html
       lang="en"
       suppressHydrationWarning
       className={`${nunitoSans.variable} ${openSans.variable}`}
+      data-user={userData ? JSON.stringify(userData) : ''}
     >
       <head>
         <meta
           name="viewport"
           content="width=device-width, initial-scale=1, viewport-fit=cover"
         />
+        {/* Add a script to ensure client has latest auth state */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  if (window.sessionStorage && window.location.pathname.indexOf('/auth/callback') === -1) {
+                    sessionStorage.setItem('lastRefresh', Date.now().toString());
+                  }
+                } catch (e) {
+                  console.error('Failed to set session data:', e);
+                }
+              })();
+            `,
+          }}
+        />
       </head>
       <body className="bg-[var(--background)] text-[var(--text-primary)] transition-colors duration-200 font-sans">
-        <LanguageProvider>
-          <SessionRefresh />
-          <ProjectProvider>
-            <div className="min-h-screen flex flex-col">
-              <Header session={session} />
+        <div className="min-h-screen flex flex-col">
+          <LanguageProvider>
+            <ProjectProvider>
+              <Header user={user} />
               <div className="h-16" />
               <main className="flex-grow">{children}</main>
               <Footer appName="Voice Tracker" />
               <HelpButton />
-            </div>
-          </ProjectProvider>
-        </LanguageProvider>
+            </ProjectProvider>
+          </LanguageProvider>
+        </div>
       </body>
     </html>
   );

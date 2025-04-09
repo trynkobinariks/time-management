@@ -23,16 +23,16 @@ export default function HelpPopup({ isOpen, onClose }: HelpPopupProps) {
 
   const sections = [
     {
+      key: 'voiceEntry',
+      icon: <VoiceEntryIcon />,
+    },
+    {
       key: 'timeTracking',
       icon: <TimeTrackingIcon />,
     },
     {
       key: 'projects',
       icon: <ProjectsIcon />,
-    },
-    {
-      key: 'voiceEntry',
-      icon: <VoiceEntryIcon />,
     },
     {
       key: 'reports',

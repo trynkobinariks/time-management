@@ -2,9 +2,10 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { Project, TimeEntry, ProjectType } from '../lib/types';
-import { createBrowserClient } from '@supabase/ssr';
+import { createClient } from '../lib/supabase/client';
 import type { User } from '@supabase/supabase-js';
 import * as db from '../lib/supabase/db';
+import { usePathname, useSearchParams } from 'next/navigation';
 
 interface ProjectContextType {
   projects: Project[];
@@ -42,24 +43,41 @@ export function ProjectProvider({ children }: ProjectProviderProps) {
   const [timeEntries, setTimeEntries] = useState<TimeEntry[]>([]);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [user, setUser] = useState<User | null>(null);
-  const supabase = createBrowserClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '',
-  );
+  const [isInitialized, setIsInitialized] = useState(false);
+  const supabase = createClient();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
 
-  // Get and subscribe to auth state
+  useEffect(() => {
+      const fetchUserData = async () => {
+        try {
+          const { data } = await supabase.auth.getUser();
+          setUser(data.user);
+        } catch (error) {
+          console.error('Error refreshing user data on navigation:', error);
+      }
+    };
+    fetchUserData();
+  }, [pathname, searchParams, supabase.auth]);
+
   useEffect(() => {
     const getUser = async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      setUser(user);
+      try {
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
+        setUser(session?.user ?? null);
+        setIsInitialized(true);
+      } catch (error) {
+        console.error('Error getting session:', error);
+        setIsInitialized(true);
+      }
     };
     getUser();
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    } = supabase.auth.onAuthStateChange(async (_event, session) => {
       setUser(session?.user ?? null);
     });
 
@@ -68,16 +86,14 @@ export function ProjectProvider({ children }: ProjectProviderProps) {
     };
   }, [supabase.auth]);
 
-  // Load initial data
   useEffect(() => {
-    if (!user) return;
+    if (!user || !isInitialized) return;
 
     const selectedYear = selectedDate.getFullYear();
     const selectedMonth = selectedDate.getMonth();
 
     const loadData = async () => {
       try {
-        // Load projects
         const projectsData = await db.getProjects(user.id);
         setProjects(
           projectsData.map(p => ({
@@ -86,7 +102,6 @@ export function ProjectProvider({ children }: ProjectProviderProps) {
           })),
         );
 
-        // Load time entries for the entire month
         const monthStart = new Date(selectedYear, selectedMonth, 1);
         const monthEnd = new Date(selectedYear, selectedMonth + 1, 0);
 
@@ -102,7 +117,7 @@ export function ProjectProvider({ children }: ProjectProviderProps) {
     };
 
     loadData();
-  }, [user, selectedDate]);
+  }, [user, selectedDate, isInitialized]);
 
   const addProject = async (
     project: Omit<Project, 'id' | 'created_at' | 'updated_at' | 'user_id'>,
