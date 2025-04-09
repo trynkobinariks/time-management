@@ -45,7 +45,6 @@ export default function TimeEntriesList({
       new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
   );
 
-  // Highlight the most recent entry for 3 seconds
   useEffect(() => {
     if (sortedTimeEntries.length > 0) {
       const mostRecentEntry = sortedTimeEntries[0];
@@ -53,7 +52,7 @@ export default function TimeEntriesList({
 
       const timer = setTimeout(() => {
         setHighlightedEntryId(null);
-      }, 3000);
+      }, 1000);
 
       return () => clearTimeout(timer);
     }
@@ -133,7 +132,7 @@ export default function TimeEntriesList({
                 key={entry.id}
                 className={`transition-colors duration-300 ${
                   highlightedEntryId === entry.id
-                    ? 'bg-blue-50 dark:bg-blue-900/20'
+                    ? 'bg-[var(--card-border)]'
                     : ''
                 }`}
               >
