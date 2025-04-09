@@ -5,7 +5,7 @@ import { useClientTranslation } from '../../../hooks/useClientTranslation';
 import Datepicker from './components/DatePicker/Datepicker';
 import RecordButton from '../../VoiceTimeEntry/components/RecordButton';
 import { useVoiceTimeEntry } from '../../VoiceTimeEntry/useVoiceTimeEntry';
-import WeeklyProjectHours from '../../WeeklyProjectHours';
+import WeeklyProjectHours from '../../WeeklyProjectHours/index';
 
 const Dashboard = () => {
   const { t } = useClientTranslation();

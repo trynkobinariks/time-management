@@ -132,7 +132,8 @@
     "weeklyHours": "Тижневі години",
     "totalHours": "Загальні години",
     "overtime": "понаднормово",
-    "remaining": "залишилось"
+    "remaining": "залишилось",
+    "left": "залишилось"
   },
   "voiceEntry": {
     "recording": "Запис...",

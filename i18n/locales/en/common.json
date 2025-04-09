@@ -132,7 +132,8 @@
     "weeklyHours": "Weekly Hours",
     "totalHours": "Total Hours",
     "overtime": "overtime",
-    "remaining": "remaining"
+    "remaining": "remaining",
+    "left": "left"
   },
   "voiceEntry": {
     "recording": "Recording...",
