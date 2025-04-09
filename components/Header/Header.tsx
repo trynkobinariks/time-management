@@ -11,12 +11,11 @@ import DesktopNavigation from './components/DesktopNavigation/DesktopNavigation'
 import LogoutButton from './components/LogoutButton/LogoutButton';
 import BurgerMenuButton from './components/BurgerMenuButton/BurgerMenuButton';
 import LogoLink from './components/LogoLink/LogoLink';
-import { Session } from '@supabase/supabase-js';
+import { User } from '@supabase/supabase-js';
 
-export default function Header({ session }: { session: Session | null }) {
+export default function Header({ user }: { user: User | null }) {
   const { language, setLanguage } = useLanguage();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const user = session?.user;
 
   // Close mobile menu when session changes
   useEffect(() => {
