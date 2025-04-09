@@ -5,7 +5,7 @@ import { useClientTranslation } from '../../../hooks/useClientTranslation';
 import Datepicker from './components/DatePicker/Datepicker';
 import RecordButton from '../../VoiceTimeEntry/components/RecordButton';
 import { useVoiceTimeEntry } from '../../VoiceTimeEntry/useVoiceTimeEntry';
-import WeeklyProjectHours from '../../WeeklyProjectHours';
+import WeeklyProjectHours from '../../WeeklyProjectHours/index';
 
 const Dashboard = () => {
   const { t } = useClientTranslation();
@@ -32,11 +32,11 @@ const Dashboard = () => {
   return (
     <div className="container mx-auto px-4 py-8 max-w-7xl relative flex flex-col h-[calc(100vh-64px-54px)]">
       <div className="flex flex-col mb-6 space-y-3">
-        <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center">
+        <div className="flex flex-col lg:flex-row lg:justify-between lg:items-top">
           <h1 className="text-2xl font-medium text-[var(--text-primary)]">
             {t('welcome.title')}
           </h1>
-          <div className="mt-2 lg:mt-0 lg:w-3/5 xl:w-1/2">
+          <div className="mt-2 lg:mt-0 sm:w-5/6">
             <WeeklyProjectHours selectedDate={selectedDate} isCompact={true} />
           </div>
         </div>

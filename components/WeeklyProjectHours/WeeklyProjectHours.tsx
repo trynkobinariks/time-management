@@ -1,10 +1,12 @@
 'use client';
 
-import React, { useMemo } from 'react';
-import { useProjectContext } from '../contexts/ProjectContext';
-import { ProjectType } from '../lib/types';
-import { startOfWeek, endOfWeek, format, isWithinInterval } from 'date-fns';
-import { useClientTranslation } from '../hooks/useClientTranslation';
+import React from 'react';
+import { useClientTranslation } from '../../hooks/useClientTranslation';
+import {
+  useWeeklyProjectHours,
+  WEEKLY_TOTAL_TARGET,
+  PROJECT_TYPE_TARGET,
+} from './useWeeklyProjectHours';
 
 interface WeeklyProjectHoursProps {
   selectedDate: Date;
@@ -15,85 +17,9 @@ export default function WeeklyProjectHours({
   selectedDate,
   isCompact = false,
 }: WeeklyProjectHoursProps) {
-  const { timeEntries, projects } = useProjectContext();
   const { t } = useClientTranslation();
-
-  // Constants for weekly metrics
-  const WEEKLY_TOTAL_TARGET = 40; // 8 hours per day, 5 days
-  const PROJECT_TYPE_TARGET = 20; // Max 20 hours per project type per week
-
-  // Calculate weekly metrics based on selected date
-  const weeklyMetrics = useMemo(() => {
-    // Calculate week boundaries for the selected date
-    const weekStart = startOfWeek(selectedDate, { weekStartsOn: 1 }); // Monday
-    const weekEnd = endOfWeek(selectedDate, { weekStartsOn: 1 }); // Sunday
-
-    // Filter time entries for the current week
-    const weeklyEntries = timeEntries.filter(entry => {
-      const entryDate = new Date(entry.date);
-      return isWithinInterval(entryDate, { start: weekStart, end: weekEnd });
-    });
-
-    // Group by project types and calculate hours
-    let internalHours = 0;
-    let commercialHours = 0;
-    let totalHours = 0;
-
-    weeklyEntries.forEach(entry => {
-      const project = projects.find(p => p.id === entry.project_id);
-
-      if (project) {
-        if (project.type === ProjectType.INTERNAL) {
-          internalHours += entry.hours;
-        } else {
-          commercialHours += entry.hours;
-        }
-        totalHours += entry.hours;
-      }
-    });
-
-    // Calculate remaining hours
-    const internalRemaining = Math.max(0, PROJECT_TYPE_TARGET - internalHours);
-    const commercialRemaining = Math.max(
-      0,
-      PROJECT_TYPE_TARGET - commercialHours,
-    );
-    const totalRemaining = Math.max(0, WEEKLY_TOTAL_TARGET - totalHours);
-
-    // Calculate percentages for progress bars
-    const internalPercentage = Math.min(
-      100,
-      (internalHours / PROJECT_TYPE_TARGET) * 100,
-    );
-    const commercialPercentage = Math.min(
-      100,
-      (commercialHours / PROJECT_TYPE_TARGET) * 100,
-    );
-    const totalPercentage = Math.min(
-      100,
-      (totalHours / WEEKLY_TOTAL_TARGET) * 100,
-    );
-
-    return {
-      weekStart,
-      weekEnd,
-      internalHours,
-      commercialHours,
-      totalHours,
-      internalRemaining,
-      commercialRemaining,
-      totalRemaining,
-      internalPercentage,
-      commercialPercentage,
-      totalPercentage,
-      internalOvertime: internalHours > PROJECT_TYPE_TARGET,
-      commercialOvertime: commercialHours > PROJECT_TYPE_TARGET,
-      totalOvertime: totalHours > WEEKLY_TOTAL_TARGET,
-    };
-  }, [timeEntries, projects, selectedDate]);
-
-  // Format the week range for display
-  const weekRangeText = `${format(weeklyMetrics.weekStart, 'MMM d')} - ${format(weeklyMetrics.weekEnd, 'MMM d, yyyy')}`;
+  const { weeklyMetrics, animatedPercentages, highlightedBars, weekRangeText } =
+    useWeeklyProjectHours(selectedDate);
 
   if (isCompact) {
     return (
@@ -104,7 +30,7 @@ export default function WeeklyProjectHours({
           </span>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+        <div className="grid grid-cols-1 sm:grid-cols-1 gap-2">
           {/* Total Hours */}
           <div className="space-y-1">
             <div className="flex flex-col">
@@ -115,13 +41,16 @@ export default function WeeklyProjectHours({
                 <span
                   className={`text-xs font-medium ${weeklyMetrics.totalOvertime ? 'text-red-500' : 'text-[var(--text-primary)]'}`}
                 >
-                  {weeklyMetrics.totalHours.toFixed(1)}/{WEEKLY_TOTAL_TARGET}h
+                  <span className="text-sm">
+                    {weeklyMetrics.totalRemaining.toFixed(1)}
+                  </span>
+                  /{WEEKLY_TOTAL_TARGET}h {t('dashboard.left')}
                 </span>
               </div>
               <div className="h-1 mt-1 bg-[var(--card-border)] rounded-full overflow-hidden">
                 <div
-                  className={`h-full rounded-full ${weeklyMetrics.totalOvertime ? 'bg-red-500' : 'bg-violet-600'}`}
-                  style={{ width: `${weeklyMetrics.totalPercentage}%` }}
+                  className={`h-full rounded-full transition-all duration-1000 ease-out ${highlightedBars.total ? 'opacity-70' : 'opacity-100'} ${weeklyMetrics.totalOvertime ? 'bg-red-500' : 'bg-violet-600'}`}
+                  style={{ width: `${animatedPercentages.total}%` }}
                 ></div>
               </div>
             </div>
@@ -137,14 +66,16 @@ export default function WeeklyProjectHours({
                 <span
                   className={`text-xs font-medium ${weeklyMetrics.internalOvertime ? 'text-red-500' : 'text-[var(--text-primary)]'}`}
                 >
-                  {weeklyMetrics.internalHours.toFixed(1)}/{PROJECT_TYPE_TARGET}
-                  h
+                  <span className="text-sm">
+                    {weeklyMetrics.internalRemaining.toFixed(1)}
+                  </span>
+                  /{PROJECT_TYPE_TARGET}h {t('dashboard.left')}
                 </span>
               </div>
               <div className="h-1 mt-1 bg-[var(--card-border)] rounded-full overflow-hidden">
                 <div
-                  className={`h-full rounded-full ${weeklyMetrics.internalOvertime ? 'bg-red-500' : 'bg-blue-500'}`}
-                  style={{ width: `${weeklyMetrics.internalPercentage}%` }}
+                  className={`h-full rounded-full transition-all duration-1000 ease-out ${highlightedBars.internal ? 'opacity-70' : 'opacity-100'} ${weeklyMetrics.internalOvertime ? 'bg-red-500' : 'bg-blue-500'}`}
+                  style={{ width: `${animatedPercentages.internal}%` }}
                 ></div>
               </div>
             </div>
@@ -160,14 +91,16 @@ export default function WeeklyProjectHours({
                 <span
                   className={`text-xs font-medium ${weeklyMetrics.commercialOvertime ? 'text-red-500' : 'text-[var(--text-primary)]'}`}
                 >
-                  {weeklyMetrics.commercialHours.toFixed(1)}/
-                  {PROJECT_TYPE_TARGET}h
+                  <span className="text-sm">
+                    {weeklyMetrics.commercialRemaining.toFixed(1)}
+                  </span>
+                  /{PROJECT_TYPE_TARGET}h {t('dashboard.left')}
                 </span>
               </div>
               <div className="h-1 mt-1 bg-[var(--card-border)] rounded-full overflow-hidden">
                 <div
-                  className={`h-full rounded-full ${weeklyMetrics.commercialOvertime ? 'bg-red-500' : 'bg-green-500'}`}
-                  style={{ width: `${weeklyMetrics.commercialPercentage}%` }}
+                  className={`h-full rounded-full transition-all duration-1000 ease-out ${highlightedBars.commercial ? 'opacity-70' : 'opacity-100'} ${weeklyMetrics.commercialOvertime ? 'bg-red-500' : 'bg-green-500'}`}
+                  style={{ width: `${animatedPercentages.commercial}%` }}
                 ></div>
               </div>
             </div>
@@ -197,10 +130,10 @@ export default function WeeklyProjectHours({
             </h3>
             <div className="flex items-baseline gap-1">
               <span className="text-lg font-semibold text-[var(--text-primary)]">
-                {weeklyMetrics.totalHours.toFixed(1)}h
+                {weeklyMetrics.totalRemaining.toFixed(1)}h
               </span>
               <span className="text-xs text-[var(--text-secondary)]">
-                / {WEEKLY_TOTAL_TARGET}h
+                / {WEEKLY_TOTAL_TARGET}h {t('dashboard.left')}
               </span>
             </div>
           </div>
@@ -212,16 +145,16 @@ export default function WeeklyProjectHours({
               </span>
             ) : (
               <span className="text-sm font-medium text-[var(--text-secondary)]">
-                {weeklyMetrics.totalRemaining.toFixed(1)}h{' '}
-                {t('dashboard.remaining')}
+                {weeklyMetrics.totalHours.toFixed(1)}h / {WEEKLY_TOTAL_TARGET}h{' '}
+                {t('dashboard.used')}
               </span>
             )}
           </div>
         </div>
         <div className="h-2 bg-[var(--card-border)] rounded-full overflow-hidden">
           <div
-            className={`h-full rounded-full ${weeklyMetrics.totalOvertime ? 'bg-red-500' : 'bg-violet-600'}`}
-            style={{ width: `${weeklyMetrics.totalPercentage}%` }}
+            className={`h-full rounded-full transition-all duration-1000 ease-out ${highlightedBars.total ? 'opacity-70' : 'opacity-100'} ${weeklyMetrics.totalOvertime ? 'bg-red-500' : 'bg-violet-600'}`}
+            style={{ width: `${animatedPercentages.total}%` }}
           ></div>
         </div>
       </div>
@@ -235,10 +168,10 @@ export default function WeeklyProjectHours({
             </h3>
             <div className="flex items-baseline gap-1">
               <span className="text-lg font-semibold text-[var(--text-primary)]">
-                {weeklyMetrics.internalHours.toFixed(1)}h
+                {weeklyMetrics.internalRemaining.toFixed(1)}h
               </span>
               <span className="text-xs text-[var(--text-secondary)]">
-                / {PROJECT_TYPE_TARGET}h
+                / {PROJECT_TYPE_TARGET}h {t('dashboard.left')}
               </span>
             </div>
           </div>
@@ -251,16 +184,16 @@ export default function WeeklyProjectHours({
               </span>
             ) : (
               <span className="text-sm font-medium text-[var(--text-secondary)]">
-                {weeklyMetrics.internalRemaining.toFixed(1)}h{' '}
-                {t('dashboard.remaining')}
+                {weeklyMetrics.internalHours.toFixed(1)}h /{' '}
+                {PROJECT_TYPE_TARGET}h {t('dashboard.used')}
               </span>
             )}
           </div>
         </div>
         <div className="h-2 bg-[var(--card-border)] rounded-full overflow-hidden">
           <div
-            className={`h-full rounded-full ${weeklyMetrics.internalOvertime ? 'bg-red-500' : 'bg-blue-500'}`}
-            style={{ width: `${weeklyMetrics.internalPercentage}%` }}
+            className={`h-full rounded-full transition-all duration-1000 ease-out ${highlightedBars.internal ? 'opacity-70' : 'opacity-100'} ${weeklyMetrics.internalOvertime ? 'bg-red-500' : 'bg-blue-500'}`}
+            style={{ width: `${animatedPercentages.internal}%` }}
           ></div>
         </div>
       </div>
@@ -274,10 +207,10 @@ export default function WeeklyProjectHours({
             </h3>
             <div className="flex items-baseline gap-1">
               <span className="text-lg font-semibold text-[var(--text-primary)]">
-                {weeklyMetrics.commercialHours.toFixed(1)}h
+                {weeklyMetrics.commercialRemaining.toFixed(1)}h
               </span>
               <span className="text-xs text-[var(--text-secondary)]">
-                / {PROJECT_TYPE_TARGET}h
+                / {PROJECT_TYPE_TARGET}h {t('dashboard.left')}
               </span>
             </div>
           </div>
@@ -292,16 +225,16 @@ export default function WeeklyProjectHours({
               </span>
             ) : (
               <span className="text-sm font-medium text-[var(--text-secondary)]">
-                {weeklyMetrics.commercialRemaining.toFixed(1)}h{' '}
-                {t('dashboard.remaining')}
+                {weeklyMetrics.commercialHours.toFixed(1)}h /{' '}
+                {PROJECT_TYPE_TARGET}h {t('dashboard.used')}
               </span>
             )}
           </div>
         </div>
         <div className="h-2 bg-[var(--card-border)] rounded-full overflow-hidden">
           <div
-            className={`h-full rounded-full ${weeklyMetrics.commercialOvertime ? 'bg-red-500' : 'bg-green-500'}`}
-            style={{ width: `${weeklyMetrics.commercialPercentage}%` }}
+            className={`h-full rounded-full transition-all duration-1000 ease-out ${highlightedBars.commercial ? 'opacity-70' : 'opacity-100'} ${weeklyMetrics.commercialOvertime ? 'bg-red-500' : 'bg-green-500'}`}
+            style={{ width: `${animatedPercentages.commercial}%` }}
           ></div>
         </div>
       </div>
