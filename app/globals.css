@@ -5,10 +5,16 @@
   --foreground: #111827;
   --card-background: #ffffff;
   --card-border: #e5e7eb;
+  --card-alt-background: #f3f4f6;
   --text-primary: #111827;
   --text-secondary: #4b5563;
   --vh: 1vh;
   
+  /* Error and success colors - light theme */
+    --error-bg: #fee2e2;
+    --error-border: #fecaca;
+    --error-text: #b91c1c;
+    --success-text: #16a34a;
   /* Badge colors - light theme (high contrast) */
     --badge-internal-bg: #dbeafe;
     /* blue-200 */
@@ -47,8 +53,14 @@
   --foreground: #f9fafb;
   --card-background: #1f2937;
   --card-border: #374151;
+  --card-alt-background: #374151;
   --text-primary: #f9fafb;
   --text-secondary: #9ca3af;
+  /* Error and success colors - dark theme */
+    --error-bg: rgba(185, 28, 28, 0.2);
+    --error-border: rgba(185, 28, 28, 0.4);
+    --error-text: #ef4444;
+    --success-text: #4ade80;
   /* Badge colors - dark theme */
     --badge-internal-bg: rgba(37, 99, 235, 0.3);
     /* blue-900/30 */

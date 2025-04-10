@@ -117,10 +117,8 @@ export default function UserSettingsComponent({
 
       {/* Combined Limits Validation */}
       {validationError && (
-        <div className="p-3 bg-red-50 border border-red-200 rounded-md dark:bg-red-900/20 dark:border-red-800">
-          <p className="text-sm text-red-600 dark:text-red-400">
-            {validationError}
-          </p>
+        <div className="p-3 bg-[var(--error-bg)] border border-[var(--error-border)] rounded-md">
+          <p className="text-sm text-[var(--error-text)]">{validationError}</p>
         </div>
       )}
 
@@ -130,8 +128,8 @@ export default function UserSettingsComponent({
             <p
               className={`text-sm ${
                 saveMessage === t('settings.saveSuccess')
-                  ? 'text-green-500'
-                  : 'text-red-500'
+                  ? 'text-[var(--success-text)]'
+                  : 'text-[var(--error-text)]'
               }`}
             >
               {saveMessage}

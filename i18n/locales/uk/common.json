@@ -235,6 +235,7 @@
     }
   },
   "settings": {
+    "title": "Налаштування",
     "workingHours": "Тижневі години",
     "workingHoursPerDay": "Годин на день",
     "workingDaysPerWeek": "Днів на тиждень",
