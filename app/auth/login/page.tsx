@@ -25,10 +25,10 @@ const LoginContent = () => {
       <div className="w-full relative z-10 py-6">
         <div className="flex flex-col items-center">
           <Logo size="lg" className="mb-6" />
-          <h2 className="text-center text-2xl sm:text-3xl font-medium text-gray-900 dark:text-[var(--text-primary)]">
+          <h2 className="text-center text-2xl sm:text-3xl font-medium text-[var(--text-primary)]">
             {t('auth.login.title')}
           </h2>
-          <p className="mt-2 text-center text-sm text-gray-600 dark:text-[var(--text-secondary)]">
+          <p className="mt-2 text-center text-sm text-[var(--text-secondary)]">
             <Link
               href="/auth/signup"
               className="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300"

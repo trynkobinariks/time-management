@@ -95,7 +95,7 @@ const ResetPasswordPage = () => {
           <div className="flex items-center justify-between">
             <Link
               href="/auth/login"
-              className="text-sm font-medium text-blue-400 hover:text-blue-300"
+              className="text-sm font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300"
             >
               {t('auth.resetPassword.backToLogin')}
             </Link>

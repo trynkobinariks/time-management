@@ -66,7 +66,7 @@ const SignUpPage = () => {
           <p className="mt-2 text-center text-sm text-[var(--text-secondary)]">
             <Link
               href="/auth/login"
-              className="font-medium text-blue-400 hover:text-blue-300"
+              className="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300"
             >
               {t('auth.login.signIn')}
             </Link>
