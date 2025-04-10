@@ -39,18 +39,20 @@ export default function UserSettingsComponent({
   } = useUserSettingsForm({ settings, onUpdate });
 
   return (
-    <Form onSubmit={handleSubmit} className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <Form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
+      <div className="grid grid-cols-1 gap-4 sm:gap-6">
         {/* Working Hours and Days Section */}
-        <div className="md:col-span-2 flex flex-col gap-4 p-5 bg-[var(--card-alt-background)] rounded-lg border border-[var(--card-border)]">
-          <h3 className="text-lg font-medium text-[var(--text-primary)]">
+        <div className="flex flex-col gap-3 sm:gap-4 p-3 sm:p-5 bg-[var(--card-alt-background)] rounded-lg border border-[var(--card-border)]">
+          <h3 className="text-base sm:text-lg font-medium text-[var(--text-primary)]">
             {t('settings.workSchedule')}
           </h3>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-6">
             {/* Working Hours Per Day */}
             <FormField name="workingHoursPerDay">
-              <FormLabel>{t('settings.workingHoursPerDay')}</FormLabel>
+              <FormLabel className="text-sm">
+                {t('settings.workingHoursPerDay')}
+              </FormLabel>
               <NumberInput
                 id="workingHoursPerDay"
                 min={1}
@@ -65,7 +67,9 @@ export default function UserSettingsComponent({
 
             {/* Working Days Per Week */}
             <FormField name="workingDaysPerWeek">
-              <FormLabel>{t('settings.workingDaysPerWeek')}</FormLabel>
+              <FormLabel className="text-sm">
+                {t('settings.workingDaysPerWeek')}
+              </FormLabel>
               <NumberInput
                 id="workingDaysPerWeek"
                 min={1}
@@ -80,17 +84,17 @@ export default function UserSettingsComponent({
           </div>
 
           {/* Weekly Calculation */}
-          <div className="p-4 bg-[var(--card-background)] rounded-md border border-[var(--card-border)] mt-2">
+          <div className="p-3 sm:p-4 bg-[var(--card-background)] rounded-md border border-[var(--card-border)] mt-1 sm:mt-2">
             <div className="flex justify-between items-center">
               <div className="flex flex-col">
-                <span className="text-sm font-medium text-[var(--text-primary)]">
+                <span className="text-xs sm:text-sm font-medium text-[var(--text-primary)]">
                   {t('settings.totalWeeklyHours')}
                 </span>
-                <span className="text-sm text-[var(--text-secondary)]">
+                <span className="text-xs sm:text-sm text-[var(--text-secondary)]">
                   {t('settings.calculatedAutomatically')}
                 </span>
               </div>
-              <span className="text-xl font-semibold text-[var(--text-primary)] bg-[var(--card-alt-background)] py-1 px-3 rounded-md">
+              <span className="text-lg sm:text-xl font-semibold text-[var(--text-primary)] bg-[var(--card-alt-background)] py-1 px-2 sm:px-3 rounded-md">
                 {totalWeeklyHours} {t('common.hours')}
               </span>
             </div>
@@ -98,15 +102,17 @@ export default function UserSettingsComponent({
         </div>
 
         {/* Project Hours Limits Section */}
-        <div className="md:col-span-2 flex flex-col gap-4 p-5 bg-[var(--card-alt-background)] rounded-lg border border-[var(--card-border)]">
-          <h3 className="text-lg font-medium text-[var(--text-primary)]">
+        <div className="flex flex-col gap-3 sm:gap-4 p-3 sm:p-5 bg-[var(--card-alt-background)] rounded-lg border border-[var(--card-border)]">
+          <h3 className="text-base sm:text-lg font-medium text-[var(--text-primary)]">
             {t('settings.projectLimits')}
           </h3>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-6">
             {/* Internal Hours Limit */}
             <FormField name="internalHoursLimit">
-              <FormLabel>{t('settings.internalHoursLimit')}</FormLabel>
+              <FormLabel className="text-sm">
+                {t('settings.internalHoursLimit')}
+              </FormLabel>
               <NumberInput
                 id="internalHoursLimit"
                 min={0}
@@ -121,7 +127,9 @@ export default function UserSettingsComponent({
 
             {/* Commercial Hours Limit */}
             <FormField name="commercialHoursLimit">
-              <FormLabel>{t('settings.commercialHoursLimit')}</FormLabel>
+              <FormLabel className="text-sm">
+                {t('settings.commercialHoursLimit')}
+              </FormLabel>
               <NumberInput
                 id="commercialHoursLimit"
                 min={0}
@@ -136,17 +144,17 @@ export default function UserSettingsComponent({
           </div>
 
           {/* Combined Limits Visualization */}
-          <div className="p-4 bg-[var(--card-background)] rounded-md border border-[var(--card-border)] mt-2">
+          <div className="p-3 sm:p-4 bg-[var(--card-background)] rounded-md border border-[var(--card-border)] mt-1 sm:mt-2">
             <div className="mb-2 flex justify-between items-center">
-              <span className="text-sm font-medium text-[var(--text-primary)]">
+              <span className="text-xs sm:text-sm font-medium text-[var(--text-primary)]">
                 {t('settings.allocatedHours')}
               </span>
-              <span className="text-sm font-medium text-[var(--text-primary)]">
+              <span className="text-xs sm:text-sm font-medium text-[var(--text-primary)]">
                 {internalHoursLimit + commercialHoursLimit} / {totalWeeklyHours}{' '}
                 {t('common.hours')}
               </span>
             </div>
-            <div className="h-4 bg-[var(--card-border)] rounded-full overflow-hidden">
+            <div className="h-3 sm:h-4 bg-[var(--card-border)] rounded-full overflow-hidden">
               <div className="flex h-full">
                 <div
                   className="bg-blue-500 h-full"
@@ -164,13 +172,13 @@ export default function UserSettingsComponent({
                 ></div>
               </div>
             </div>
-            <div className="mt-2 flex justify-between text-xs text-[var(--text-secondary)]">
+            <div className="mt-2 flex justify-between text-[10px] sm:text-xs text-[var(--text-secondary)]">
               <div className="flex items-center">
-                <div className="w-3 h-3 bg-blue-500 rounded-full mr-1"></div>
+                <div className="w-2 h-2 sm:w-3 sm:h-3 bg-blue-500 rounded-full mr-1"></div>
                 <span>{t('projects.popup.typeInternal')}</span>
               </div>
               <div className="flex items-center">
-                <div className="w-3 h-3 bg-green-500 rounded-full mr-1"></div>
+                <div className="w-2 h-2 sm:w-3 sm:h-3 bg-green-500 rounded-full mr-1"></div>
                 <span>{t('projects.popup.typeCommercial')}</span>
               </div>
             </div>
@@ -180,12 +188,12 @@ export default function UserSettingsComponent({
 
       {/* Combined Limits Validation */}
       {validationError && (
-        <div className="p-4 bg-[var(--error-bg)] border border-[var(--error-border)] rounded-md flex items-start">
+        <div className="p-3 sm:p-4 bg-[var(--error-bg)] border border-[var(--error-border)] rounded-md flex items-start">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
             fill="currentColor"
-            className="w-5 h-5 text-[var(--error-text)] mr-2 flex-shrink-0 mt-0.5"
+            className="w-4 h-4 sm:w-5 sm:h-5 text-[var(--error-text)] mr-1.5 sm:mr-2 flex-shrink-0 mt-0.5"
           >
             <path
               fillRule="evenodd"
@@ -193,11 +201,13 @@ export default function UserSettingsComponent({
               clipRule="evenodd"
             />
           </svg>
-          <p className="text-sm text-[var(--error-text)]">{validationError}</p>
+          <p className="text-xs sm:text-sm text-[var(--error-text)]">
+            {validationError}
+          </p>
         </div>
       )}
 
-      <div className="flex items-center justify-between pt-4 border-t border-[var(--card-border)]">
+      <div className="flex items-center justify-between pt-3 sm:pt-4 border-t border-[var(--card-border)]">
         <div>
           {saveMessage && (
             <div
@@ -212,7 +222,7 @@ export default function UserSettingsComponent({
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 24 24"
                   fill="currentColor"
-                  className="w-5 h-5 mr-2"
+                  className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2"
                 >
                   <path
                     fillRule="evenodd"
@@ -225,7 +235,7 @@ export default function UserSettingsComponent({
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 24 24"
                   fill="currentColor"
-                  className="w-5 h-5 mr-2"
+                  className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2"
                 >
                   <path
                     fillRule="evenodd"
@@ -234,7 +244,7 @@ export default function UserSettingsComponent({
                   />
                 </svg>
               )}
-              <p className="text-sm font-medium">{saveMessage}</p>
+              <p className="text-xs sm:text-sm font-medium">{saveMessage}</p>
             </div>
           )}
         </div>
@@ -242,7 +252,7 @@ export default function UserSettingsComponent({
           type="submit"
           disabled={isSaving || !!validationError}
           isLoading={isSaving}
-          className="px-6"
+          className="px-4 sm:px-6 text-xs sm:text-sm py-1.5 sm:py-2"
         >
           {isSaving ? t('common.saving') : t('common.save')}
         </Button>

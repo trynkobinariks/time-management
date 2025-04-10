@@ -46,13 +46,13 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-4xl">
-      <div className="mb-8 flex items-center justify-between">
+    <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-8 max-w-4xl">
+      <div className="mb-4 sm:mb-8 flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-semibold text-[var(--text-primary)]">
+          <h1 className="text-2xl sm:text-3xl font-semibold text-[var(--text-primary)]">
             {t('settings.title')}
           </h1>
-          <p className="text-[var(--text-secondary)] mt-1">
+          <p className="text-[var(--text-secondary)] mt-1 text-sm sm:text-base">
             {t('settings.description')}
           </p>
         </div>
@@ -73,14 +73,14 @@ export default function SettingsPage() {
       </div>
 
       <div className="bg-[var(--card-background)] rounded-xl shadow-sm overflow-hidden">
-        <div className="p-6 sm:p-8">
-          <div className="flex items-center mb-6">
-            <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
+        <div className="p-4 sm:p-6 md:p-8">
+          <div className="flex items-center mb-4 sm:mb-6">
+            <div className="w-7 h-7 sm:w-8 sm:h-8 bg-blue-100 rounded-lg flex items-center justify-center mr-2 sm:mr-3">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
                 fill="currentColor"
-                className="w-5 h-5 text-blue-600"
+                className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600"
               >
                 <path
                   fillRule="evenodd"
@@ -89,7 +89,7 @@ export default function SettingsPage() {
                 />
               </svg>
             </div>
-            <h2 className="text-2xl font-medium text-[var(--text-primary)]">
+            <h2 className="text-xl sm:text-2xl font-medium text-[var(--text-primary)]">
               {t('settings.workingHours')}
             </h2>
           </div>

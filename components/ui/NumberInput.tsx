@@ -86,7 +86,7 @@ export const NumberInput: React.FC<NumberInputProps> = ({
             bg-[var(--card-background)]
             text-[var(--text-primary)]
             placeholder:text-[var(--text-secondary)]
-            py-2 px-3 pr-16
+            py-[0.4rem] sm:py-2 px-2 sm:px-3 pr-12 sm:pr-16
             text-sm
             ${errorClasses}
             border
@@ -110,14 +110,14 @@ export const NumberInput: React.FC<NumberInputProps> = ({
             <button
               type="button"
               onClick={increment}
-              className="flex-1 px-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--card-border)] transition-colors rounded-tr-md"
+              className="flex-1 px-1.5 sm:px-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--card-border)] transition-colors rounded-tr-md"
               disabled={max !== undefined && value >= max}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 20 20"
                 fill="currentColor"
-                className="w-4 h-4"
+                className="w-3 h-3 sm:w-4 sm:h-4"
               >
                 <path
                   fillRule="evenodd"
@@ -129,14 +129,14 @@ export const NumberInput: React.FC<NumberInputProps> = ({
             <button
               type="button"
               onClick={decrement}
-              className="flex-1 px-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--card-border)] transition-colors rounded-br-md"
+              className="flex-1 px-1.5 sm:px-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--card-border)] transition-colors rounded-br-md"
               disabled={min !== undefined && value <= min}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 20 20"
                 fill="currentColor"
-                className="w-4 h-4"
+                className="w-3 h-3 sm:w-4 sm:h-4"
               >
                 <path
                   fillRule="evenodd"
