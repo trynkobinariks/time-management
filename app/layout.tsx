@@ -4,9 +4,8 @@ import './globals.css';
 import { ProjectProvider } from '../contexts/ProjectContext';
 import { LanguageProvider } from '../contexts/LanguageContext';
 import Header from '../components/Header/Header';
-import Footer from '../components/Footer/Footer';
-import { HelpButton } from '../components/InfoHelp';
 import { createClient } from '@/lib/supabase/server';
+import AuthLayoutWrapper from '@/components/AuthLayoutWrapper';
 
 const nunitoSans = Nunito_Sans({
   subsets: ['latin'],
@@ -53,7 +52,7 @@ export default async function RootLayout({
       <head>
         <meta
           name="viewport"
-          content="width=device-width, initial-scale=1, viewport-fit=cover"
+          content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, viewport-fit=cover"
         />
         {/* Add a script to ensure client has latest auth state */}
         <script
@@ -78,9 +77,7 @@ export default async function RootLayout({
             <ProjectProvider>
               <Header user={user} />
               <div className="h-16" />
-              <main className="flex-grow">{children}</main>
-              <Footer appName="Voice Tracker" />
-              <HelpButton />
+              <AuthLayoutWrapper>{children}</AuthLayoutWrapper>
             </ProjectProvider>
           </LanguageProvider>
         </div>
