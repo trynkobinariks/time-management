@@ -3,6 +3,7 @@ import { Nunito_Sans, Open_Sans } from 'next/font/google';
 import './globals.css';
 import { ProjectProvider } from '../contexts/ProjectContext';
 import { LanguageProvider } from '../contexts/LanguageContext';
+import { UserSettingsProvider } from '../contexts/UserSettingsContext';
 import Header from '../components/Header/Header';
 import { createClient } from '@/lib/supabase/server';
 import AuthLayoutWrapper from '@/components/AuthLayoutWrapper';
@@ -75,9 +76,11 @@ export default async function RootLayout({
         <div className="min-h-screen flex flex-col">
           <LanguageProvider>
             <ProjectProvider>
-              <Header user={user} />
-              <div className="h-16" />
-              <AuthLayoutWrapper>{children}</AuthLayoutWrapper>
+              <UserSettingsProvider>
+                <Header user={user} />
+                <div className="h-16" />
+                <AuthLayoutWrapper>{children}</AuthLayoutWrapper>
+              </UserSettingsProvider>
             </ProjectProvider>
           </LanguageProvider>
         </div>

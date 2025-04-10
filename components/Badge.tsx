@@ -24,7 +24,7 @@ export default function Badge({
       case ProjectType.INTERNAL:
         return 'bg-[var(--badge-internal-bg)] text-[var(--badge-internal-text)]';
       case 'commercial':
-      case ProjectType.EXTERNAL:
+      case ProjectType.COMMERCIAL:
         return 'bg-[var(--badge-commercial-bg)] text-[var(--badge-commercial-text)]';
       default:
         return 'bg-[var(--badge-default-bg)] text-[var(--badge-default-text)]';

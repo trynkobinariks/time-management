@@ -2,10 +2,18 @@ import { useMemo, useEffect, useState, useRef } from 'react';
 import { useProjectContext } from '../../contexts/ProjectContext';
 import { ProjectType } from '../../lib/types';
 import { startOfWeek, endOfWeek, format, isWithinInterval } from 'date-fns';
+import { useUserSettings } from '@/hooks/useUserSettings';
 
-// Constants for weekly metrics
-export const WEEKLY_TOTAL_TARGET = 40; // 8 hours per day, 5 days
-export const PROJECT_TYPE_TARGET = 20; // Max 20 hours per project type per week
+// Default constants (will be overridden by user settings)
+export const DEFAULT_WORKING_HOURS_PER_DAY = 8;
+export const DEFAULT_WORKING_DAYS_PER_WEEK = 5;
+export const DEFAULT_INTERNAL_HOURS_LIMIT = 20;
+export const DEFAULT_COMMERCIAL_HOURS_LIMIT = 20;
+
+// For backwards compatibility
+export const WEEKLY_TOTAL_TARGET =
+  DEFAULT_WORKING_HOURS_PER_DAY * DEFAULT_WORKING_DAYS_PER_WEEK;
+export const PROJECT_TYPE_TARGET = DEFAULT_INTERNAL_HOURS_LIMIT;
 
 interface WeeklyMetrics {
   weekStart: Date;
@@ -47,6 +55,18 @@ export function useWeeklyProjectHours(
   selectedDate: Date,
 ): UseWeeklyProjectHoursReturn {
   const { timeEntries, projects } = useProjectContext();
+  const { settings } = useUserSettings();
+
+  // Calculate weekly total based on user settings
+  const weeklyTotalTarget =
+    settings?.working_hours_per_day && settings?.working_days_per_week
+      ? settings.working_hours_per_day * settings.working_days_per_week
+      : WEEKLY_TOTAL_TARGET;
+  const internalHoursLimit =
+    settings?.internal_hours_limit || DEFAULT_INTERNAL_HOURS_LIMIT;
+  const commercialHoursLimit =
+    settings?.commercial_hours_limit || DEFAULT_COMMERCIAL_HOURS_LIMIT;
+
   const [animatedPercentages, setAnimatedPercentages] =
     useState<AnimationState>({
       total: 0,
@@ -95,25 +115,25 @@ export function useWeeklyProjectHours(
     });
 
     // Calculate remaining hours
-    const internalRemaining = Math.max(0, PROJECT_TYPE_TARGET - internalHours);
+    const internalRemaining = Math.max(0, internalHoursLimit - internalHours);
     const commercialRemaining = Math.max(
       0,
-      PROJECT_TYPE_TARGET - commercialHours,
+      commercialHoursLimit - commercialHours,
     );
-    const totalRemaining = Math.max(0, WEEKLY_TOTAL_TARGET - totalHours);
+    const totalRemaining = Math.max(0, weeklyTotalTarget - totalHours);
 
     // Calculate percentages for progress bars
     const internalPercentage = Math.min(
       100,
-      (internalHours / PROJECT_TYPE_TARGET) * 100,
+      (internalHours / internalHoursLimit) * 100,
     );
     const commercialPercentage = Math.min(
       100,
-      (commercialHours / PROJECT_TYPE_TARGET) * 100,
+      (commercialHours / commercialHoursLimit) * 100,
     );
     const totalPercentage = Math.min(
       100,
-      (totalHours / WEEKLY_TOTAL_TARGET) * 100,
+      (totalHours / weeklyTotalTarget) * 100,
     );
 
     return {
@@ -128,11 +148,18 @@ export function useWeeklyProjectHours(
       internalPercentage,
       commercialPercentage,
       totalPercentage,
-      internalOvertime: internalHours > PROJECT_TYPE_TARGET,
-      commercialOvertime: commercialHours > PROJECT_TYPE_TARGET,
-      totalOvertime: totalHours > WEEKLY_TOTAL_TARGET,
+      internalOvertime: internalHours > internalHoursLimit,
+      commercialOvertime: commercialHours > commercialHoursLimit,
+      totalOvertime: totalHours > weeklyTotalTarget,
     };
-  }, [timeEntries, projects, selectedDate]);
+  }, [
+    timeEntries,
+    projects,
+    selectedDate,
+    weeklyTotalTarget,
+    internalHoursLimit,
+    commercialHoursLimit,
+  ]);
 
   // Handle animations for progress bars
   useEffect(() => {

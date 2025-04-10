@@ -187,6 +187,9 @@
     "edit": "Edit",
     "save": "Save",
     "cancel": "Cancel",
+    "saving": "Saving...",
+    "error": "Error",
+    "hours": "hours",
     "calendar": {
       "months": {
         "january": "January",
@@ -245,5 +248,21 @@
         "content": "Customize the app to your needs, including theme preferences and language settings."
       }
     }
+  },
+  "settings": {
+    "title": "Settings",
+    "workingHours": "Working Hours Settings",
+    "workingHoursPerDay": "Working Hours Per Day",
+    "workingHoursPerDayHelp": "Default number of hours you work per day",
+    "workingDaysPerWeek": "Working Days Per Week",
+    "workingDaysPerWeekHelp": "Number of days you work per week",
+    "totalWeeklyHours": "Total Weekly Hours",
+    "internalHoursLimit": "Internal Projects Hours Limit",
+    "internalHoursLimitHelp": "Maximum hours to spend on internal projects per week",
+    "commercialHoursLimit": "Commercial Projects Hours Limit",
+    "commercialHoursLimitHelp": "Maximum hours to spend on commercial projects per week",
+    "saveSuccess": "Settings saved successfully!",
+    "saveError": "Error saving settings",
+    "limitExceedsTotal": "Total hours limit exceeds the sum of internal and commercial limits"
   }
 }

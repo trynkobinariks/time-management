@@ -4,9 +4,12 @@ import React from 'react';
 import { useClientTranslation } from '../../hooks/useClientTranslation';
 import {
   useWeeklyProjectHours,
-  WEEKLY_TOTAL_TARGET,
-  PROJECT_TYPE_TARGET,
+  DEFAULT_WORKING_HOURS_PER_DAY,
+  DEFAULT_WORKING_DAYS_PER_WEEK,
+  DEFAULT_INTERNAL_HOURS_LIMIT,
+  DEFAULT_COMMERCIAL_HOURS_LIMIT,
 } from './useWeeklyProjectHours';
+import { useUserSettings } from '@/hooks/useUserSettings';
 
 interface WeeklyProjectHoursProps {
   selectedDate: Date;
@@ -18,8 +21,19 @@ export default function WeeklyProjectHours({
   isCompact = false,
 }: WeeklyProjectHoursProps) {
   const { t } = useClientTranslation();
+  const { settings } = useUserSettings();
   const { weeklyMetrics, animatedPercentages, highlightedBars, weekRangeText } =
     useWeeklyProjectHours(selectedDate);
+
+  // Get limits from user settings or use defaults
+  const weeklyTotalTarget =
+    settings?.working_hours_per_day && settings?.working_days_per_week
+      ? settings.working_hours_per_day * settings.working_days_per_week
+      : DEFAULT_WORKING_HOURS_PER_DAY * DEFAULT_WORKING_DAYS_PER_WEEK;
+  const internalHoursLimit =
+    settings?.internal_hours_limit || DEFAULT_INTERNAL_HOURS_LIMIT;
+  const commercialHoursLimit =
+    settings?.commercial_hours_limit || DEFAULT_COMMERCIAL_HOURS_LIMIT;
 
   if (isCompact) {
     return (
@@ -44,7 +58,7 @@ export default function WeeklyProjectHours({
                   <span className="text-sm">
                     {weeklyMetrics.totalRemaining.toFixed(1)}
                   </span>
-                  /{WEEKLY_TOTAL_TARGET}h {t('dashboard.left')}
+                  /{weeklyTotalTarget}h {t('dashboard.left')}
                 </span>
               </div>
               <div className="h-1 mt-1 bg-[var(--card-border)] rounded-full overflow-hidden">
@@ -69,7 +83,7 @@ export default function WeeklyProjectHours({
                   <span className="text-sm">
                     {weeklyMetrics.internalRemaining.toFixed(1)}
                   </span>
-                  /{PROJECT_TYPE_TARGET}h {t('dashboard.left')}
+                  /{internalHoursLimit}h {t('dashboard.left')}
                 </span>
               </div>
               <div className="h-1 mt-1 bg-[var(--card-border)] rounded-full overflow-hidden">
@@ -94,7 +108,7 @@ export default function WeeklyProjectHours({
                   <span className="text-sm">
                     {weeklyMetrics.commercialRemaining.toFixed(1)}
                   </span>
-                  /{PROJECT_TYPE_TARGET}h {t('dashboard.left')}
+                  /{commercialHoursLimit}h {t('dashboard.left')}
                 </span>
               </div>
               <div className="h-1 mt-1 bg-[var(--card-border)] rounded-full overflow-hidden">
@@ -133,19 +147,19 @@ export default function WeeklyProjectHours({
                 {weeklyMetrics.totalRemaining.toFixed(1)}h
               </span>
               <span className="text-xs text-[var(--text-secondary)]">
-                / {WEEKLY_TOTAL_TARGET}h {t('dashboard.left')}
+                / {weeklyTotalTarget}h {t('dashboard.left')}
               </span>
             </div>
           </div>
           <div className="text-right">
             {weeklyMetrics.totalOvertime ? (
               <span className="text-sm font-medium text-red-500">
-                +{(weeklyMetrics.totalHours - WEEKLY_TOTAL_TARGET).toFixed(1)}h{' '}
+                +{(weeklyMetrics.totalHours - weeklyTotalTarget).toFixed(1)}h{' '}
                 {t('dashboard.overtime')}
               </span>
             ) : (
               <span className="text-sm font-medium text-[var(--text-secondary)]">
-                {weeklyMetrics.totalHours.toFixed(1)}h / {WEEKLY_TOTAL_TARGET}h{' '}
+                {weeklyMetrics.totalHours.toFixed(1)}h / {weeklyTotalTarget}h{' '}
                 {t('dashboard.used')}
               </span>
             )}
@@ -171,21 +185,20 @@ export default function WeeklyProjectHours({
                 {weeklyMetrics.internalRemaining.toFixed(1)}h
               </span>
               <span className="text-xs text-[var(--text-secondary)]">
-                / {PROJECT_TYPE_TARGET}h {t('dashboard.left')}
+                / {internalHoursLimit}h {t('dashboard.left')}
               </span>
             </div>
           </div>
           <div className="text-right">
             {weeklyMetrics.internalOvertime ? (
               <span className="text-sm font-medium text-red-500">
-                +
-                {(weeklyMetrics.internalHours - PROJECT_TYPE_TARGET).toFixed(1)}
+                +{(weeklyMetrics.internalHours - internalHoursLimit).toFixed(1)}
                 h {t('dashboard.overtime')}
               </span>
             ) : (
               <span className="text-sm font-medium text-[var(--text-secondary)]">
-                {weeklyMetrics.internalHours.toFixed(1)}h /{' '}
-                {PROJECT_TYPE_TARGET}h {t('dashboard.used')}
+                {weeklyMetrics.internalHours.toFixed(1)}h / {internalHoursLimit}
+                h {t('dashboard.used')}
               </span>
             )}
           </div>
@@ -210,7 +223,7 @@ export default function WeeklyProjectHours({
                 {weeklyMetrics.commercialRemaining.toFixed(1)}h
               </span>
               <span className="text-xs text-[var(--text-secondary)]">
-                / {PROJECT_TYPE_TARGET}h {t('dashboard.left')}
+                / {commercialHoursLimit}h {t('dashboard.left')}
               </span>
             </div>
           </div>
@@ -218,7 +231,7 @@ export default function WeeklyProjectHours({
             {weeklyMetrics.commercialOvertime ? (
               <span className="text-sm font-medium text-red-500">
                 +
-                {(weeklyMetrics.commercialHours - PROJECT_TYPE_TARGET).toFixed(
+                {(weeklyMetrics.commercialHours - commercialHoursLimit).toFixed(
                   1,
                 )}
                 h {t('dashboard.overtime')}
@@ -226,7 +239,7 @@ export default function WeeklyProjectHours({
             ) : (
               <span className="text-sm font-medium text-[var(--text-secondary)]">
                 {weeklyMetrics.commercialHours.toFixed(1)}h /{' '}
-                {PROJECT_TYPE_TARGET}h {t('dashboard.used')}
+                {commercialHoursLimit}h {t('dashboard.used')}
               </span>
             )}
           </div>
