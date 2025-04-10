@@ -6,20 +6,7 @@ import { useSearchParams } from 'next/navigation';
 import Logo from '@/components/Logo';
 import { signInAction } from '@/lib/supabase/auth-actions';
 
-// Background component for auth pages
-function AuthBackground() {
-  return (
-    <>
-      <div className="auth-triangle auth-triangle-1 z-0"></div>
-      <div className="auth-triangle auth-triangle-2 z-0"></div>
-      <div className="auth-triangle auth-triangle-3 z-0"></div>
-      <div className="auth-triangle auth-triangle-4 z-0"></div>
-      <div className="auth-triangle auth-triangle-5 z-0"></div>
-    </>
-  );
-}
-
-function LoginContent() {
+const LoginContent = () => {
   const [error, setError] = React.useState<string | null>(null);
   const searchParams = useSearchParams();
   const next = searchParams.get('next') || '/dashboard';
@@ -32,12 +19,11 @@ function LoginContent() {
   }, [searchParams]);
 
   return (
-    <div className="min-h-[calc(100vh-53px-env(safe-area-inset-top))] flex items-center justify-center bg-white dark:bg-[var(--background)] px-4 sm:px-6 lg:px-8 pb-env(safe-area-inset-bottom) auth-background">
-      <AuthBackground />
-      <div className="max-w-md w-full space-y-6 relative z-10">
+    <div className="w-full px-4 sm:px-6">
+      <div className="w-full relative z-10 py-6">
         <div className="flex flex-col items-center">
-          <Logo size="lg" className="mb-4" />
-          <h2 className="text-center text-3xl font-medium text-gray-900 dark:text-[var(--text-primary)]">
+          <Logo size="lg" className="mb-6" />
+          <h2 className="text-center text-2xl sm:text-3xl font-medium text-gray-900 dark:text-[var(--text-primary)]">
             Sign in to your account
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600 dark:text-[var(--text-secondary)]">
@@ -50,13 +36,13 @@ function LoginContent() {
           </p>
         </div>
 
-        <form className="mt-8 space-y-6 z-50" action={signInAction}>
+        <form className="mt-6 space-y-4 z-50" action={signInAction}>
           {error && (
-            <div className="rounded-md bg-red-900/50 p-4">
+            <div className="rounded-md bg-red-900/50 p-3">
               <div className="flex">
                 <div className="ml-3">
                   <h3 className="text-sm font-medium text-red-200">Error</h3>
-                  <div className="mt-2 text-sm text-red-100">{error}</div>
+                  <div className="mt-1 text-sm text-red-100">{error}</div>
                 </div>
               </div>
             </div>
@@ -73,7 +59,7 @@ function LoginContent() {
                 type="email"
                 autoComplete="email"
                 required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 dark:border-[var(--card-border)] bg-white dark:bg-[var(--card-background)] placeholder-gray-500 dark:placeholder-[var(--text-secondary)] text-gray-900 dark:text-[var(--text-primary)] rounded-t-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="appearance-none rounded-none relative block w-full px-3 py-3 border border-gray-300 dark:border-[var(--card-border)] bg-white dark:bg-[var(--card-background)] placeholder-gray-500 dark:placeholder-[var(--text-secondary)] text-gray-900 dark:text-[var(--text-primary)] rounded-t-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="Email"
               />
             </div>
@@ -87,7 +73,7 @@ function LoginContent() {
                 type="password"
                 autoComplete="current-password"
                 required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 dark:border-[var(--card-border)] bg-white dark:bg-[var(--card-background)] placeholder-gray-500 dark:placeholder-[var(--text-secondary)] text-gray-900 dark:text-[var(--text-primary)] rounded-b-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="appearance-none rounded-none relative block w-full px-3 py-3 border border-gray-300 dark:border-[var(--card-border)] bg-white dark:bg-[var(--card-background)] placeholder-gray-500 dark:placeholder-[var(--text-secondary)] text-gray-900 dark:text-[var(--text-primary)] rounded-b-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="Password"
               />
             </div>
@@ -109,7 +95,7 @@ function LoginContent() {
           <div>
             <button
               type="submit"
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white cursor-pointer bg-blue-600 hover:bg-blue-700"
+              className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white cursor-pointer bg-blue-600 hover:bg-blue-700"
             >
               Sign in
             </button>
@@ -118,13 +104,13 @@ function LoginContent() {
       </div>
     </div>
   );
-}
+};
 
-export default function LoginPage() {
+const LoginPage = () => {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen flex items-center justify-center text-[var(--text-primary)]">
+        <div className="flex items-center justify-center text-[var(--text-primary)]">
           Loading...
         </div>
       }
@@ -132,4 +118,6 @@ export default function LoginPage() {
       <LoginContent />
     </Suspense>
   );
-}
+};
+
+export default LoginPage;

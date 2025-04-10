@@ -4,78 +4,71 @@ import { useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Logo from '@/components/Logo';
 import { createClient } from '@/lib/supabase/client';
-// Background component for auth pages
-function AuthBackground() {
-  return (
-    <>
-      <div className="auth-triangle auth-triangle-1 z-0"></div>
-      <div className="auth-triangle auth-triangle-2 z-0"></div>
-      <div className="auth-triangle auth-triangle-3 z-0"></div>
-      <div className="auth-triangle auth-triangle-4 z-0"></div>
-      <div className="auth-triangle auth-triangle-5 z-0"></div>
-    </>
-  );
-}
+import AuthBackground from '@/components/AuthBackground';
 
 function AuthCallbackContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const next = searchParams.get('next') || '/dashboard';
 
   useEffect(() => {
     const handleCallback = async () => {
+      const supabase = createClient();
+      const { error } = await supabase.auth.getUser();
+      const hash = window.location.hash;
+
+      // Get the code from the hash (e.g. #access_token=xxx)
       try {
-        // Get the auth code from the URL
-        const code = searchParams.get('code');
-        const next = searchParams.get('next') || '/';
-
-        if (!code) {
-          throw new Error('No code found in URL');
+        // If there's a hash, extract the session information from it
+        if (hash) {
+          await supabase.auth.getSession();
         }
 
-        // Exchange the code for a session
-        if (!createClient) {
-          throw new Error('Supabase client not initialized');
-        }
-        const { data, error } =
-          await createClient().auth.exchangeCodeForSession(code);
+        // If a session was successfully retrieved, navigate to the app
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
 
         if (error) {
-          throw error;
+          // If there was an error, redirect to the sign-in page
+          console.error('Error during auth callback:', error);
+          window.location.replace(
+            '/auth/login?error=' +
+              encodeURIComponent(error.message || 'Authentication error'),
+          );
+          return;
         }
 
-        if (!data.session) {
-          throw new Error('No session returned from code exchange');
+        // Successfully authenticated, redirect to intended destination
+        if (user) {
+          console.log('User authenticated, redirecting to:', next);
+          const nextUrl = next || '/dashboard';
+          router.replace(nextUrl);
+          router.refresh();
+        } else {
+          // No user found, redirect to login with error
+          console.error('No user found after authentication');
+          window.location.replace('/auth/login?error=Authentication+failed');
         }
-
-        // Once the session is established, redirect to the destination
-        // No need to manually set the session as exchangeCodeForSession already does that
-        router.push(next);
-      } catch (error) {
-        console.error('Auth callback error:', error);
-        const errorMessage =
-          error instanceof Error ? error.message : 'Failed to verify email';
-        router.push(`/auth/login?error=${encodeURIComponent(errorMessage)}`);
+      } catch (err) {
+        console.error('Error handling callback:', err);
+        window.location.replace('/auth/login?error=Authentication+error');
       }
     };
 
+    // Handle the callback when the component mounts
     handleCallback();
-
-    // Cleanup function
-    return () => {
-      // Any cleanup if needed
-    };
-  }, [router, searchParams]);
+  }, [router, next, searchParams]);
 
   return (
-    <div className="min-h-[calc(100vh-env(safe-area-inset-top))] flex items-center justify-center bg-gray-900 pb-env(safe-area-inset-bottom) auth-background">
-      <AuthBackground />
-      <div className="p-4 max-w-md w-full auth-card relative z-10">
+    <div className="w-full px-4 sm:px-6">
+      <div className="w-full relative z-10 py-6">
         <div className="flex flex-col items-center">
-          <Logo size="lg" className="mb-4" />
-          <h2 className="text-center text-3xl font-medium text-white">
+          <Logo size="lg" className="mb-6" />
+          <h2 className="text-center text-2xl sm:text-3xl font-medium text-[var(--text-primary)]">
             Verifying your email...
           </h2>
-          <p className="mt-2 text-center text-sm text-gray-300">
+          <p className="mt-2 text-center text-sm text-[var(--text-secondary)]">
             Please wait while we complete the verification process.
           </p>
         </div>
@@ -88,12 +81,11 @@ export default function AuthCallbackPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-[calc(100vh-env(safe-area-inset-top))] flex items-center justify-center bg-gray-900 pb-env(safe-area-inset-bottom) auth-background">
-          <AuthBackground />
-          <div className="p-4 max-w-md w-full auth-card relative z-10">
+        <div className="w-full px-4 sm:px-6">
+          <div className="w-full relative z-10 py-6">
             <div className="flex flex-col items-center">
-              <Logo size="lg" className="mb-4" />
-              <h2 className="text-center text-3xl font-medium text-white">
+              <Logo size="lg" className="mb-6" />
+              <h2 className="text-center text-2xl sm:text-3xl font-medium text-[var(--text-primary)]">
                 Loading...
               </h2>
             </div>

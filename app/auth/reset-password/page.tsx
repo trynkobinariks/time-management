@@ -5,21 +5,9 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import Logo from '@/components/Logo';
 import { resetPasswordAction } from '@/lib/supabase/auth-actions';
+import AuthBackground from '@/components/AuthBackground';
 
-// Background component for auth pages
-function AuthBackground() {
-  return (
-    <>
-      <div className="auth-triangle auth-triangle-1 z-0"></div>
-      <div className="auth-triangle auth-triangle-2 z-0"></div>
-      <div className="auth-triangle auth-triangle-3 z-0"></div>
-      <div className="auth-triangle auth-triangle-4 z-0"></div>
-      <div className="auth-triangle auth-triangle-5 z-0"></div>
-    </>
-  );
-}
-
-export default function ResetPasswordPage() {
+const ResetPasswordPage = () => {
   const [email, setEmail] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -126,3 +114,5 @@ export default function ResetPasswordPage() {
     </div>
   );
 }
+
+export default ResetPasswordPage;

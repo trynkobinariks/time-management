@@ -8,20 +8,7 @@ import PasswordInput from '@/components/PasswordInput';
 import { useClientTranslation } from '@/hooks/useClientTranslation';
 import { signUpAction } from '@/lib/supabase/auth-actions';
 
-// Background component for auth pages
-function AuthBackground() {
-  return (
-    <>
-      <div className="auth-triangle auth-triangle-1 z-0"></div>
-      <div className="auth-triangle auth-triangle-2 z-0"></div>
-      <div className="auth-triangle auth-triangle-3 z-0"></div>
-      <div className="auth-triangle auth-triangle-4 z-0"></div>
-      <div className="auth-triangle auth-triangle-5 z-0"></div>
-    </>
-  );
-}
-
-export default function SignUpPage() {
+const SignUpPage = () => {
   const { t } = useClientTranslation();
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -42,12 +29,11 @@ export default function SignUpPage() {
 
   if (success) {
     return (
-      <div className="min-h-[calc(100vh-env(safe-area-inset-top))] flex items-center justify-center bg-[var(--background)] py-12 px-4 sm:px-6 lg:px-8 pb-env(safe-area-inset-bottom) auth-background">
-        <AuthBackground />
-        <div className="max-w-md w-full space-y-6 relative z-10">
+      <div className="w-full px-4 sm:px-6">
+        <div className="w-full space-y-6 relative z-10 py-6">
           <div className="flex flex-col items-center">
-            <Logo size="lg" className="mb-4" />
-            <h2 className="text-center text-3xl font-medium text-[var(--text-primary)]">
+            <Logo size="lg" className="mb-6" />
+            <h2 className="text-center text-2xl sm:text-3xl font-medium text-[var(--text-primary)]">
               {t('auth.signup.checkEmail')}
             </h2>
             <div className="mt-4 text-center text-sm text-[var(--text-secondary)] space-y-4">
@@ -70,12 +56,11 @@ export default function SignUpPage() {
   }
 
   return (
-    <div className="min-h-[calc(100vh-env(safe-area-inset-top))] flex items-center justify-center bg-[var(--background)] py-12 px-4 sm:px-6 lg:px-8 pb-env(safe-area-inset-bottom) auth-background">
-      <AuthBackground />
-      <div className="max-w-md w-full space-y-6 relative z-10">
+    <div className="w-full px-4 sm:px-6">
+      <div className="w-full space-y-6 relative z-10 py-6">
         <div className="flex flex-col items-center">
-          <Logo size="lg" className="mb-4" />
-          <h2 className="text-center text-3xl font-medium text-[var(--text-primary)]">
+          <Logo size="lg" className="mb-6" />
+          <h2 className="text-center text-2xl sm:text-3xl font-medium text-[var(--text-primary)]">
             {t('auth.signup.title')}
           </h2>
           <p className="mt-2 text-center text-sm text-[var(--text-secondary)]">
@@ -87,7 +72,7 @@ export default function SignUpPage() {
             </Link>
           </p>
         </div>
-        <form className="mt-8 space-y-6" action={signUpAction}>
+        <form className="mt-6 space-y-6" action={signUpAction}>
           <div className="rounded-md shadow-sm -space-y-px">
             <div>
               <label htmlFor="email-address" className="sr-only">
@@ -99,7 +84,7 @@ export default function SignUpPage() {
                 type="email"
                 autoComplete="email"
                 required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-[var(--card-border)] bg-[var(--card-background)] placeholder-[var(--text-secondary)] text-[var(--text-primary)] rounded-t-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="appearance-none rounded-none relative block w-full px-3 py-3 border border-[var(--card-border)] bg-[var(--card-background)] placeholder-[var(--text-secondary)] text-[var(--text-primary)] rounded-t-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder={t('auth.login.email')}
               />
             </div>
@@ -112,7 +97,7 @@ export default function SignUpPage() {
               autoComplete="new-password"
               placeholder={t('auth.login.password')}
               rounded="bottom"
-              className="appearance-none rounded-none relative block w-full px-3 py-2 border border-[var(--card-border)] bg-[var(--card-background)] placeholder-[var(--text-secondary)] text-[var(--text-primary)] rounded-b-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="appearance-none rounded-none relative block w-full px-3 py-3 border border-[var(--card-border)] bg-[var(--card-background)] placeholder-[var(--text-secondary)] text-[var(--text-primary)] rounded-b-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
 
@@ -129,7 +114,7 @@ export default function SignUpPage() {
           <div>
             <button
               type="submit"
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white cursor-pointer bg-blue-600 hover:bg-blue-700"
+              className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white cursor-pointer bg-blue-600 hover:bg-blue-700"
             >
               {t('auth.signup.createAccount')}
             </button>
@@ -138,4 +123,6 @@ export default function SignUpPage() {
       </div>
     </div>
   );
-}
+};
+
+export default SignUpPage;
