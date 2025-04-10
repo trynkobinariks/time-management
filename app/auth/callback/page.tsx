@@ -4,9 +4,10 @@ import { useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Logo from '@/components/Logo';
 import { createClient } from '@/lib/supabase/client';
-import AuthBackground from '@/components/AuthBackground';
+import { useClientTranslation } from '@/hooks/useClientTranslation';
 
 function AuthCallbackContent() {
+  const { t } = useClientTranslation();
   const router = useRouter();
   const searchParams = useSearchParams();
   const next = searchParams.get('next') || '/dashboard';
@@ -66,10 +67,10 @@ function AuthCallbackContent() {
         <div className="flex flex-col items-center">
           <Logo size="lg" className="mb-6" />
           <h2 className="text-center text-2xl sm:text-3xl font-medium text-[var(--text-primary)]">
-            Verifying your email...
+            {t('auth.callback.verifying')}
           </h2>
           <p className="mt-2 text-center text-sm text-[var(--text-secondary)]">
-            Please wait while we complete the verification process.
+            {t('auth.callback.pleaseWait')}
           </p>
         </div>
       </div>
@@ -78,6 +79,8 @@ function AuthCallbackContent() {
 }
 
 export default function AuthCallbackPage() {
+  const { t } = useClientTranslation();
+
   return (
     <Suspense
       fallback={
@@ -86,7 +89,7 @@ export default function AuthCallbackPage() {
             <div className="flex flex-col items-center">
               <Logo size="lg" className="mb-6" />
               <h2 className="text-center text-2xl sm:text-3xl font-medium text-[var(--text-primary)]">
-                Loading...
+                {t('auth.loading')}
               </h2>
             </div>
           </div>
