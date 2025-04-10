@@ -1,28 +1,19 @@
 import { useEffect, useState } from 'react';
+import { useTheme } from 'next-themes';
 
 export const useThemeSwitcher = () => {
-  const [isDark, setIsDark] = useState(false);
+  const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
 
+  // Make sure component is mounted to avoid hydration mismatch
   useEffect(() => {
-    const savedTheme = localStorage.getItem('theme');
-    const prefersDark = window.matchMedia(
-      '(prefers-color-scheme: dark)',
-    ).matches;
-    setIsDark(savedTheme === 'dark' || (!savedTheme && prefersDark));
+    setMounted(true);
   }, []);
 
-  useEffect(() => {
-    if (isDark) {
-      document.documentElement.classList.add('dark');
-      localStorage.setItem('theme', 'dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-      localStorage.setItem('theme', 'light');
-    }
-  }, [isDark]);
+  const isDark = mounted && theme === 'dark';
 
   const toggleTheme = () => {
-    setIsDark(!isDark);
+    setTheme(isDark ? 'light' : 'dark');
   };
 
   return { isDark, toggleTheme };
