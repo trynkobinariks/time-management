@@ -5,21 +5,11 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import Logo from '@/components/Logo';
 import { resetPasswordAction } from '@/lib/supabase/auth-actions';
+import { useClientTranslation } from '@/hooks/useClientTranslation';
+import { Form, FormField, FormLabel, Input, Button } from '@/components/ui';
 
-// Background component for auth pages
-function AuthBackground() {
-  return (
-    <>
-      <div className="auth-triangle auth-triangle-1 z-0"></div>
-      <div className="auth-triangle auth-triangle-2 z-0"></div>
-      <div className="auth-triangle auth-triangle-3 z-0"></div>
-      <div className="auth-triangle auth-triangle-4 z-0"></div>
-      <div className="auth-triangle auth-triangle-5 z-0"></div>
-    </>
-  );
-}
-
-export default function ResetPasswordPage() {
+const ResetPasswordPage = () => {
+  const { t } = useClientTranslation();
   const [email, setEmail] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -39,25 +29,23 @@ export default function ResetPasswordPage() {
 
   if (success) {
     return (
-      <div className="min-h-[calc(100vh-env(safe-area-inset-top))] flex items-center justify-center bg-[var(--background)] py-12 px-4 sm:px-6 lg:px-8 pb-env(safe-area-inset-bottom) auth-background">
-        <AuthBackground />
-        <div className="max-w-md w-full space-y-6 relative z-10">
+      <div className="w-full px-4 sm:px-6">
+        <div className="w-full space-y-6 relative z-10 py-6">
           <div className="flex flex-col items-center">
-            <Logo size="lg" className="mb-4" />
-            <h2 className="text-center text-3xl font-medium text-[var(--text-primary)]">
-              Check your email
+            <Logo size="lg" className="mb-6" />
+            <h2 className="text-center text-2xl sm:text-3xl font-medium text-[var(--text-primary)]">
+              {t('auth.resetPassword.checkEmail')}
             </h2>
             <p className="mt-2 text-center text-sm text-[var(--text-secondary)]">
-              We&apos;ve sent you an email with a link to reset your password.
-              Please check your inbox and click the link to continue.
+              {t('auth.resetPassword.emailSent')}
             </p>
           </div>
           <div className="text-center">
             <Link
               href="/auth/login"
-              className="font-medium text-[var(--text-primary)] hover:text-[var(--text-secondary)]"
+              className="font-medium text-primary-600 hover:text-primary-500"
             >
-              Return to login
+              {t('auth.resetPassword.backToLogin')}
             </Link>
           </div>
         </div>
@@ -66,36 +54,35 @@ export default function ResetPasswordPage() {
   }
 
   return (
-    <div className="min-h-[calc(100vh-env(safe-area-inset-top))] flex items-center justify-center bg-[var(--background)] py-12 px-4 sm:px-6 lg:px-8 pb-env(safe-area-inset-bottom) auth-background">
-      <AuthBackground />
-      <div className="max-w-md w-full space-y-6 relative z-10">
+    <div className="w-full px-4 sm:px-6">
+      <div className="w-full space-y-6 relative z-10 py-6">
         <div className="flex flex-col items-center">
-          <Logo size="lg" className="mb-4" />
-          <h2 className="text-center text-3xl font-medium text-[var(--text-primary)]">
-            Reset your password
+          <Logo size="lg" className="mb-6" />
+          <h2 className="text-center text-2xl sm:text-3xl font-medium text-[var(--text-primary)]">
+            {t('auth.resetPassword.title')}
           </h2>
           <p className="mt-2 text-center text-sm text-[var(--text-secondary)]">
-            Enter your email address and we&apos;ll send you a link to reset
-            your password.
+            {t('auth.resetPassword.instructions')}
           </p>
         </div>
-        <form className="mt-8 space-y-6" action={resetPasswordAction}>
-          <div>
-            <label htmlFor="email-address" className="sr-only">
-              Email address
-            </label>
-            <input
+        <Form className="mt-6 space-y-6" action={resetPasswordAction}>
+          <FormField name="email">
+            <FormLabel htmlFor="email-address" className="sr-only">
+              {t('auth.login.email')}
+            </FormLabel>
+            <Input
               id="email-address"
               name="email"
               type="email"
               autoComplete="email"
               required
+              size="lg"
+              hideLabel
               value={email}
               onChange={e => setEmail(e.target.value)}
-              className="appearance-none relative block w-full px-3 py-2 border border-[var(--card-border)] bg-[var(--card-background)] placeholder-[var(--text-secondary)] text-[var(--text-primary)] rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="Email address"
+              placeholder={t('auth.login.email')}
             />
-          </div>
+          </FormField>
 
           {error && (
             <div className="rounded-md bg-red-900/50 p-4">
@@ -110,19 +97,18 @@ export default function ResetPasswordPage() {
           <div className="flex items-center justify-between">
             <Link
               href="/auth/login"
-              className="text-sm font-medium text-blue-400 hover:text-blue-300"
+              className="text-sm font-medium text-primary-600 hover:text-primary-500"
             >
-              Back to login
+              {t('auth.resetPassword.backToLogin')}
             </Link>
-            <button
-              type="submit"
-              className="inline-flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
-            >
-              Send reset link
-            </button>
+            <Button type="submit" variant="primary" size="lg">
+              {t('auth.resetPassword.sendLink')}
+            </Button>
           </div>
-        </form>
+        </Form>
       </div>
     </div>
   );
-}
+};
+
+export default ResetPasswordPage;

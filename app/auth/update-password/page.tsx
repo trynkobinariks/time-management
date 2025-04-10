@@ -3,25 +3,17 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Logo from '@/components/Logo';
-import PasswordInput from '@/components/PasswordInput';
 import { updatePasswordAction } from '@/lib/supabase/auth-actions';
+import { useClientTranslation } from '@/hooks/useClientTranslation';
+import { Form, FormField, FormLabel, Input, Button } from '@/components/ui';
+import PasswordToggle from '@/components/PasswordToggle';
 
-// Background component for auth pages
-function AuthBackground() {
-  return (
-    <>
-      <div className="auth-triangle auth-triangle-1 z-0"></div>
-      <div className="auth-triangle auth-triangle-2 z-0"></div>
-      <div className="auth-triangle auth-triangle-3 z-0"></div>
-      <div className="auth-triangle auth-triangle-4 z-0"></div>
-      <div className="auth-triangle auth-triangle-5 z-0"></div>
-    </>
-  );
-}
-
-export default function UpdatePasswordPage() {
+const UpdatePasswordPage = () => {
+  const { t } = useClientTranslation();
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [formValid, setFormValid] = useState(false);
   const searchParams = useSearchParams();
@@ -38,10 +30,10 @@ export default function UpdatePasswordPage() {
     setError(null);
     if (password && confirmPassword) {
       if (password !== confirmPassword) {
-        setError('Passwords do not match');
+        setError(t('auth.updatePassword.passwordMismatch'));
         setFormValid(false);
       } else if (password.length < 6) {
-        setError('Password must be at least 6 characters long');
+        setError(t('auth.updatePassword.passwordTooShort'));
         setFormValid(false);
       } else {
         setFormValid(true);
@@ -49,45 +41,72 @@ export default function UpdatePasswordPage() {
     } else {
       setFormValid(false);
     }
-  }, [password, confirmPassword]);
+  }, [password, confirmPassword, t]);
 
   return (
-    <div className="min-h-[calc(100vh-env(safe-area-inset-top))] flex items-center justify-center bg-gray-900 py-12 px-4 sm:px-6 lg:px-8 pb-env(safe-area-inset-bottom) auth-background">
-      <AuthBackground />
-      <div className="max-w-md w-full space-y-6 auth-card relative z-10">
+    <div className="w-full px-4 sm:px-6">
+      <div className="w-full space-y-6 relative z-10 py-6">
         <div className="flex flex-col items-center">
-          <Logo size="lg" className="mb-4" />
-          <h2 className="text-center text-3xl font-medium text-white">
-            Update your password
+          <Logo size="lg" className="mb-6" />
+          <h2 className="text-center text-2xl sm:text-3xl font-medium text-[var(--text-primary)]">
+            {t('auth.updatePassword.title')}
           </h2>
-          <p className="mt-2 text-center text-sm text-gray-300">
-            Please enter your new password below.
+          <p className="mt-2 text-center text-sm text-[var(--text-secondary)]">
+            {t('auth.updatePassword.instructions')}
           </p>
         </div>
-        <form className="mt-8 space-y-6" action={updatePasswordAction}>
-          <div className="rounded-md shadow-sm -space-y-px">
-            <PasswordInput
-              id="password"
-              label="New password"
-              name="password"
-              value={password}
-              onChange={e => setPassword(e.target.value)}
-              autoComplete="new-password"
-              placeholder="New password"
-              rounded="top"
-              className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-600 bg-gray-700 placeholder-gray-400 text-white rounded-t-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
-            <PasswordInput
-              id="confirm-password"
-              label="Confirm new password"
-              value={confirmPassword}
-              onChange={e => setConfirmPassword(e.target.value)}
-              autoComplete="new-password"
-              placeholder="Confirm new password"
-              rounded="bottom"
-              className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-600 bg-gray-700 placeholder-gray-400 text-white rounded-b-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
-          </div>
+        <Form className="mt-6 space-y-6" action={updatePasswordAction}>
+          <FormField name="password">
+            <FormLabel htmlFor="password" className="sr-only">
+              {t('auth.updatePassword.newPassword')}
+            </FormLabel>
+            <div className="relative">
+              <Input
+                id="password"
+                name="password"
+                type={showPassword ? 'text' : 'password'}
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+                autoComplete="new-password"
+                required
+                size="lg"
+                hideLabel
+                placeholder={t('auth.updatePassword.newPassword')}
+              />
+              <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
+                <PasswordToggle
+                  showPassword={showPassword}
+                  onToggle={() => setShowPassword(!showPassword)}
+                />
+              </div>
+            </div>
+          </FormField>
+
+          <FormField name="confirm-password">
+            <FormLabel htmlFor="confirm-password" className="sr-only">
+              {t('auth.updatePassword.confirmPassword')}
+            </FormLabel>
+            <div className="relative">
+              <Input
+                id="confirm-password"
+                name="confirm-password"
+                type={showConfirmPassword ? 'text' : 'password'}
+                value={confirmPassword}
+                onChange={e => setConfirmPassword(e.target.value)}
+                autoComplete="new-password"
+                required
+                size="lg"
+                hideLabel
+                placeholder={t('auth.updatePassword.confirmPassword')}
+              />
+              <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
+                <PasswordToggle
+                  showPassword={showConfirmPassword}
+                  onToggle={() => setShowConfirmPassword(!showConfirmPassword)}
+                />
+              </div>
+            </div>
+          </FormField>
 
           {error && (
             <div className="rounded-md bg-red-900/50 p-4">
@@ -99,19 +118,19 @@ export default function UpdatePasswordPage() {
             </div>
           )}
 
-          <div>
-            <button
-              type="submit"
-              disabled={!formValid}
-              className={`group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white ${
-                !formValid ? 'bg-gray-600' : 'bg-blue-600 hover:bg-blue-700'
-              }`}
-            >
-              Update password
-            </button>
-          </div>
-        </form>
+          <Button
+            type="submit"
+            variant="primary"
+            size="lg"
+            fullWidth
+            disabled={!formValid}
+          >
+            {t('auth.updatePassword.updateButton')}
+          </Button>
+        </Form>
       </div>
     </div>
   );
-}
+};
+
+export default UpdatePasswordPage;

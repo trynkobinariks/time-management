@@ -102,7 +102,9 @@
       "forgotPassword": "Forgot your password?",
       "signingIn": "Signing in...",
       "signIn": "Sign in",
-      "error": "Error"
+      "error": "Error",
+      "noAccount": "Don't have an account?",
+      "signUp": "Sign up"
     },
     "signup": {
       "title": "Create a new account",
@@ -111,7 +113,40 @@
       "verificationSent": "We've sent you an email with a link to verify your account. Please check your inbox (and spam folder) and click the link to continue.",
       "autoRedirect": "After verifying your email, you'll be automatically redirected to the dashboard.",
       "spamNote": "If you don't see the email, please wait a few minutes and check your spam folder.",
-      "returnToLogin": "Return to login"
+      "returnToLogin": "Return to login",
+      "backToLogin": "Back to login",
+      "alreadyHaveAccount": "Already have an account?",
+      "signingUp": "Signing up..."
+    },
+    "resetPassword": {
+      "title": "Reset your password",
+      "instructions": "Enter your email address and we'll send you a link to reset your password.",
+      "checkEmail": "Check your email",
+      "emailSent": "We've sent you an email with a link to reset your password. Please check your inbox and click the link to continue.",
+      "sendLink": "Send reset link",
+      "backToLogin": "Back to login"
+    },
+    "forgotPassword": {
+      "title": "Forgot your password",
+      "instruction": "Enter your email address and we'll send you a link to reset your password.",
+      "sendEmail": "Send reset link",
+      "checkEmail": "Check your email",
+      "resetSent": "We've sent you an email with a link to reset your password. Please check your inbox and click the link to continue.",
+      "returnToLogin": "Return to login",
+      "spamNote": "If you don't see the email, please wait a few minutes and check your spam folder."
+    },
+    "updatePassword": {
+      "title": "Update your password",
+      "instructions": "Please enter your new password below.",
+      "newPassword": "New password",
+      "confirmPassword": "Confirm new password",
+      "updateButton": "Update password",
+      "passwordMismatch": "Passwords do not match",
+      "passwordTooShort": "Password must be at least 6 characters long"
+    },
+    "callback": {
+      "verifying": "Verifying your email...",
+      "pleaseWait": "Please wait while we complete the verification process."
     },
     "loading": "Loading..."
   },
