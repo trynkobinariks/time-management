@@ -1,19 +1,22 @@
 'use client';
 
-import React, { Suspense } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import Logo from '@/components/Logo';
-import { signInAction } from '@/lib/supabase/auth-actions';
 import { useClientTranslation } from '@/hooks/useClientTranslation';
+import { signInAction } from '@/lib/supabase/auth-actions';
+import { Form, FormField, FormLabel, Input, Button } from '@/components/ui';
+import PasswordToggle from '@/components/PasswordToggle';
 
-const LoginContent = () => {
+const LoginPage = () => {
   const { t } = useClientTranslation();
-  const [error, setError] = React.useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
   const searchParams = useSearchParams();
   const next = searchParams.get('next') || '/dashboard';
 
-  React.useEffect(() => {
+  useEffect(() => {
     const errorParam = searchParams.get('error');
     if (errorParam) {
       setError(errorParam);
@@ -22,107 +25,93 @@ const LoginContent = () => {
 
   return (
     <div className="w-full px-4 sm:px-6">
-      <div className="w-full relative z-10 py-6">
+      <div className="w-full space-y-6 relative z-10 py-6">
         <div className="flex flex-col items-center">
           <Logo size="lg" className="mb-6" />
           <h2 className="text-center text-2xl sm:text-3xl font-medium text-[var(--text-primary)]">
             {t('auth.login.title')}
           </h2>
           <p className="mt-2 text-center text-sm text-[var(--text-secondary)]">
+            {t('auth.login.noAccount')}{' '}
             <Link
               href="/auth/signup"
-              className="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300"
+              className="font-medium text-primary-600 hover:text-primary-500"
             >
-              {t('auth.login.createAccount')}
+              {t('auth.login.signUp')}
             </Link>
           </p>
         </div>
 
-        <form className="mt-6 space-y-4 z-50" action={signInAction}>
-          {error && (
-            <div className="rounded-md bg-red-900/50 p-3">
-              <div className="flex">
-                <div className="ml-3">
-                  <h3 className="text-sm font-medium text-red-200">
-                    {t('auth.login.error')}
-                  </h3>
-                  <div className="mt-1 text-sm text-red-100">{error}</div>
-                </div>
-              </div>
-            </div>
-          )}
+        <Form className="mt-6 space-y-6" action={signInAction}>
+          <FormField name="email">
+            <FormLabel htmlFor="email-address" className="sr-only">
+              {t('auth.login.email')}
+            </FormLabel>
+            <Input
+              id="email-address"
+              name="email"
+              type="email"
+              autoComplete="email"
+              required
+              size="lg"
+              hideLabel
+              placeholder={t('auth.login.email')}
+            />
+          </FormField>
 
-          <div className="rounded-md shadow-sm -space-y-px">
-            <div>
-              <label htmlFor="email" className="sr-only">
-                {t('auth.login.email')}
-              </label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                autoComplete="email"
-                required
-                className="appearance-none rounded-none relative block w-full px-3 py-3 border border-gray-300 dark:border-[var(--card-border)] bg-white dark:bg-[var(--card-background)] placeholder-gray-500 dark:placeholder-[var(--text-secondary)] text-gray-900 dark:text-[var(--text-primary)] rounded-t-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder={t('auth.login.email')}
-              />
-            </div>
+          <FormField name="password">
+            <FormLabel htmlFor="password" className="sr-only">
+              {t('auth.login.password')}
+            </FormLabel>
             <div className="relative">
-              <label htmlFor="password" className="sr-only">
-                {t('auth.login.password')}
-              </label>
-              <input
+              <Input
                 id="password"
                 name="password"
-                type="password"
+                type={showPassword ? 'text' : 'password'}
                 autoComplete="current-password"
                 required
-                className="appearance-none rounded-none relative block w-full px-3 py-3 border border-gray-300 dark:border-[var(--card-border)] bg-white dark:bg-[var(--card-background)] placeholder-gray-500 dark:placeholder-[var(--text-secondary)] text-gray-900 dark:text-[var(--text-primary)] rounded-b-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                size="lg"
+                hideLabel
                 placeholder={t('auth.login.password')}
               />
+              <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
+                <PasswordToggle
+                  showPassword={showPassword}
+                  onToggle={() => setShowPassword(!showPassword)}
+                />
+              </div>
             </div>
-          </div>
+          </FormField>
 
           <div className="flex items-center justify-between">
             <div className="text-sm">
               <Link
-                href="/auth/reset-password"
-                className="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300"
+                href="/auth/forgot-password"
+                className="font-medium text-primary-600 hover:text-primary-500"
               >
                 {t('auth.login.forgotPassword')}
               </Link>
             </div>
           </div>
 
+          {error && (
+            <div className="rounded-md bg-red-900/50 p-4">
+              <div className="flex">
+                <div className="ml-3">
+                  <h3 className="text-sm font-medium text-red-200">{error}</h3>
+                </div>
+              </div>
+            </div>
+          )}
+
           <input type="hidden" name="next" value={next} />
 
-          <div>
-            <button
-              type="submit"
-              className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white cursor-pointer bg-blue-600 hover:bg-blue-700"
-            >
-              {t('auth.login.signIn')}
-            </button>
-          </div>
-        </form>
+          <Button type="submit" variant="primary" size="lg" fullWidth>
+            {t('auth.login.signIn')}
+          </Button>
+        </Form>
       </div>
     </div>
-  );
-};
-
-const LoginPage = () => {
-  const { t } = useClientTranslation();
-
-  return (
-    <Suspense
-      fallback={
-        <div className="flex items-center justify-center text-[var(--text-primary)]">
-          {t('auth.loading')}
-        </div>
-      }
-    >
-      <LoginContent />
-    </Suspense>
   );
 };
 

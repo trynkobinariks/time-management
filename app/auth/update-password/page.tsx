@@ -3,14 +3,17 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Logo from '@/components/Logo';
-import PasswordInput from '@/components/PasswordInput';
 import { updatePasswordAction } from '@/lib/supabase/auth-actions';
 import { useClientTranslation } from '@/hooks/useClientTranslation';
+import { Form, FormField, FormLabel, Input, Button } from '@/components/ui';
+import PasswordToggle from '@/components/PasswordToggle';
 
 const UpdatePasswordPage = () => {
   const { t } = useClientTranslation();
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [formValid, setFormValid] = useState(false);
   const searchParams = useSearchParams();
@@ -42,7 +45,7 @@ const UpdatePasswordPage = () => {
 
   return (
     <div className="w-full px-4 sm:px-6">
-      <div className="w-full relative z-10 py-6">
+      <div className="w-full space-y-6 relative z-10 py-6">
         <div className="flex flex-col items-center">
           <Logo size="lg" className="mb-6" />
           <h2 className="text-center text-2xl sm:text-3xl font-medium text-[var(--text-primary)]">
@@ -52,30 +55,58 @@ const UpdatePasswordPage = () => {
             {t('auth.updatePassword.instructions')}
           </p>
         </div>
-        <form className="mt-6 space-y-6" action={updatePasswordAction}>
-          <div className="rounded-md shadow-sm -space-y-px">
-            <PasswordInput
-              id="password"
-              label={t('auth.updatePassword.newPassword')}
-              name="password"
-              value={password}
-              onChange={e => setPassword(e.target.value)}
-              autoComplete="new-password"
-              placeholder={t('auth.updatePassword.newPassword')}
-              rounded="top"
-              className="appearance-none rounded-none relative block w-full px-3 py-3 border border-[var(--card-border)] bg-[var(--card-background)] placeholder-[var(--text-secondary)] text-[var(--text-primary)] rounded-t-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
-            <PasswordInput
-              id="confirm-password"
-              label={t('auth.updatePassword.confirmPassword')}
-              value={confirmPassword}
-              onChange={e => setConfirmPassword(e.target.value)}
-              autoComplete="new-password"
-              placeholder={t('auth.updatePassword.confirmPassword')}
-              rounded="bottom"
-              className="appearance-none rounded-none relative block w-full px-3 py-3 border border-[var(--card-border)] bg-[var(--card-background)] placeholder-[var(--text-secondary)] text-[var(--text-primary)] rounded-b-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
-          </div>
+        <Form className="mt-6 space-y-6" action={updatePasswordAction}>
+          <FormField name="password">
+            <FormLabel htmlFor="password" className="sr-only">
+              {t('auth.updatePassword.newPassword')}
+            </FormLabel>
+            <div className="relative">
+              <Input
+                id="password"
+                name="password"
+                type={showPassword ? 'text' : 'password'}
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+                autoComplete="new-password"
+                required
+                size="lg"
+                hideLabel
+                placeholder={t('auth.updatePassword.newPassword')}
+              />
+              <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
+                <PasswordToggle
+                  showPassword={showPassword}
+                  onToggle={() => setShowPassword(!showPassword)}
+                />
+              </div>
+            </div>
+          </FormField>
+
+          <FormField name="confirm-password">
+            <FormLabel htmlFor="confirm-password" className="sr-only">
+              {t('auth.updatePassword.confirmPassword')}
+            </FormLabel>
+            <div className="relative">
+              <Input
+                id="confirm-password"
+                name="confirm-password"
+                type={showConfirmPassword ? 'text' : 'password'}
+                value={confirmPassword}
+                onChange={e => setConfirmPassword(e.target.value)}
+                autoComplete="new-password"
+                required
+                size="lg"
+                hideLabel
+                placeholder={t('auth.updatePassword.confirmPassword')}
+              />
+              <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
+                <PasswordToggle
+                  showPassword={showConfirmPassword}
+                  onToggle={() => setShowConfirmPassword(!showConfirmPassword)}
+                />
+              </div>
+            </div>
+          </FormField>
 
           {error && (
             <div className="rounded-md bg-red-900/50 p-4">
@@ -87,18 +118,16 @@ const UpdatePasswordPage = () => {
             </div>
           )}
 
-          <div>
-            <button
-              type="submit"
-              disabled={!formValid}
-              className={`group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white ${
-                !formValid ? 'bg-gray-600' : 'bg-blue-600 hover:bg-blue-700'
-              }`}
-            >
-              {t('auth.updatePassword.updateButton')}
-            </button>
-          </div>
-        </form>
+          <Button
+            type="submit"
+            variant="primary"
+            size="lg"
+            fullWidth
+            disabled={!formValid}
+          >
+            {t('auth.updatePassword.updateButton')}
+          </Button>
+        </Form>
       </div>
     </div>
   );

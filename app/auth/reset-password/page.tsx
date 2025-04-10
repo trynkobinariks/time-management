@@ -6,6 +6,7 @@ import { useSearchParams } from 'next/navigation';
 import Logo from '@/components/Logo';
 import { resetPasswordAction } from '@/lib/supabase/auth-actions';
 import { useClientTranslation } from '@/hooks/useClientTranslation';
+import { Form, FormField, FormLabel, Input, Button } from '@/components/ui';
 
 const ResetPasswordPage = () => {
   const { t } = useClientTranslation();
@@ -42,9 +43,9 @@ const ResetPasswordPage = () => {
           <div className="text-center">
             <Link
               href="/auth/login"
-              className="font-medium text-[var(--text-primary)] hover:text-[var(--text-secondary)]"
+              className="font-medium text-primary-600 hover:text-primary-500"
             >
-              {t('auth.signup.returnToLogin')}
+              {t('auth.resetPassword.backToLogin')}
             </Link>
           </div>
         </div>
@@ -64,23 +65,24 @@ const ResetPasswordPage = () => {
             {t('auth.resetPassword.instructions')}
           </p>
         </div>
-        <form className="mt-6 space-y-6" action={resetPasswordAction}>
-          <div>
-            <label htmlFor="email-address" className="sr-only">
+        <Form className="mt-6 space-y-6" action={resetPasswordAction}>
+          <FormField name="email">
+            <FormLabel htmlFor="email-address" className="sr-only">
               {t('auth.login.email')}
-            </label>
-            <input
+            </FormLabel>
+            <Input
               id="email-address"
               name="email"
               type="email"
               autoComplete="email"
               required
+              size="lg"
+              hideLabel
               value={email}
               onChange={e => setEmail(e.target.value)}
-              className="appearance-none relative block w-full px-3 py-3 border border-[var(--card-border)] bg-[var(--card-background)] placeholder-[var(--text-secondary)] text-[var(--text-primary)] rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               placeholder={t('auth.login.email')}
             />
-          </div>
+          </FormField>
 
           {error && (
             <div className="rounded-md bg-red-900/50 p-4">
@@ -95,18 +97,15 @@ const ResetPasswordPage = () => {
           <div className="flex items-center justify-between">
             <Link
               href="/auth/login"
-              className="text-sm font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300"
+              className="text-sm font-medium text-primary-600 hover:text-primary-500"
             >
               {t('auth.resetPassword.backToLogin')}
             </Link>
-            <button
-              type="submit"
-              className="inline-flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
-            >
+            <Button type="submit" variant="primary" size="lg">
               {t('auth.resetPassword.sendLink')}
-            </button>
+            </Button>
           </div>
-        </form>
+        </Form>
       </div>
     </div>
   );

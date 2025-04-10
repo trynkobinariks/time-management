@@ -5,14 +5,11 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import Logo from '@/components/Logo';
 import { useClientTranslation } from '@/hooks/useClientTranslation';
-import { signUpAction } from '@/lib/supabase/auth-actions';
+import { resetPasswordAction } from '@/lib/supabase/auth-actions';
 import { Form, FormField, FormLabel, Input, Button } from '@/components/ui';
-import PasswordToggle from '@/components/PasswordToggle';
 
-const SignUpPage = () => {
+const ForgotPasswordPage = () => {
   const { t } = useClientTranslation();
-  const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const searchParams = useSearchParams();
@@ -36,12 +33,11 @@ const SignUpPage = () => {
           <div className="flex flex-col items-center">
             <Logo size="lg" className="mb-6" />
             <h2 className="text-center text-2xl sm:text-3xl font-medium text-[var(--text-primary)]">
-              {t('auth.signup.checkEmail')}
+              {t('auth.forgotPassword.checkEmail')}
             </h2>
             <div className="mt-4 text-center text-sm text-[var(--text-secondary)] space-y-4">
-              <p>{t('auth.signup.verificationSent')}</p>
-              <p className="font-medium">{t('auth.signup.autoRedirect')}</p>
-              <p className="text-xs">{t('auth.signup.spamNote')}</p>
+              <p>{t('auth.forgotPassword.resetSent')}</p>
+              <p className="text-xs">{t('auth.forgotPassword.spamNote')}</p>
             </div>
           </div>
           <div className="text-center">
@@ -49,7 +45,7 @@ const SignUpPage = () => {
               href="/auth/login"
               className="font-medium text-primary-600 hover:text-primary-500"
             >
-              {t('auth.signup.backToLogin')}
+              {t('auth.forgotPassword.returnToLogin')}
             </Link>
           </div>
         </div>
@@ -63,19 +59,13 @@ const SignUpPage = () => {
         <div className="flex flex-col items-center">
           <Logo size="lg" className="mb-6" />
           <h2 className="text-center text-2xl sm:text-3xl font-medium text-[var(--text-primary)]">
-            {t('auth.signup.title')}
+            {t('auth.forgotPassword.title')}
           </h2>
           <p className="mt-2 text-center text-sm text-[var(--text-secondary)]">
-            {t('auth.signup.alreadyHaveAccount')}{' '}
-            <Link
-              href="/auth/login"
-              className="font-medium text-primary-600 hover:text-primary-500"
-            >
-              {t('auth.login.signIn')}
-            </Link>
+            {t('auth.forgotPassword.instruction')}
           </p>
         </div>
-        <Form className="mt-6 space-y-6" action={signUpAction}>
+        <Form className="mt-6 space-y-6" action={resetPasswordAction}>
           <FormField name="email">
             <FormLabel htmlFor="email-address" className="sr-only">
               {t('auth.login.email')}
@@ -92,32 +82,6 @@ const SignUpPage = () => {
             />
           </FormField>
 
-          <FormField name="password">
-            <FormLabel htmlFor="password" className="sr-only">
-              {t('auth.login.password')}
-            </FormLabel>
-            <div className="relative">
-              <Input
-                id="password"
-                name="password"
-                type={showPassword ? 'text' : 'password'}
-                value={password}
-                onChange={e => setPassword(e.target.value)}
-                autoComplete="new-password"
-                required
-                size="lg"
-                hideLabel
-                placeholder={t('auth.login.password')}
-              />
-              <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
-                <PasswordToggle
-                  showPassword={showPassword}
-                  onToggle={() => setShowPassword(!showPassword)}
-                />
-              </div>
-            </div>
-          </FormField>
-
           {error && (
             <div className="rounded-md bg-red-900/50 p-4">
               <div className="flex">
@@ -129,12 +93,21 @@ const SignUpPage = () => {
           )}
 
           <Button type="submit" variant="primary" size="lg" fullWidth>
-            {t('auth.signup.createAccount')}
+            {t('auth.forgotPassword.sendEmail')}
           </Button>
+
+          <div className="text-center">
+            <Link
+              href="/auth/login"
+              className="font-medium text-primary-600 hover:text-primary-500"
+            >
+              {t('auth.forgotPassword.returnToLogin')}
+            </Link>
+          </div>
         </Form>
       </div>
     </div>
   );
 };
 
-export default SignUpPage;
+export default ForgotPasswordPage;
