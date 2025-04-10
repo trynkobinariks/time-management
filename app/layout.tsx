@@ -3,9 +3,11 @@ import { Nunito_Sans, Open_Sans } from 'next/font/google';
 import './globals.css';
 import { ProjectProvider } from '../contexts/ProjectContext';
 import { LanguageProvider } from '../contexts/LanguageContext';
+import { UserSettingsProvider } from '../contexts/UserSettingsContext';
 import Header from '../components/Header/Header';
 import { createClient } from '@/lib/supabase/server';
 import AuthLayoutWrapper from '@/components/AuthLayoutWrapper';
+import { ThemeProvider } from '../contexts/ThemeProvider';
 
 const nunitoSans = Nunito_Sans({
   subsets: ['latin'],
@@ -73,13 +75,17 @@ export default async function RootLayout({
       </head>
       <body className="bg-[var(--background)] text-[var(--text-primary)] transition-colors duration-200 font-sans">
         <div className="min-h-screen flex flex-col">
-          <LanguageProvider>
-            <ProjectProvider>
-              <Header user={user} />
-              <div className="h-16" />
-              <AuthLayoutWrapper>{children}</AuthLayoutWrapper>
-            </ProjectProvider>
-          </LanguageProvider>
+          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+            <LanguageProvider>
+              <ProjectProvider>
+                <UserSettingsProvider>
+                  <Header user={user} />
+                  <div className="h-16" />
+                  <AuthLayoutWrapper>{children}</AuthLayoutWrapper>
+                </UserSettingsProvider>
+              </ProjectProvider>
+            </LanguageProvider>
+          </ThemeProvider>
         </div>
       </body>
     </html>

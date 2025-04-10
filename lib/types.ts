@@ -1,7 +1,7 @@
 // Project Types
 export enum ProjectType {
-  INTERNAL = 'INTERNAL',
-  EXTERNAL = 'EXTERNAL',
+  INTERNAL = 'internal',
+  COMMERCIAL = 'commercial',
 }
 
 export interface BaseModel {
@@ -51,4 +51,12 @@ export interface WeeklySummary {
   weekEndDate: Date;
   totalHoursWorked: number;
   dailySummaries: DailySummary[];
+}
+
+export interface UserSettings extends BaseModel {
+  user_id: string; // UUID, references auth.users(id)
+  working_hours_per_day: number; // Default: 8
+  working_days_per_week: number; // Default: 5
+  internal_hours_limit: number; // Default: 20
+  commercial_hours_limit: number; // Default: 20
 }

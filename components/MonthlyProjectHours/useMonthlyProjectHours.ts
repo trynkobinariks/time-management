@@ -1,23 +1,25 @@
 import { useMemo, useEffect, useState, useRef } from 'react';
 import { useProjectContext } from '../../contexts/ProjectContext';
 import { ProjectType } from '../../lib/types';
-import { startOfWeek, endOfWeek, format, isWithinInterval } from 'date-fns';
+import {
+  startOfMonth,
+  endOfMonth,
+  format,
+  isWithinInterval,
+  eachDayOfInterval,
+  isWeekend,
+} from 'date-fns';
 import { useUserSettings } from '@/hooks/useUserSettings';
 
 // Default constants (will be overridden by user settings)
 export const DEFAULT_WORKING_HOURS_PER_DAY = 8;
 export const DEFAULT_WORKING_DAYS_PER_WEEK = 5;
-export const DEFAULT_INTERNAL_HOURS_LIMIT = 20;
-export const DEFAULT_COMMERCIAL_HOURS_LIMIT = 20;
+export const DEFAULT_INTERNAL_HOURS_LIMIT_WEEKLY = 20; // Weekly limit
+export const DEFAULT_COMMERCIAL_HOURS_LIMIT_WEEKLY = 20; // Weekly limit
 
-// For backwards compatibility
-export const WEEKLY_TOTAL_TARGET =
-  DEFAULT_WORKING_HOURS_PER_DAY * DEFAULT_WORKING_DAYS_PER_WEEK;
-export const PROJECT_TYPE_TARGET = DEFAULT_INTERNAL_HOURS_LIMIT;
-
-interface WeeklyMetrics {
-  weekStart: Date;
-  weekEnd: Date;
+interface MonthlyMetrics {
+  monthStart: Date;
+  monthEnd: Date;
   internalHours: number;
   commercialHours: number;
   totalHours: number;
@@ -44,28 +46,47 @@ interface HighlightState {
   commercial: boolean;
 }
 
-interface UseWeeklyProjectHoursReturn {
-  weeklyMetrics: WeeklyMetrics;
+interface UseMonthlyProjectHoursReturn {
+  monthlyMetrics: MonthlyMetrics;
   animatedPercentages: AnimationState;
   highlightedBars: HighlightState;
-  weekRangeText: string;
+  monthRangeText: string;
+  workingDaysCount: number;
 }
 
-export function useWeeklyProjectHours(
+export function useMonthlyProjectHours(
   selectedDate: Date,
-): UseWeeklyProjectHoursReturn {
+): UseMonthlyProjectHoursReturn {
   const { timeEntries, projects } = useProjectContext();
   const { settings } = useUserSettings();
 
-  // Calculate weekly total based on user settings
-  const weeklyTotalTarget =
-    settings?.working_hours_per_day && settings?.working_days_per_week
-      ? settings.working_hours_per_day * settings.working_days_per_week
-      : WEEKLY_TOTAL_TARGET;
-  const internalHoursLimit =
-    settings?.internal_hours_limit || DEFAULT_INTERNAL_HOURS_LIMIT;
-  const commercialHoursLimit =
-    settings?.commercial_hours_limit || DEFAULT_COMMERCIAL_HOURS_LIMIT;
+  // Calculate working days in the month (Monday-Friday)
+  const workingDaysCount = useMemo(() => {
+    const monthStart = startOfMonth(selectedDate);
+    const monthEnd = endOfMonth(selectedDate);
+
+    const daysInMonth = eachDayOfInterval({ start: monthStart, end: monthEnd });
+    return daysInMonth.filter(day => !isWeekend(day)).length;
+  }, [selectedDate]);
+
+  // Calculate scaling factor based on working days
+  // This represents how many weeks worth of working days are in this month
+  const monthToWeekScalingFactor =
+    workingDaysCount / DEFAULT_WORKING_DAYS_PER_WEEK;
+
+  // Calculate monthly total based on user settings and working days count
+  const monthlyTotalTarget = settings?.working_hours_per_day
+    ? settings.working_hours_per_day * workingDaysCount // Exact hours based on working days
+    : DEFAULT_WORKING_HOURS_PER_DAY * workingDaysCount;
+
+  // Calculate monthly limits by scaling weekly limits according to working days count
+  const internalHoursLimit = settings?.internal_hours_limit
+    ? settings.internal_hours_limit * monthToWeekScalingFactor // Scale weekly limit to month
+    : DEFAULT_INTERNAL_HOURS_LIMIT_WEEKLY * monthToWeekScalingFactor;
+
+  const commercialHoursLimit = settings?.commercial_hours_limit
+    ? settings.commercial_hours_limit * monthToWeekScalingFactor
+    : DEFAULT_COMMERCIAL_HOURS_LIMIT_WEEKLY * monthToWeekScalingFactor;
 
   const [animatedPercentages, setAnimatedPercentages] =
     useState<AnimationState>({
@@ -84,16 +105,16 @@ export function useWeeklyProjectHours(
     commercialPercentage: number;
   } | null>(null);
 
-  // Calculate weekly metrics based on selected date
-  const weeklyMetrics = useMemo(() => {
-    // Calculate week boundaries for the selected date
-    const weekStart = startOfWeek(selectedDate, { weekStartsOn: 1 }); // Monday
-    const weekEnd = endOfWeek(selectedDate, { weekStartsOn: 1 }); // Sunday
+  // Calculate monthly metrics based on selected date
+  const monthlyMetrics = useMemo(() => {
+    // Calculate month boundaries for the selected date
+    const monthStart = startOfMonth(selectedDate);
+    const monthEnd = endOfMonth(selectedDate);
 
-    // Filter time entries for the current week
-    const weeklyEntries = timeEntries.filter(entry => {
+    // Filter time entries for the current month
+    const monthlyEntries = timeEntries.filter(entry => {
       const entryDate = new Date(entry.date);
-      return isWithinInterval(entryDate, { start: weekStart, end: weekEnd });
+      return isWithinInterval(entryDate, { start: monthStart, end: monthEnd });
     });
 
     // Group by project types and calculate hours
@@ -101,7 +122,7 @@ export function useWeeklyProjectHours(
     let commercialHours = 0;
     let totalHours = 0;
 
-    weeklyEntries.forEach(entry => {
+    monthlyEntries.forEach(entry => {
       const project = projects.find(p => p.id === entry.project_id);
 
       if (project) {
@@ -120,7 +141,7 @@ export function useWeeklyProjectHours(
       0,
       commercialHoursLimit - commercialHours,
     );
-    const totalRemaining = Math.max(0, weeklyTotalTarget - totalHours);
+    const totalRemaining = Math.max(0, monthlyTotalTarget - totalHours);
 
     // Calculate percentages for progress bars
     const internalPercentage = Math.min(
@@ -133,12 +154,12 @@ export function useWeeklyProjectHours(
     );
     const totalPercentage = Math.min(
       100,
-      (totalHours / weeklyTotalTarget) * 100,
+      (totalHours / monthlyTotalTarget) * 100,
     );
 
     return {
-      weekStart,
-      weekEnd,
+      monthStart,
+      monthEnd,
       internalHours,
       commercialHours,
       totalHours,
@@ -150,13 +171,13 @@ export function useWeeklyProjectHours(
       totalPercentage,
       internalOvertime: internalHours > internalHoursLimit,
       commercialOvertime: commercialHours > commercialHoursLimit,
-      totalOvertime: totalHours > weeklyTotalTarget,
+      totalOvertime: totalHours > monthlyTotalTarget,
     };
   }, [
     timeEntries,
     projects,
     selectedDate,
-    weeklyTotalTarget,
+    monthlyTotalTarget,
     internalHoursLimit,
     commercialHoursLimit,
   ]);
@@ -180,13 +201,13 @@ export function useWeeklyProjectHours(
     // Animate from 0 to current values after a short delay
     const timer = setTimeout(() => {
       setAnimatedPercentages({
-        total: weeklyMetrics.totalPercentage,
-        internal: weeklyMetrics.internalPercentage,
-        commercial: weeklyMetrics.commercialPercentage,
+        total: monthlyMetrics.totalPercentage,
+        internal: monthlyMetrics.internalPercentage,
+        commercial: monthlyMetrics.commercialPercentage,
       });
     }, 50);
 
-    prevMetricsRef.current = weeklyMetrics;
+    prevMetricsRef.current = monthlyMetrics;
     return () => clearTimeout(timer);
   }, [selectedDate]); // Re-run when selectedDate changes
 
@@ -200,13 +221,13 @@ export function useWeeklyProjectHours(
     const changedBars = {
       total:
         prevMetricsRef.current.totalPercentage !==
-        weeklyMetrics.totalPercentage,
+        monthlyMetrics.totalPercentage,
       internal:
         prevMetricsRef.current.internalPercentage !==
-        weeklyMetrics.internalPercentage,
+        monthlyMetrics.internalPercentage,
       commercial:
         prevMetricsRef.current.commercialPercentage !==
-        weeklyMetrics.commercialPercentage,
+        monthlyMetrics.commercialPercentage,
     };
 
     // Highlight changed bars
@@ -228,25 +249,26 @@ export function useWeeklyProjectHours(
 
       // Animate to new values
       setAnimatedPercentages({
-        total: weeklyMetrics.totalPercentage,
-        internal: weeklyMetrics.internalPercentage,
-        commercial: weeklyMetrics.commercialPercentage,
+        total: monthlyMetrics.totalPercentage,
+        internal: monthlyMetrics.internalPercentage,
+        commercial: monthlyMetrics.commercialPercentage,
       });
 
-      prevMetricsRef.current = weeklyMetrics;
+      prevMetricsRef.current = monthlyMetrics;
       return () => clearTimeout(highlightTimer);
     }
 
-    prevMetricsRef.current = weeklyMetrics;
-  }, [weeklyMetrics]);
+    prevMetricsRef.current = monthlyMetrics;
+  }, [monthlyMetrics]);
 
-  // Format the week range for display
-  const weekRangeText = `${format(weeklyMetrics.weekStart, 'MMM d')} - ${format(weeklyMetrics.weekEnd, 'MMM d, yyyy')}`;
+  // Format the month range for display
+  const monthRangeText = format(monthlyMetrics.monthStart, 'MMMM yyyy');
 
   return {
-    weeklyMetrics,
+    monthlyMetrics,
     animatedPercentages,
     highlightedBars,
-    weekRangeText,
+    monthRangeText,
+    workingDaysCount,
   };
 }
