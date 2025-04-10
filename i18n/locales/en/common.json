@@ -168,7 +168,11 @@
     "totalHours": "Total Hours",
     "overtime": "overtime",
     "remaining": "remaining",
-    "left": "left"
+    "left": "left",
+    "week": "Week",
+    "month": "Month",
+    "workingDays": "working days",
+    "monthlyHours": "Monthly Hours"
   },
   "voiceEntry": {
     "recording": "Recording...",
@@ -251,18 +255,23 @@
   },
   "settings": {
     "title": "Settings",
+    "description": "Customize your time tracking experience",
     "workingHours": "Working Hours Settings",
+    "workSchedule": "Work Schedule",
     "workingHoursPerDay": "Working Hours Per Day",
     "workingHoursPerDayHelp": "Default number of hours you work per day",
     "workingDaysPerWeek": "Working Days Per Week",
     "workingDaysPerWeekHelp": "Number of days you work per week",
     "totalWeeklyHours": "Total Weekly Hours",
+    "calculatedAutomatically": "Calculated based on your schedule",
+    "projectLimits": "Project Hour Limits",
     "internalHoursLimit": "Internal Projects Hours Limit",
     "internalHoursLimitHelp": "Maximum hours to spend on internal projects per week",
     "commercialHoursLimit": "Commercial Projects Hours Limit",
     "commercialHoursLimitHelp": "Maximum hours to spend on commercial projects per week",
+    "allocatedHours": "Total Allocated Hours",
     "saveSuccess": "Settings saved successfully!",
     "saveError": "Error saving settings",
-    "limitExceedsTotal": "Total hours limit exceeds the sum of internal and commercial limits"
+    "limitExceedsTotal": "The sum of internal and commercial limits exceeds your total weekly hours"
   }
 }
