@@ -1,4 +1,3 @@
-import VoiceTimeEntry from '../../VoiceTimeEntry/VoiceTimeEntry';
 import TimeEntriesList from '../../TimeEntriesList/TimeEntriesList';
 import { useMainPage } from './useMainPage';
 import { useClientTranslation } from '../../../hooks/useClientTranslation';
@@ -56,7 +55,6 @@ const Dashboard = () => {
 
         <div className="lg:col-span-5 order-1 lg:order-1">
           <div className="grid grid-cols-1 gap-6">
-            <VoiceTimeEntry showRecordButton={false} />
             <Datepicker
               t={t}
               getMonthTranslation={getMonthTranslation}
