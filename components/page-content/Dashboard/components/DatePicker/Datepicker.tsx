@@ -93,7 +93,7 @@ const Datepicker = ({
           </button>
         </div>
 
-        <div className="grid grid-cols-7 gap-2 sm:gap-1 md:aspect-square">
+        <div className="grid grid-cols-7 gap-2 sm:gap-1">
           {/* Day names row */}
           {[
             'monday',
@@ -106,7 +106,7 @@ const Datepicker = ({
           ].map(day => (
             <div
               key={day}
-              className="text-center text-[10px] sm:text-xs md:text-sm font-medium text-[var(--text-secondary)] flex items-center justify-center h-6 sm:h-8 md:h-auto"
+              className="text-center text-[10px] sm:text-xs md:text-sm font-medium text-[var(--text-secondary)] flex items-center justify-center h-6 sm:h-8"
             >
               {t(`common.calendar.days.${day}`)}
             </div>
@@ -125,7 +125,7 @@ const Datepicker = ({
                 key={day.toString()}
                 onClick={() => setSelectedDate(day)}
                 className={`cursor-pointer
-                      h-8 w-8 sm:h-9 sm:w-9 md:h-auto md:w-auto md:aspect-square flex items-center justify-center text-[10px] sm:text-xl relative
+                      h-8 w-8 sm:h-9 sm:w-9 md:h-10 md:w-10 flex items-center justify-center text-[10px] sm:text-sm md:text-base relative
                       rounded-full 
                       ${
                         isSameDay(day, selectedDate)

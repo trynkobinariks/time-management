@@ -38,19 +38,23 @@ export default function Header({ user }: { user: User | null }) {
             {user && !isAuth && <DesktopNavigation navItems={navItems} />}
           </div>
           <div className="flex items-center space-x-4">
-            <LanguageSwitcher language={language} setLanguage={setLanguage} />
-            <ThemeSwitcher />
+            <div className="hidden md:flex items-center space-x-4">
+              <LanguageSwitcher language={language} setLanguage={setLanguage} />
+              <ThemeSwitcher />
+              {user && !isAuth && (
+                <>
+                  <span className="text-sm text-[var(--text-secondary)]">
+                    {user.email}
+                  </span>
+                  <LogoutButton />
+                </>
+              )}
+            </div>
             {user && !isAuth && (
-              <>
-                <span className="text-sm text-[var(--text-secondary)] hidden md:inline">
-                  {user.email}
-                </span>
-                <LogoutButton />
-                <BurgerMenuButton
-                  isMenuOpen={isMenuOpen}
-                  onClick={() => setIsMenuOpen(!isMenuOpen)}
-                />
-              </>
+              <BurgerMenuButton
+                isMenuOpen={isMenuOpen}
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+              />
             )}
           </div>
         </div>

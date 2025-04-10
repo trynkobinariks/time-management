@@ -120,6 +120,48 @@ export type Database = {
           },
         ];
       };
+
+      user_settings: {
+        Row: {
+          id: string;
+          created_at: string;
+          updated_at: string;
+          user_id: string;
+          working_hours_per_day: number;
+          working_days_per_week: number;
+          internal_hours_limit: number;
+          commercial_hours_limit: number;
+        };
+        Insert: {
+          id?: string;
+          created_at?: string;
+          updated_at?: string;
+          user_id: string;
+          working_hours_per_day?: number;
+          working_days_per_week?: number;
+          internal_hours_limit?: number;
+          commercial_hours_limit?: number;
+        };
+        Update: {
+          id?: string;
+          created_at?: string;
+          updated_at?: string;
+          user_id?: string;
+          working_hours_per_day?: number;
+          working_days_per_week?: number;
+          internal_hours_limit?: number;
+          commercial_hours_limit?: number;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'user_settings_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: true;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
     };
     Views: {
       [_ in never]: never;

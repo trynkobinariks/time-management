@@ -28,6 +28,13 @@ export default function ProjectCard({
     }
   };
 
+  const getBadgeVariant = () => {
+    if (project.type === ProjectType.INTERNAL) {
+      return 'internal';
+    }
+    return 'commercial';
+  };
+
   return (
     <div className="flex justify-between items-start">
       <div>
@@ -41,7 +48,7 @@ export default function ProjectCard({
           </h3>
           <div className="ml-2">
             <Badge
-              variant={project.type}
+              variant={getBadgeVariant()}
               label={
                 project.type === ProjectType.INTERNAL
                   ? t('projects.popup.typeInternal') || 'Internal'

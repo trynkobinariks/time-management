@@ -155,45 +155,41 @@ export default function ProjectForm({
         >
           {t('projects.popup.type') || 'Project Type'}
         </label>
-        <div className="flex gap-4">
-          <label className="flex items-center cursor-pointer">
+        <div className="flex justify-center space-x-4 mt-6">
+          <div className="flex items-center space-x-2">
             <input
               type="radio"
+              id="internalType"
               name="type"
               value={ProjectType.INTERNAL}
               checked={formData.type === ProjectType.INTERNAL}
               onChange={handleChange}
-              className="sr-only"
+              className="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500"
             />
-            <span
-              className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                formData.type === ProjectType.INTERNAL
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-[var(--card-background)] text-[var(--text-primary)] border border-[var(--card-border)]'
-              }`}
+            <label
+              htmlFor="internalType"
+              className={`text-sm ${formData.type === ProjectType.INTERNAL ? 'text-blue-600' : 'text-[var(--text-secondary)]'}`}
             >
-              {t('projects.popup.typeInternal') || 'Internal'}
-            </span>
-          </label>
-          <label className="flex items-center cursor-pointer">
+              {t('projects.popup.typeInternal')}
+            </label>
+          </div>
+          <div className="flex items-center space-x-2">
             <input
               type="radio"
+              id="commercialType"
               name="type"
-              value={ProjectType.EXTERNAL}
-              checked={formData.type === ProjectType.EXTERNAL}
+              value={ProjectType.COMMERCIAL}
+              checked={formData.type === ProjectType.COMMERCIAL}
               onChange={handleChange}
-              className="sr-only"
+              className="h-4 w-4 text-green-600 border-gray-300 focus:ring-green-500"
             />
-            <span
-              className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                formData.type === ProjectType.EXTERNAL
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-[var(--card-background)] text-[var(--text-primary)] border border-[var(--card-border)]'
-              }`}
+            <label
+              htmlFor="commercialType"
+              className={`text-sm ${formData.type === ProjectType.COMMERCIAL ? 'text-green-600' : 'text-[var(--text-secondary)]'}`}
             >
-              {t('projects.popup.typeCommercial') || 'Commercial'}
-            </span>
-          </label>
+              {t('projects.popup.typeCommercial')}
+            </label>
+          </div>
         </div>
       </div>
 

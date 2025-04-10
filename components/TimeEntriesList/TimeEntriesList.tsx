@@ -99,7 +99,7 @@ export default function TimeEntriesList({
   };
 
   return (
-    <div className="bg-[var(--card-background)] rounded-lg shadow-sm">
+    <div className="bg-[var(--card-background)] rounded-lg shadow-sm lg:flex lg:flex-col">
       <div className="px-6 py-4 border-b border-[var(--card-border)] flex justify-between items-center">
         <h2 className="text-lg font-medium text-[var(--text-primary)]">
           {t(
@@ -126,7 +126,7 @@ export default function TimeEntriesList({
         </div>
       ) : (
         <>
-          <div className="divide-y divide-[var(--card-border)] overflow-y-auto max-h-[50vh]">
+          <div className="divide-y divide-[var(--card-border)] overflow-y-auto max-h-[45vh] lg:max-h-[30vh]">
             {sortedTimeEntries.map(entry => (
               <div
                 key={entry.id}

@@ -3,12 +3,18 @@ import React from 'react';
 import { navItems } from '../../config';
 import { MobileNavigationProps } from './types';
 import MobileNavigationTab from './MobileNavigationTab';
+import ThemeSwitcher from '../../../ThemeSwitcher/ThemeSwitcher';
+import LanguageSwitcher from '../../../LanguageSwitcher';
+import LogoutButton from '../LogoutButton/LogoutButton';
+import { useLanguage } from '../../../../contexts/LanguageContext';
 
 const MobileNavigation = ({
   isMenuOpen,
   setIsMenuOpen,
   user,
 }: MobileNavigationProps) => {
+  const { language, setLanguage } = useLanguage();
+
   return (
     <div
       className={`md:hidden fixed inset-y-0 right-0 w-64 bg-[var(--card-background)] shadow-lg transform transition-transform duration-300 ease-in-out z-40 ${
@@ -39,6 +45,11 @@ const MobileNavigation = ({
             <span className="block px-4 py-2 text-sm text-[var(--text-secondary)]">
               {user.email}
             </span>
+            <div className="flex items-center justify-between px-4 py-2">
+              <LanguageSwitcher language={language} setLanguage={setLanguage} />
+              <ThemeSwitcher />
+              <LogoutButton />
+            </div>
           </div>
         )}
       </div>
