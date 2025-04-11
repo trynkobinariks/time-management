@@ -38,6 +38,11 @@
     "addEntry": "Add Time Entry",
     "noEntries": "No time entries for this date",
     "hoursWorked": "hours worked",
+    "dailyLimitExceeded": "Daily limit exceeded:",
+    "dailyHoursInfo": "Current daily total:",
+    "enforceDailyLimit": "Enforce daily hour limit",
+    "dailyLimitEnforced": "Daily limit enforced:",
+    "maxAllowed": "Maximum allowed:",
     "popup": {
       "editEntry": "Edit Time Entry",
       "createEntry": "Add Time Entry",

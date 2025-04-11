@@ -30,6 +30,9 @@ interface WeeklyMetrics {
   internalOvertime: boolean;
   commercialOvertime: boolean;
   totalOvertime: boolean;
+  internalOvertimeHours: number;
+  commercialOvertimeHours: number;
+  totalOvertimeHours: number;
 }
 
 interface AnimationState {
@@ -122,6 +125,17 @@ export function useWeeklyProjectHours(
     );
     const totalRemaining = Math.max(0, weeklyTotalTarget - totalHours);
 
+    // Calculate overtime hours
+    const internalOvertimeHours = Math.max(
+      0,
+      internalHours - internalHoursLimit,
+    );
+    const commercialOvertimeHours = Math.max(
+      0,
+      commercialHours - commercialHoursLimit,
+    );
+    const totalOvertimeHours = Math.max(0, totalHours - weeklyTotalTarget);
+
     // Calculate percentages for progress bars
     const internalPercentage = Math.min(
       100,
@@ -151,6 +165,9 @@ export function useWeeklyProjectHours(
       internalOvertime: internalHours > internalHoursLimit,
       commercialOvertime: commercialHours > commercialHoursLimit,
       totalOvertime: totalHours > weeklyTotalTarget,
+      internalOvertimeHours,
+      commercialOvertimeHours,
+      totalOvertimeHours,
     };
   }, [
     timeEntries,

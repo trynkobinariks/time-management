@@ -55,10 +55,19 @@ export default function WeeklyProjectHours({
                 <span
                   className={`text-xs sm:text-sm font-medium ${weeklyMetrics.totalOvertime ? 'text-red-500' : 'text-[var(--text-primary)]'}`}
                 >
-                  <span className="text-sm sm:text-xl">
-                    {weeklyMetrics.totalRemaining.toFixed(1)}
-                  </span>
-                  /{weeklyTotalTarget}h {t('dashboard.left')}
+                  {weeklyMetrics.totalOvertime ? (
+                    <>
+                      +{weeklyMetrics.totalOvertimeHours.toFixed(1)}h{' '}
+                      {t('dashboard.overtime')}
+                    </>
+                  ) : (
+                    <>
+                      <span className="text-sm sm:text-xl">
+                        {weeklyMetrics.totalRemaining.toFixed(1)}
+                      </span>
+                      /{weeklyTotalTarget}h {t('dashboard.left')}
+                    </>
+                  )}
                 </span>
               </div>
               <div className="h-2 mt-1 bg-[var(--card-border)] rounded-full overflow-hidden">
@@ -80,10 +89,19 @@ export default function WeeklyProjectHours({
                 <span
                   className={`text-xs sm:text-sm font-medium ${weeklyMetrics.internalOvertime ? 'text-red-500' : 'text-[var(--text-primary)]'}`}
                 >
-                  <span className="text-sm sm:text-xl">
-                    {weeklyMetrics.internalRemaining.toFixed(1)}
-                  </span>
-                  /{internalHoursLimit}h {t('dashboard.left')}
+                  {weeklyMetrics.internalOvertime ? (
+                    <>
+                      +{weeklyMetrics.internalOvertimeHours.toFixed(1)}h{' '}
+                      {t('dashboard.overtime')}
+                    </>
+                  ) : (
+                    <>
+                      <span className="text-sm sm:text-xl">
+                        {weeklyMetrics.internalRemaining.toFixed(1)}
+                      </span>
+                      /{internalHoursLimit}h {t('dashboard.left')}
+                    </>
+                  )}
                 </span>
               </div>
               <div className="h-2 mt-1 bg-[var(--card-border)] rounded-full overflow-hidden">
@@ -105,10 +123,19 @@ export default function WeeklyProjectHours({
                 <span
                   className={`text-xs sm:text-sm font-medium ${weeklyMetrics.commercialOvertime ? 'text-red-500' : 'text-[var(--text-primary)]'}`}
                 >
-                  <span className="text-sm sm:text-xl">
-                    {weeklyMetrics.commercialRemaining.toFixed(1)}
-                  </span>
-                  /{commercialHoursLimit}h {t('dashboard.left')}
+                  {weeklyMetrics.commercialOvertime ? (
+                    <>
+                      +{weeklyMetrics.commercialOvertimeHours.toFixed(1)}h{' '}
+                      {t('dashboard.overtime')}
+                    </>
+                  ) : (
+                    <>
+                      <span className="text-sm sm:text-xl">
+                        {weeklyMetrics.commercialRemaining.toFixed(1)}
+                      </span>
+                      /{commercialHoursLimit}h {t('dashboard.left')}
+                    </>
+                  )}
                 </span>
               </div>
               <div className="h-2 mt-1 bg-[var(--card-border)] rounded-full overflow-hidden">
@@ -154,7 +181,7 @@ export default function WeeklyProjectHours({
           <div className="text-right">
             {weeklyMetrics.totalOvertime ? (
               <span className="text-xl font-medium text-red-500">
-                +{(weeklyMetrics.totalHours - weeklyTotalTarget).toFixed(1)}h{' '}
+                +{weeklyMetrics.totalOvertimeHours.toFixed(1)}h{' '}
                 {t('dashboard.overtime')}
               </span>
             ) : (
@@ -192,8 +219,8 @@ export default function WeeklyProjectHours({
           <div className="text-right">
             {weeklyMetrics.internalOvertime ? (
               <span className="text-xl font-medium text-red-500">
-                +{(weeklyMetrics.internalHours - internalHoursLimit).toFixed(1)}
-                h {t('dashboard.overtime')}
+                +{weeklyMetrics.internalOvertimeHours.toFixed(1)}h{' '}
+                {t('dashboard.overtime')}
               </span>
             ) : (
               <span className="text-xl font-medium text-[var(--text-secondary)]">
@@ -230,11 +257,8 @@ export default function WeeklyProjectHours({
           <div className="text-right">
             {weeklyMetrics.commercialOvertime ? (
               <span className="text-xl font-medium text-red-500">
-                +
-                {(weeklyMetrics.commercialHours - commercialHoursLimit).toFixed(
-                  1,
-                )}
-                h {t('dashboard.overtime')}
+                +{weeklyMetrics.commercialOvertimeHours.toFixed(1)}h{' '}
+                {t('dashboard.overtime')}
               </span>
             ) : (
               <span className="text-xl font-medium text-[var(--text-secondary)]">

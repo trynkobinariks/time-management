@@ -1,312 +1,280 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { useProjectContext } from '../contexts/ProjectContext';
-import { format, startOfWeek, endOfWeek } from 'date-fns';
+import { useState, useEffect } from 'react';
 import { TimeEntry } from '../lib/types';
+import { CloseIcon } from './icons';
+import { useClientTranslation } from '../hooks/useClientTranslation';
+import { format } from 'date-fns';
+import { useUserSettings } from '@/hooks/useUserSettings';
+import { useProjectContext } from '../contexts/ProjectContext';
+
+interface Project {
+  id: string;
+  name: string;
+}
 
 interface TimeEntryFormProps {
-  projectId?: string;
-  onSuccess?: () => void;
-  onCancel?: () => void;
-  editingEntry?: TimeEntry | null;
+  mode: 'create' | 'edit';
+  selectedDate?: Date;
+  entry?: TimeEntry;
+  projects: Project[];
+  onSave: (
+    entry:
+      | Omit<TimeEntry, 'id' | 'created_at' | 'updated_at' | 'user_id'>
+      | TimeEntry,
+  ) => void;
+  onCancel: () => void;
 }
 
 export default function TimeEntryForm({
-  projectId,
-  onSuccess,
+  mode,
+  selectedDate,
+  entry,
+  projects,
+  onSave,
   onCancel,
-  editingEntry,
 }: TimeEntryFormProps) {
-  const { projects, timeEntries, addTimeEntry, updateTimeEntry } =
-    useProjectContext();
+  const { t } = useClientTranslation();
+  const { settings } = useUserSettings();
+  const { timeEntries } = useProjectContext();
+  const [error, setError] = useState<string | null>(null);
+  const [enforceLimit, setEnforceLimit] = useState<boolean>(true);
 
+  // Initialize form data based on mode
   const [formData, setFormData] = useState({
-    project_id: projectId || '',
-    date: format(new Date(), 'yyyy-MM-dd'),
-    hours: '',
+    project_id: projects.length > 0 ? projects[0].id : '',
+    hours: 1,
     description: '',
+    date: selectedDate
+      ? format(selectedDate, 'yyyy-MM-dd')
+      : format(new Date(), 'yyyy-MM-dd'),
+    ...(entry && mode === 'edit'
+      ? {
+          id: entry.id,
+          created_at: entry.created_at,
+          updated_at: entry.updated_at,
+          user_id: entry.user_id,
+        }
+      : {}),
   });
 
+  // Set form data from entry when editing
   useEffect(() => {
-    if (editingEntry) {
+    if (mode === 'edit' && entry) {
       setFormData({
-        project_id: editingEntry.project_id,
-        date: editingEntry.date,
-        hours: editingEntry.hours.toString(),
-        description: editingEntry.description || '',
+        project_id: entry.project_id,
+        hours: entry.hours,
+        description: entry.description || '',
+        date: entry.date,
+        id: entry.id,
+        created_at: entry.created_at,
+        updated_at: entry.updated_at,
+        user_id: entry.user_id,
       });
     }
-  }, [editingEntry]);
+  }, [mode, entry]);
 
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  // Calculate total hours for the selected date
+  const totalHoursForDate = timeEntries
+    .filter(item => {
+      const date =
+        mode === 'create'
+          ? selectedDate
+            ? format(selectedDate, 'yyyy-MM-dd')
+            : format(new Date(), 'yyyy-MM-dd')
+          : entry?.date;
 
-  const handleChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-    >,
-  ) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+      // For edit mode, exclude the current entry from the total
+      return item.date === date && (mode === 'create' || item.id !== entry?.id);
+    })
+    .reduce((sum, item) => sum + item.hours, 0);
 
-    // Clear error when field is edited
-    if (errors[name]) {
-      setErrors(prev => {
-        const newErrors = { ...prev };
-        delete newErrors[name];
-        return newErrors;
-      });
-    }
-  };
+  // Get daily hours limit from settings
+  const dailyHoursLimit = settings?.working_hours_per_day || 8;
 
-  const validateForm = () => {
-    const newErrors: Record<string, string> = {};
+  // Calculate available hours (can be negative if already over limit)
+  const availableHours = dailyHoursLimit - totalHoursForDate;
 
-    if (!formData.project_id) {
-      newErrors.project_id = 'Please select a project';
-    }
-
-    if (!formData.date) {
-      newErrors.date = 'Date is required';
-    } else {
-      // Check weekly hours limit
-      const entryDate = new Date(formData.date);
-      const weekStart = startOfWeek(entryDate, { weekStartsOn: 1 });
-      const weekEnd = endOfWeek(weekStart, { weekStartsOn: 1 });
-
-      const weekEntries = timeEntries.filter(entry => {
-        const date = new Date(entry.date);
-        return date >= weekStart && date <= weekEnd;
-      });
-
-      const weeklyHours = weekEntries.reduce(
-        (sum, entry) => sum + entry.hours,
-        0,
+  const handleHoursChange = (value: number) => {
+    // Enforce daily limit if enabled
+    if (enforceLimit && totalHoursForDate + value > dailyHoursLimit) {
+      // Cap the value at the available hours (or minimum 0.5)
+      const maxAllowedHours = Math.max(0.5, availableHours);
+      setFormData({ ...formData, hours: maxAllowedHours });
+      setError(
+        `${t('timeEntries.dailyLimitEnforced')} ${dailyHoursLimit}h. ${t('timeEntries.maxAllowed')} ${maxAllowedHours.toFixed(1)}h.`,
       );
-      const newHours = parseFloat(formData.hours) || 0;
-      const totalHours = weeklyHours + newHours;
-
-      if (totalHours > 40) {
-        newErrors.hours = `Adding ${newHours}h would exceed the 40h weekly limit (${weeklyHours.toFixed(1)}h used)`;
-      }
-    }
-
-    if (!formData.hours) {
-      newErrors.hours = 'Hours are required';
     } else {
-      const hours = parseFloat(formData.hours);
-      if (isNaN(hours) || hours <= 0) {
-        newErrors.hours = 'Hours must be a positive number';
-      } else if (hours > 24) {
-        newErrors.hours = 'Hours cannot exceed 24 per day';
+      setFormData({ ...formData, hours: value });
+
+      // Clear previous error
+      setError(null);
+
+      // Show warning if exceeding limit but not enforcing
+      if (!enforceLimit && totalHoursForDate + value > dailyHoursLimit) {
+        setError(
+          `${t('timeEntries.dailyLimitExceeded')} ${(totalHoursForDate + value).toFixed(1)}/${dailyHoursLimit}h (+${(totalHoursForDate + value - dailyHoursLimit).toFixed(1)}h overtime)`,
+        );
       }
     }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (validateForm()) {
-      try {
-        if (editingEntry) {
-          await updateTimeEntry({
-            ...editingEntry,
-            project_id: formData.project_id,
-            date: formData.date,
-            hours: parseFloat(formData.hours),
-            description: formData.description,
-          });
-        } else {
-          await addTimeEntry({
-            project_id: formData.project_id,
-            date: formData.date,
-            hours: parseFloat(formData.hours),
-            description: formData.description,
-          });
-        }
+    // Final check - enforce limit if enabled
+    if (enforceLimit && totalHoursForDate + formData.hours > dailyHoursLimit) {
+      const maxAllowedHours = Math.max(0.5, availableHours);
+      setFormData(prev => ({ ...prev, hours: maxAllowedHours }));
+      return; // Prevent form submission
+    }
 
-        if (onSuccess) {
-          onSuccess();
-        }
-      } catch (error) {
-        console.error('Failed to save time entry:', error);
+    // Allow submission
+    onSave(formData);
+  };
 
-        // Show user-friendly error
-        const errorMessage =
-          error instanceof Error
-            ? error.message
-            : 'Failed to save time entry. Please try again.';
+  const toggleEnforceLimit = () => {
+    const newEnforceState = !enforceLimit;
+    setEnforceLimit(newEnforceState);
 
-        setErrors(prev => ({
-          ...prev,
-          submit: errorMessage,
-        }));
-      }
+    // If enabling enforcement and current value would exceed limit, adjust it down
+    if (
+      newEnforceState &&
+      totalHoursForDate + formData.hours > dailyHoursLimit
+    ) {
+      const maxAllowedHours = Math.max(0.5, availableHours);
+      setFormData(prev => ({ ...prev, hours: maxAllowedHours }));
+      setError(
+        `${t('timeEntries.dailyLimitEnforced')} ${dailyHoursLimit}h. ${t('timeEntries.maxAllowed')} ${maxAllowedHours.toFixed(1)}h.`,
+      );
+    } else if (
+      !newEnforceState &&
+      totalHoursForDate + formData.hours > dailyHoursLimit
+    ) {
+      // If disabling enforcement but still over limit, show warning
+      setError(
+        `${t('timeEntries.dailyLimitExceeded')} ${(totalHoursForDate + formData.hours).toFixed(1)}/${dailyHoursLimit}h (+${(totalHoursForDate + formData.hours - dailyHoursLimit).toFixed(1)}h overtime)`,
+      );
+    } else {
+      setError(null);
     }
   };
 
   return (
-    <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
-      <div className="bg-[var(--card-background)] rounded-lg shadow-xl p-6 max-w-md w-full mx-4">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-lg font-medium text-[var(--text-primary)]">
-            {editingEntry ? 'Edit Time Entry' : 'Log Time'}
-          </h2>
-          <button
-            onClick={onCancel}
-            className="text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5 cursor-pointer"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
+    <div className="fixed inset-0 bg-gray-500/50 backdrop-blur-sm flex items-center justify-center z-50">
+      <div className="bg-[var(--card-background)] rounded-lg shadow-xl max-w-lg w-full mx-4 transform transition-all">
+        <div className="px-6 py-4 border-b border-[var(--card-border)]">
+          <div className="flex justify-between items-center">
+            <h2 className="text-lg font-medium text-[var(--text-primary)]">
+              {mode === 'create'
+                ? t('timeEntries.createEntry')
+                : t('timeEntries.editEntry')}
+            </h2>
+            <button
+              onClick={onCancel}
+              className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] cursor-pointer"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
-          </button>
+              <CloseIcon />
+            </button>
+          </div>
         </div>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label
-              htmlFor="project_id"
-              className="block text-sm font-medium text-[var(--text-primary)] mb-1"
-            >
-              Project
-            </label>
-            <select
-              id="project_id"
-              name="project_id"
-              value={formData.project_id}
-              onChange={handleChange}
-              disabled={!!projectId}
-              className={`w-full rounded-md border ${
-                errors.project_id
-                  ? 'border-red-500'
-                  : 'border-[var(--card-border)]'
-              } px-3 py-2 text-[var(--text-primary)] bg-[var(--card-background)] focus:outline-none focus:ring-1 focus:ring-[var(--card-border)] cursor-pointer`}
-            >
-              <option value="">Select a project</option>
-              {projects.map(project => (
-                <option key={project.id} value={project.id}>
-                  {project.name}
-                </option>
-              ))}
-            </select>
-            {errors.project_id && (
-              <p className="mt-1 text-sm text-red-600 dark:text-red-400">
-                {errors.project_id}
+        <form onSubmit={handleSubmit} className="p-6 space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm font-medium text-[var(--text-primary)] mb-1">
+                {t('timeEntries.project')}
+              </label>
+              <select
+                value={formData.project_id}
+                onChange={e =>
+                  setFormData({ ...formData, project_id: e.target.value })
+                }
+                className="block w-full rounded-md border-[var(--card-border)] shadow-sm focus:border-blue-500 focus:ring-blue-500 bg-[var(--card-background)] text-[var(--text-primary)] sm:text-sm transition-colors px-3 py-2"
+              >
+                {projects.map(project => (
+                  <option key={project.id} value={project.id}>
+                    {project.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-[var(--text-primary)] mb-1">
+                {t('timeEntries.hours')}
+              </label>
+              <div className="relative rounded-md shadow-sm">
+                <input
+                  type="number"
+                  step="0.5"
+                  min="0"
+                  value={formData.hours}
+                  onChange={e => handleHoursChange(parseFloat(e.target.value))}
+                  className={`block w-full rounded-md shadow-sm focus:ring-blue-500 bg-[var(--card-background)] sm:text-sm transition-colors px-3 py-2 pr-12 ${error ? 'border-red-500 focus:border-red-500 text-red-500' : 'border-[var(--card-border)] focus:border-blue-500 text-[var(--text-primary)]'}`}
+                />
+                <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                  <span
+                    className={`sm:text-sm ${error ? 'text-red-500' : 'text-[var(--text-secondary)]'}`}
+                  >
+                    {formData.hours === 1
+                      ? t('timeEntries.hour')
+                      : t('timeEntries.hours')}
+                  </span>
+                </div>
+              </div>
+              {error && <p className="mt-2 text-sm text-red-500">{error}</p>}
+              <p className="mt-2 text-xs text-[var(--text-secondary)]">
+                {t('timeEntries.dailyHoursInfo')} {totalHoursForDate.toFixed(1)}
+                /{dailyHoursLimit}h (
+                {Math.max(0, dailyHoursLimit - totalHoursForDate).toFixed(1)}h
+                remaining)
               </p>
-            )}
+              <div className="mt-2 flex items-center">
+                <input
+                  id="enforce-limit"
+                  type="checkbox"
+                  checked={enforceLimit}
+                  onChange={toggleEnforceLimit}
+                  className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                />
+                <label
+                  htmlFor="enforce-limit"
+                  className="ml-2 block text-xs text-[var(--text-secondary)]"
+                >
+                  {t('timeEntries.enforceDailyLimit')}
+                </label>
+              </div>
+            </div>
           </div>
 
           <div>
-            <label
-              htmlFor="date"
-              className="block text-sm font-medium text-[var(--text-primary)] mb-1"
-            >
-              Date
-            </label>
-            <input
-              type="date"
-              id="date"
-              name="date"
-              value={formData.date}
-              onChange={handleChange}
-              className={`w-full rounded-md border ${
-                errors.date ? 'border-red-500' : 'border-[var(--card-border)]'
-              } px-3 py-2 text-[var(--text-primary)] bg-[var(--card-background)] focus:outline-none focus:ring-1 focus:ring-[var(--card-border)] cursor-pointer`}
-            />
-            {errors.date && (
-              <p className="mt-1 text-sm text-red-600 dark:text-red-400">
-                {errors.date}
-              </p>
-            )}
-          </div>
-
-          <div>
-            <label
-              htmlFor="hours"
-              className="block text-sm font-medium text-[var(--text-primary)] mb-1"
-            >
-              Hours
-            </label>
-            <input
-              type="number"
-              id="hours"
-              name="hours"
-              value={formData.hours}
-              onChange={handleChange}
-              step="0.25"
-              min="0.25"
-              max="24"
-              className={`w-full rounded-md border ${
-                errors.hours ? 'border-red-500' : 'border-[var(--card-border)]'
-              } px-3 py-2 text-[var(--text-primary)] bg-[var(--card-background)] focus:outline-none focus:ring-1 focus:ring-[var(--card-border)]`}
-              placeholder="0.0"
-            />
-            {errors.hours && (
-              <p className="mt-1 text-sm text-red-600 dark:text-red-400">
-                {errors.hours}
-              </p>
-            )}
-          </div>
-
-          <div>
-            <label
-              htmlFor="description"
-              className="block text-sm font-medium text-[var(--text-primary)] mb-1"
-            >
-              Description
+            <label className="block text-sm font-medium text-[var(--text-primary)] mb-1">
+              {t('timeEntries.description')}
             </label>
             <textarea
-              id="description"
-              name="description"
-              value={formData.description}
-              onChange={handleChange}
+              value={formData.description || ''}
+              onChange={e =>
+                setFormData({ ...formData, description: e.target.value })
+              }
+              className="block w-full rounded-md border-[var(--card-border)] shadow-sm focus:border-blue-500 focus:ring-blue-500 bg-[var(--card-background)] text-[var(--text-primary)] sm:text-sm transition-colors px-3 py-2"
               rows={3}
-              className={`w-full rounded-md border ${
-                errors.description
-                  ? 'border-red-500'
-                  : 'border-[var(--card-border)]'
-              } px-3 py-2 text-[var(--text-primary)] bg-[var(--card-background)] focus:outline-none focus:ring-1 focus:ring-[var(--card-border)]`}
-              placeholder="What did you work on?"
+              placeholder={t('timeEntries.descriptionPlaceholder')}
             />
-            {errors.description && (
-              <p className="mt-1 text-sm text-red-600 dark:text-red-400">
-                {errors.description}
-              </p>
-            )}
           </div>
 
-          {errors.submit && (
-            <p className="text-sm text-red-600 dark:text-red-400">
-              {errors.submit}
-            </p>
-          )}
-
-          <div className="flex justify-end space-x-3">
+          <div className="flex justify-end space-x-3 pt-2">
             <button
               type="button"
               onClick={onCancel}
-              className="px-4 py-2 text-sm font-medium text-[var(--text-primary)] bg-[var(--card-background)] border border-[var(--card-border)] hover:bg-[var(--card-border)] rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--card-border)]"
+              className="px-4 py-2 text-sm font-medium text-[var(--text-primary)] bg-[var(--card-background)] border border-[var(--card-border)] rounded-md hover:bg-[var(--card-border)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors cursor-pointer"
             >
-              Cancel
+              {t('common.cancel')}
             </button>
             <button
               type="submit"
-              className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors cursor-pointer"
             >
-              {editingEntry ? 'Save Changes' : 'Log Time'}
+              {t('common.save')}
             </button>
           </div>
         </form>
