@@ -7,3 +7,5 @@ export * from './Accordion';
 // Export custom UI components
 export * from './Button';
 export * from './Input';
+export * from './ConfirmationDialog';
+export * from './DeleteConfirmationProvider';

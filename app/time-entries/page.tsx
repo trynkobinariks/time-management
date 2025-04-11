@@ -14,6 +14,7 @@ import {
   AccordionContent,
 } from '../../components/ui/Accordion';
 import Badge from '../../components/Badge';
+import { DeleteConfirmationProvider } from '../../components/ui/DeleteConfirmationProvider';
 
 const ITEMS_PER_PAGE = 5;
 
@@ -126,139 +127,171 @@ export default function TimeEntriesPage() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8 time-entries-page">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-medium text-[var(--text-primary)]">
-          {t('header.nav.timeEntries')}
-        </h1>
-      </div>
-
-      {Object.keys(entriesByDate).length === 0 ? (
-        <div className="text-center py-12">
-          <p className="text-[var(--text-secondary)] mb-4">
-            {t('timeEntries.noTimeEntries')}
-          </p>
+    <DeleteConfirmationProvider>
+      <div className="container mx-auto px-4 py-8 time-entries-page">
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-2xl font-medium text-[var(--text-primary)]">
+            {t('header.nav.timeEntries')}
+          </h1>
         </div>
-      ) : (
-        <>
-          <Accordion
-            type="multiple"
-            className="space-y-6"
-            value={openItems}
-            onValueChange={handleAccordionChange}
-          >
-            {Object.entries(paginatedEntries).map(([dateStr, entries]) => (
-              <AccordionItem
-                key={dateStr}
-                value={dateStr}
-                className="border border-[var(--card-border)] rounded-md bg-[var(--card-background)] overflow-hidden transition-shadow duration-300 hover:shadow-md"
-              >
-                <AccordionTrigger className="px-4 py-3 bg-[var(--card-border)] border-b border-[var(--card-border)] hover:no-underline cursor-pointer transition-all duration-300">
-                  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center w-full gap-2">
-                    <h2 className="text-base font-medium text-[var(--text-primary)] text-left">
-                      {format(new Date(dateStr), 'EEEE, MMMM d, yyyy')}
-                    </h2>
-                    <div className="flex flex-wrap items-center gap-2 self-start sm:self-auto">
-                      {dateStats[dateStr]?.internalHours > 0 && (
-                        <Badge
-                          variant="internal"
-                          label={`${dateStats[dateStr].internalHours} ${t('timeEntries.hours')}`}
-                        />
-                      )}
-                      {dateStats[dateStr]?.commercialHours > 0 && (
-                        <Badge
-                          variant="commercial"
-                          label={`${dateStats[dateStr].commercialHours} ${t('timeEntries.hours')}`}
-                        />
-                      )}
-                      <span className="text-sm text-[var(--text-secondary)]">
-                        {dateStats[dateStr].totalHours}{' '}
-                        {dateStats[dateStr].totalHours === 1
-                          ? t('timeEntries.hour')
-                          : t('timeEntries.hours')}
-                      </span>
+
+        {Object.keys(entriesByDate).length === 0 ? (
+          <div className="text-center py-12">
+            <p className="text-[var(--text-secondary)] mb-4">
+              {t('timeEntries.noTimeEntries')}
+            </p>
+          </div>
+        ) : (
+          <>
+            <Accordion
+              type="multiple"
+              className="space-y-6"
+              value={openItems}
+              onValueChange={handleAccordionChange}
+            >
+              {Object.entries(paginatedEntries).map(([dateStr, entries]) => (
+                <AccordionItem
+                  key={dateStr}
+                  value={dateStr}
+                  className="border border-[var(--card-border)] rounded-md bg-[var(--card-background)] overflow-hidden transition-shadow duration-300 hover:shadow-md"
+                >
+                  <AccordionTrigger className="px-4 py-3 bg-[var(--card-border)] border-b border-[var(--card-border)] hover:no-underline cursor-pointer transition-all duration-300">
+                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center w-full gap-2">
+                      <h2 className="text-base font-medium text-[var(--text-primary)] text-left">
+                        {format(new Date(dateStr), 'EEEE, MMMM d, yyyy')}
+                      </h2>
+                      <div className="flex flex-wrap items-center gap-2 self-start sm:self-auto">
+                        {dateStats[dateStr]?.internalHours > 0 && (
+                          <Badge
+                            variant="internal"
+                            label={`${dateStats[dateStr].internalHours} ${t('timeEntries.hours')}`}
+                          />
+                        )}
+                        {dateStats[dateStr]?.commercialHours > 0 && (
+                          <Badge
+                            variant="commercial"
+                            label={`${dateStats[dateStr].commercialHours} ${t('timeEntries.hours')}`}
+                          />
+                        )}
+                        <span className="text-sm text-[var(--text-secondary)]">
+                          {dateStats[dateStr].totalHours}{' '}
+                          {dateStats[dateStr].totalHours === 1
+                            ? t('timeEntries.hour')
+                            : t('timeEntries.hours')}
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                </AccordionTrigger>
-                <AccordionContent className="p-0 transition-all will-change-[height]">
-                  <div className="divide-y divide-[var(--card-border)]">
-                    {entries.map(entry => {
-                      const project = projects.find(
-                        p => p.id === entry.project_id,
-                      );
-                      return (
-                        <TimeEntryItem
-                          key={entry.id}
-                          entry={entry}
-                          projectName={
-                            project?.name || t('timeEntries.unknownProject')
-                          }
-                          projectType={project?.type || 'INTERNAL'}
-                          onEdit={handleEdit}
-                          onDelete={handleDelete}
-                        />
-                      );
-                    })}
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
-            ))}
-          </Accordion>
+                  </AccordionTrigger>
+                  <AccordionContent className="p-0 transition-all will-change-[height]">
+                    <div className="divide-y divide-[var(--card-border)]">
+                      {entries.map(entry => {
+                        const project = projects.find(
+                          p => p.id === entry.project_id,
+                        );
+                        return (
+                          <TimeEntryItem
+                            key={entry.id}
+                            entry={entry}
+                            projectName={
+                              project?.name || t('timeEntries.unknownProject')
+                            }
+                            projectType={project?.type || 'INTERNAL'}
+                            onEdit={handleEdit}
+                            onDelete={handleDelete}
+                          />
+                        );
+                      })}
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
 
-          {/* Pagination */}
-          {totalPages > 1 && (
-            <div className="flex justify-center mt-8">
-              <nav className="flex items-center gap-1">
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div className="flex justify-center mt-8">
+                <nav className="flex items-center gap-1">
+                  <button
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    disabled={currentPage === 1}
+                    className="px-3 py-1 rounded border border-[var(--card-border)] bg-[var(--card-background)] text-[var(--text-primary)] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                    aria-label="Previous page"
+                  >
+                    &laquo;
+                  </button>
+
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                    page => (
+                      <button
+                        key={page}
+                        onClick={() => handlePageChange(page)}
+                        className={`px-3 py-1 rounded ${
+                          currentPage === page
+                            ? 'bg-blue-600 text-white'
+                            : 'border border-[var(--card-border)] bg-[var(--card-background)] text-[var(--text-primary)] cursor-pointer'
+                        }`}
+                        aria-label={`Page ${page}`}
+                        aria-current={currentPage === page ? 'page' : undefined}
+                      >
+                        {page}
+                      </button>
+                    ),
+                  )}
+
+                  <button
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                    className="px-3 py-1 rounded border border-[var(--card-border)] bg-[var(--card-background)] text-[var(--text-primary)] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                    aria-label="Next page"
+                  >
+                    &raquo;
+                  </button>
+                </nav>
+              </div>
+            )}
+          </>
+        )}
+
+        {/* Edit Form */}
+        {editingEntry && (
+          <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
+            <div className="bg-[var(--card-background)] rounded-lg p-6 max-w-md w-full mx-4 shadow-xl">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-lg font-medium text-[var(--text-primary)]">
+                  {t('timeEntries.editEntry')}
+                </h2>
                 <button
-                  onClick={() => handlePageChange(currentPage - 1)}
-                  disabled={currentPage === 1}
-                  className="px-3 py-1 rounded border border-[var(--card-border)] bg-[var(--card-background)] text-[var(--text-primary)] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-                  aria-label="Previous page"
+                  onClick={() => setEditingEntry(null)}
+                  className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
+                  aria-label={t('common.close')}
                 >
-                  &laquo;
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
                 </button>
-
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                  page => (
-                    <button
-                      key={page}
-                      onClick={() => handlePageChange(page)}
-                      className={`px-3 py-1 rounded ${
-                        currentPage === page
-                          ? 'bg-blue-600 text-white'
-                          : 'border border-[var(--card-border)] bg-[var(--card-background)] text-[var(--text-primary)] cursor-pointer'
-                      }`}
-                      aria-label={`Page ${page}`}
-                      aria-current={currentPage === page ? 'page' : undefined}
-                    >
-                      {page}
-                    </button>
-                  ),
-                )}
-
-                <button
-                  onClick={() => handlePageChange(currentPage + 1)}
-                  disabled={currentPage === totalPages}
-                  className="px-3 py-1 rounded border border-[var(--card-border)] bg-[var(--card-background)] text-[var(--text-primary)] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-                  aria-label="Next page"
-                >
-                  &raquo;
-                </button>
-              </nav>
+              </div>
+              <TimeEntryForm
+                mode="edit"
+                entry={editingEntry}
+                projects={projects}
+                onSave={handleSave}
+                onCancel={() => setEditingEntry(null)}
+              />
             </div>
-          )}
-        </>
-      )}
-
-      {editingEntry && (
-        <TimeEntryForm
-          mode="edit"
-          entry={editingEntry}
-          projects={projects}
-          onSave={handleSave}
-          onCancel={() => setEditingEntry(null)}
-        />
-      )}
-    </div>
+          </div>
+        )}
+      </div>
+    </DeleteConfirmationProvider>
   );
 }

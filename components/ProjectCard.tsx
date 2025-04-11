@@ -1,10 +1,11 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Project, ProjectType } from '../lib/types';
 import { useProjectContext } from '../contexts/ProjectContext';
 import { useClientTranslation } from '../hooks/useClientTranslation';
 import Badge from './Badge';
+import { useDeleteConfirmation } from './ui/DeleteConfirmationProvider';
 
 interface ProjectCardProps {
   project: Project;
@@ -16,16 +17,23 @@ export default function ProjectCard({
   onEditClick,
 }: ProjectCardProps) {
   const { deleteProject } = useProjectContext();
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const { t } = useClientTranslation();
+  const { showDeleteConfirmation } = useDeleteConfirmation();
 
   const handleDelete = async () => {
     try {
       await deleteProject(project.id);
-      setShowDeleteConfirm(false);
     } catch (error) {
       console.error('Error deleting project:', error);
     }
+  };
+
+  const handleDeleteClick = () => {
+    showDeleteConfirmation({
+      title: t('projects.popup.delete'),
+      message: `${t('projects.popup.deleteConfirmation')} "${project.name}"?`,
+      onConfirm: handleDelete,
+    });
   };
 
   const getBadgeVariant = () => {
@@ -36,37 +44,11 @@ export default function ProjectCard({
   };
 
   return (
-    <div className="flex justify-between items-start">
-      <div>
-        <div className="flex items-center">
-          <div
-            className="w-3 h-3 rounded-full mr-2 flex-shrink-0"
-            style={{ backgroundColor: project.color || '#374151' }}
-          />
-          <h3 className="text-sm font-medium text-[var(--text-primary)]">
-            {project.name}
-          </h3>
-          <div className="ml-2">
-            <Badge
-              variant={getBadgeVariant()}
-              label={
-                project.type === ProjectType.INTERNAL
-                  ? t('projects.popup.typeInternal') || 'Internal'
-                  : t('projects.popup.typeCommercial') || 'Commercial'
-              }
-            />
-          </div>
-        </div>
-        {project.description && (
-          <p className="mt-1 text-sm text-[var(--text-secondary)]">
-            {project.description}
-          </p>
-        )}
-      </div>
-      <div className="flex items-center space-x-4">
+    <div className="p-4 sm:pl-6 relative min-h-24">
+      <div className="absolute top-2 right-2 flex flex-col space-y-1">
         <button
           onClick={onEditClick}
-          className="p-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--card-border)] rounded-full cursor-pointer transition-colors"
+          className="p-2 text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-full cursor-pointer transition-colors"
           aria-label="Edit project"
           title="Edit project"
         >
@@ -86,8 +68,8 @@ export default function ProjectCard({
           </svg>
         </button>
         <button
-          onClick={() => setShowDeleteConfirm(true)}
-          className="p-2 text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-full cursor-pointer transition-colors"
+          onClick={handleDeleteClick}
+          className="p-2 text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-full cursor-pointer transition-colors"
           aria-label="Delete project"
           title="Delete project"
         >
@@ -107,35 +89,34 @@ export default function ProjectCard({
           </svg>
         </button>
       </div>
-
-      {/* Delete Confirmation Modal */}
-      {showDeleteConfirm && (
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-[var(--card-background)] rounded-lg p-6 max-w-sm w-full mx-4">
-            <h3 className="text-lg font-medium text-[var(--text-primary)] mb-4">
-              Delete Project
+      <div className="flex justify-between items-start pr-12">
+        <div>
+          <div className="flex items-center">
+            <div
+              className="w-3 h-3 rounded-full mr-2 flex-shrink-0"
+              style={{ backgroundColor: project.color || '#374151' }}
+            />
+            <h3 className="text-sm font-medium text-[var(--text-primary)]">
+              {project.name}
             </h3>
-            <p className="text-sm text-[var(--text-secondary)] mb-6">
-              Are you sure you want to delete &ldquo;{project.name}&rdquo;? This
-              action cannot be undone.
-            </p>
-            <div className="flex justify-end space-x-3">
-              <button
-                onClick={() => setShowDeleteConfirm(false)}
-                className="px-4 py-2 text-sm font-medium text-[var(--text-primary)] bg-[var(--card-background)] border border-[var(--card-border)] rounded-md hover:bg-[var(--card-border)] focus:outline-none focus:ring-2 focus:ring-[var(--card-border)]"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleDelete}
-                className="px-4 py-2 text-sm font-medium text-white bg-red-600 border border-transparent rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-              >
-                Delete
-              </button>
+            <div className="ml-2">
+              <Badge
+                variant={getBadgeVariant()}
+                label={
+                  project.type === ProjectType.INTERNAL
+                    ? t('projects.popup.typeInternal') || 'Internal'
+                    : t('projects.popup.typeCommercial') || 'Commercial'
+                }
+              />
             </div>
           </div>
+          {project.description && (
+            <p className="mt-1 text-sm text-[var(--text-secondary)]">
+              {project.description}
+            </p>
+          )}
         </div>
-      )}
+      </div>
     </div>
   );
 }
