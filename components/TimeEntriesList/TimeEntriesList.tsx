@@ -5,6 +5,7 @@ import { TimeEntry } from '../../lib/types';
 import TimeEntryItem from '../TimeEntryItem/TimeEntryItem';
 import TimeEntryForm from '../TimeEntryForm';
 import CreateButton from '../CreateButton';
+import { DeleteConfirmationProvider } from '../ui/DeleteConfirmationProvider';
 
 interface Project {
   id: string;
@@ -100,94 +101,96 @@ export default function TimeEntriesList({
   };
 
   return (
-    <div className="bg-[var(--card-background)] rounded-lg shadow-sm lg:flex lg:flex-col">
-      <div className="px-6 py-4 border-b border-[var(--card-border)] flex justify-between items-center">
-        <h2 className="text-lg font-medium text-[var(--text-primary)]">
-          {t(
-            'common.calendar.days.' +
-              format(selectedDate, 'EEEE').toLowerCase(),
-          )}
-          ,{' '}
-          {t(
-            'common.calendar.months.' +
-              format(selectedDate, 'MMMM').toLowerCase(),
-          )}{' '}
-          {format(selectedDate, 'd, yyyy')}
-        </h2>
-        <CreateButton
-          onClick={handleCreate}
-          variant="icon"
-          label={t('timeEntries.addTimeEntry')}
-        />
-      </div>
-
-      {sortedTimeEntries.length === 0 ? (
-        <div className="px-6 py-4 text-center text-[var(--text-secondary)]">
-          {t('timeEntries.noTimeEntriesForThisDate')}
+    <DeleteConfirmationProvider>
+      <div className="bg-[var(--card-background)] rounded-lg shadow-sm lg:flex lg:flex-col">
+        <div className="px-6 py-4 border-b border-[var(--card-border)] flex justify-between items-center">
+          <h2 className="text-lg font-medium text-[var(--text-primary)]">
+            {t(
+              'common.calendar.days.' +
+                format(selectedDate, 'EEEE').toLowerCase(),
+            )}
+            ,{' '}
+            {t(
+              'common.calendar.months.' +
+                format(selectedDate, 'MMMM').toLowerCase(),
+            )}{' '}
+            {format(selectedDate, 'd, yyyy')}
+          </h2>
+          <CreateButton
+            onClick={handleCreate}
+            variant="icon"
+            label={t('timeEntries.addTimeEntry')}
+          />
         </div>
-      ) : (
-        <>
-          <div className="divide-y divide-[var(--card-border)] overflow-y-auto max-h-[45vh] lg:max-h-[30vh]">
-            {sortedTimeEntries.map(entry => (
-              <div
-                key={entry.id}
-                className={`transition-colors duration-300 ${
-                  highlightedEntryId === entry.id
-                    ? 'bg-[var(--card-border)]'
-                    : ''
-                }`}
-              >
-                <TimeEntryItem
-                  entry={entry}
-                  projectName={getProjectName(entry.project_id)}
-                  projectType={getProjectType(entry.project_id)}
-                  onEdit={handleEdit}
-                  onDelete={onDeleteEntry}
-                />
+
+        {sortedTimeEntries.length === 0 ? (
+          <div className="px-6 py-4 text-center text-[var(--text-secondary)]">
+            {t('timeEntries.noTimeEntriesForThisDate')}
+          </div>
+        ) : (
+          <>
+            <div className="divide-y divide-[var(--card-border)] overflow-y-auto max-h-[45vh] lg:max-h-[30vh]">
+              {sortedTimeEntries.map(entry => (
+                <div
+                  key={entry.id}
+                  className={`transition-colors duration-300 ${
+                    highlightedEntryId === entry.id
+                      ? 'bg-[var(--card-border)]'
+                      : ''
+                  }`}
+                >
+                  <TimeEntryItem
+                    entry={entry}
+                    projectName={getProjectName(entry.project_id)}
+                    projectType={getProjectType(entry.project_id)}
+                    onEdit={handleEdit}
+                    onDelete={onDeleteEntry}
+                  />
+                </div>
+              ))}
+            </div>
+
+            <div className="px-4 py-4 flex items-center justify-between bg-[var(--card-border)] border-t border-[var(--card-border)] rounded-b-lg">
+              <div className="flex items-center space-x-2">
+                <span className="text-sm font-medium text-[var(--text-primary)]">
+                  {t('timeEntries.totalHours')}
+                </span>
               </div>
-            ))}
-          </div>
 
-          <div className="px-4 py-4 flex items-center justify-between bg-[var(--card-border)] border-t border-[var(--card-border)] rounded-b-lg">
-            <div className="flex items-center space-x-2">
-              <span className="text-sm font-medium text-[var(--text-primary)]">
-                {t('timeEntries.totalHours')}
-              </span>
+              <div className="flex-1"></div>
+
+              <div className="flex items-center">
+                <span className="text-lg font-semibold text-[var(--text-primary)]">
+                  {sortedTimeEntries
+                    .reduce((sum, entry) => sum + entry.hours, 0)
+                    .toFixed(1)}{' '}
+                  {t('timeEntries.hours')}
+                </span>
+              </div>
             </div>
+          </>
+        )}
 
-            <div className="flex-1"></div>
+        {editingEntryId && (
+          <TimeEntryForm
+            mode="edit"
+            entry={timeEntries.find(entry => entry.id === editingEntryId)!}
+            projects={projects}
+            onSave={handleSave}
+            onCancel={handleCancel}
+          />
+        )}
 
-            <div className="flex items-center">
-              <span className="text-lg font-semibold text-[var(--text-primary)]">
-                {sortedTimeEntries
-                  .reduce((sum, entry) => sum + entry.hours, 0)
-                  .toFixed(1)}{' '}
-                {t('timeEntries.hours')}
-              </span>
-            </div>
-          </div>
-        </>
-      )}
-
-      {editingEntryId && (
-        <TimeEntryForm
-          mode="edit"
-          entry={timeEntries.find(entry => entry.id === editingEntryId)!}
-          projects={projects}
-          onSave={handleSave}
-          onCancel={handleCancel}
-        />
-      )}
-
-      {isCreating && (
-        <TimeEntryForm
-          mode="create"
-          selectedDate={selectedDate}
-          projects={projects}
-          onSave={handleCreateSave}
-          onCancel={handleCancel}
-        />
-      )}
-    </div>
+        {isCreating && (
+          <TimeEntryForm
+            mode="create"
+            selectedDate={selectedDate}
+            projects={projects}
+            onSave={handleCreateSave}
+            onCancel={handleCancel}
+          />
+        )}
+      </div>
+    </DeleteConfirmationProvider>
   );
 }

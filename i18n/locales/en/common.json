@@ -69,7 +69,7 @@
     "addProject": "Add Project",
     "allProjects": "All Projects",
     "noProjects": "No projects yet. Add your first project to get started.",
-    "totalProjects": "Total Projects",
+    "totalProjects": "Total",
     "project": "project",
     "projects": "projects",
     "popup": {
@@ -177,7 +177,10 @@
     "week": "Week",
     "month": "Month",
     "workingDays": "working days",
-    "monthlyHours": "Monthly Hours"
+    "monthlyHours": "Monthly Hours",
+    "projectHoursDetails": "Project Hours Details",
+    "used": "used",
+    "projectBreakdown": "Project Breakdown"
   },
   "voiceEntry": {
     "recording": "Recording...",
@@ -199,6 +202,10 @@
     "saving": "Saving...",
     "error": "Error",
     "hours": "hours",
+    "delete": "Delete",
+    "confirm": "Confirm",
+    "confirmation": "Confirmation",
+    "confirmDelete": "Are you sure you want to delete this item? This action cannot be undone.",
     "calendar": {
       "months": {
         "january": "January",

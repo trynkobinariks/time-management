@@ -41,6 +41,17 @@ const Dashboard = () => {
     }
   }, []);
 
+  // Check for scrollToTop flag and scroll to top if present
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const shouldScrollToTop = sessionStorage.getItem('scrollToTop');
+      if (shouldScrollToTop === 'true') {
+        window.scrollTo(0, 0);
+        sessionStorage.removeItem('scrollToTop');
+      }
+    }
+  }, []);
+
   // Save periodType to localStorage when it changes
   const handlePeriodChange = (newPeriod: PeriodType) => {
     setPeriodType(newPeriod);
