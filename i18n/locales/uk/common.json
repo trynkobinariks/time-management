@@ -38,6 +38,11 @@
     "addEntry": "Додати запис",
     "noEntries": "Немає записів для цієї дати",
     "hoursWorked": "годин відпрацьовано",
+    "dailyLimitExceeded": "Перевищено денний ліміт:",
+    "dailyHoursInfo": "Поточний денний підсумок:",
+    "enforceDailyLimit": "Дотримуватися денного ліміту годин",
+    "dailyLimitEnforced": "Денний ліміт застосовано:",
+    "maxAllowed": "Максимально дозволено:",
     "popup": {
       "editEntry": "Редагувати запис",
       "createEntry": "Додати запис",

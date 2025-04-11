@@ -6,7 +6,7 @@ import { useClientTranslation } from '../../hooks/useClientTranslation';
 import { useState } from 'react';
 import { TimeEntry } from '../../lib/types';
 import TimeEntryItem from '../../components/TimeEntryItem/TimeEntryItem';
-import EditTimeEntryForm from '../../components/EditTimeEntryForm';
+import TimeEntryForm from '../../components/TimeEntryForm';
 
 export default function TimeEntriesPage() {
   const { timeEntries, projects, deleteTimeEntry, updateTimeEntry } =
@@ -31,8 +31,13 @@ export default function TimeEntriesPage() {
     setEditingEntry(entry);
   };
 
-  const handleSave = (updatedEntry: TimeEntry) => {
-    updateTimeEntry(updatedEntry);
+  const handleSave = (
+    updatedEntry:
+      | TimeEntry
+      | Omit<TimeEntry, 'id' | 'created_at' | 'updated_at' | 'user_id'>,
+  ) => {
+    // Since we're in edit mode, we know this is a full TimeEntry
+    updateTimeEntry(updatedEntry as TimeEntry);
     setEditingEntry(null);
   };
 
@@ -89,7 +94,8 @@ export default function TimeEntriesPage() {
       )}
 
       {editingEntry && (
-        <EditTimeEntryForm
+        <TimeEntryForm
+          mode="edit"
           entry={editingEntry}
           projects={projects}
           onSave={handleSave}
