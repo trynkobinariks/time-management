@@ -9,15 +9,15 @@
     }
   },
   "timeEntries": {
-    "totalHours": "Total Hours",
+    "totalHours": "Total",
     "quickTimeEntry": "Quick Time Entry",
     "noTimeEntriesForThisDate": "No time entries for this date",
     "unknownProject": "Unknown Project",
     "deleteEntry": "Delete Entry",
     "noTimeEntries": "No time entries yet. Add your first entry to get started.",
     "timeEntry": "Time Entry",
-    "hour": "hour",
-    "hours": "hours",
+    "hour": "h",
+    "hours": "h",
     "dateFormat": "EEEE, MMMM d, yyyy",
     "project": "Project",
     "description": "Description",
