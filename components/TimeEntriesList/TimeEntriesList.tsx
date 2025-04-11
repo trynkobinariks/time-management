@@ -148,24 +148,22 @@ export default function TimeEntriesList({
             ))}
           </div>
 
-          <div className="px-6 py-4 flex items-center justify-between bg-[var(--card-border)] border-t border-[var(--card-border)] rounded-b-lg">
-            <div className="flex items-center space-x-4">
-              <span className="w-8"></span>
+          <div className="px-4 py-4 flex items-center justify-between bg-[var(--card-border)] border-t border-[var(--card-border)] rounded-b-lg">
+            <div className="flex items-center space-x-2">
               <span className="text-sm font-medium text-[var(--text-primary)]">
                 {t('timeEntries.totalHours')}
               </span>
             </div>
 
-            <div className="flex-1 mx-8"></div>
+            <div className="flex-1"></div>
 
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center">
               <span className="text-lg font-semibold text-[var(--text-primary)]">
                 {sortedTimeEntries
                   .reduce((sum, entry) => sum + entry.hours, 0)
                   .toFixed(1)}{' '}
                 {t('timeEntries.hours')}
               </span>
-              <span className="w-16"></span>
             </div>
           </div>
         </>

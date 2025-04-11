@@ -11,18 +11,36 @@ interface TimeEntryItemProps {
   onDelete: (id: string) => void;
 }
 
-export default function TimeEntryItem({
+const TimeEntryItem = ({
   entry,
   projectName,
   projectType,
   onEdit,
   onDelete,
-}: TimeEntryItemProps) {
+}: TimeEntryItemProps) => {
   const { t } = useClientTranslation();
 
   return (
-    <div className="px-6 py-4">
-      <div className="flex justify-between items-start">
+    <div className="pl-6 py-4 relative min-h-24">
+      <div className="absolute top-2 right-2 flex flex-col space-x-1">
+        <button
+          onClick={() => onEdit(entry)}
+          className="p-2 text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-full cursor-pointer transition-colors"
+          aria-label="Edit entry"
+          title="Edit entry"
+        >
+          <EditIcon />
+        </button>
+        <button
+          onClick={() => onDelete(entry.id)}
+          className="p-2 text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-full cursor-pointer transition-colors"
+          aria-label="Delete entry"
+          title="Delete entry"
+        >
+          <DeleteIcon />
+        </button>
+      </div>
+      <div className="flex justify-between items-start pr-12">
         <div>
           <div className="flex items-center">
             <h3 className="text-sm font-medium text-[var(--text-primary)]">
@@ -45,29 +63,15 @@ export default function TimeEntryItem({
             </p>
           )}
         </div>
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center">
           <span className="text-sm font-medium text-[var(--text-primary)] whitespace-nowrap">
             {entry.hours}{' '}
             {entry.hours === 1 ? t('timeEntries.hour') : t('timeEntries.hours')}
           </span>
-          <button
-            onClick={() => onEdit(entry)}
-            className="p-2 text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-full cursor-pointer transition-colors"
-            aria-label="Edit entry"
-            title="Edit entry"
-          >
-            <EditIcon />
-          </button>
-          <button
-            onClick={() => onDelete(entry.id)}
-            className="p-2 text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-full cursor-pointer transition-colors"
-            aria-label="Delete entry"
-            title="Delete entry"
-          >
-            <DeleteIcon />
-          </button>
         </div>
       </div>
     </div>
   );
-}
+};
+
+export default TimeEntryItem;
