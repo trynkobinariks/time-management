@@ -2,9 +2,8 @@ import { format } from 'date-fns';
 import { useClientTranslation } from '../../hooks/useClientTranslation';
 import { useState, useEffect } from 'react';
 import { TimeEntry } from '../../lib/types';
-import EditTimeEntryForm from '../EditTimeEntryForm';
 import TimeEntryItem from '../TimeEntryItem/TimeEntryItem';
-import CreateTimeEntryForm from '../CreateTimeEntryForm';
+import TimeEntryForm from '../TimeEntryForm';
 import CreateButton from '../CreateButton';
 
 interface Project {
@@ -74,13 +73,19 @@ export default function TimeEntriesList({
     setEditingEntryId(entry.id);
   };
 
-  const handleSave = (editedEntry: TimeEntry) => {
-    onEditEntry(editedEntry);
+  const handleSave = (
+    editedEntry:
+      | TimeEntry
+      | Omit<TimeEntry, 'id' | 'created_at' | 'updated_at' | 'user_id'>,
+  ) => {
+    // Since we're in edit mode, we know this is a full TimeEntry
+    onEditEntry(editedEntry as TimeEntry);
     setEditingEntryId(null);
   };
 
   const handleCancel = () => {
     setEditingEntryId(null);
+    setIsCreating(false);
   };
 
   const handleCreate = () => {
@@ -91,10 +96,6 @@ export default function TimeEntriesList({
     newEntry: Omit<TimeEntry, 'id' | 'created_at' | 'updated_at' | 'user_id'>,
   ) => {
     onCreateEntry(newEntry);
-    setIsCreating(false);
-  };
-
-  const handleCreateCancel = () => {
     setIsCreating(false);
   };
 
@@ -171,7 +172,8 @@ export default function TimeEntriesList({
       )}
 
       {editingEntryId && (
-        <EditTimeEntryForm
+        <TimeEntryForm
+          mode="edit"
           entry={timeEntries.find(entry => entry.id === editingEntryId)!}
           projects={projects}
           onSave={handleSave}
@@ -180,11 +182,12 @@ export default function TimeEntriesList({
       )}
 
       {isCreating && (
-        <CreateTimeEntryForm
+        <TimeEntryForm
+          mode="create"
           selectedDate={selectedDate}
           projects={projects}
           onSave={handleCreateSave}
-          onCancel={handleCreateCancel}
+          onCancel={handleCancel}
         />
       )}
     </div>

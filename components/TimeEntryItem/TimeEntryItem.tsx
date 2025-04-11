@@ -32,7 +32,7 @@ export default function TimeEntryItem({
               <Badge
                 variant={projectType}
                 label={
-                  projectType === 'INTERNAL'
+                  projectType === 'internal'
                     ? t('projects.popup.typeInternal') || 'Internal'
                     : t('projects.popup.typeCommercial') || 'Commercial'
                 }

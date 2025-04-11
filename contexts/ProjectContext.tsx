@@ -6,6 +6,7 @@ import { createClient } from '../lib/supabase/client';
 import type { User } from '@supabase/supabase-js';
 import * as db from '../lib/supabase/db';
 import { usePathname, useSearchParams } from 'next/navigation';
+import { startOfWeek, endOfWeek } from 'date-fns';
 
 interface ProjectContextType {
   projects: Project[];
@@ -49,12 +50,12 @@ export function ProjectProvider({ children }: ProjectProviderProps) {
   const searchParams = useSearchParams();
 
   useEffect(() => {
-      const fetchUserData = async () => {
-        try {
-          const { data } = await supabase.auth.getUser();
-          setUser(data.user);
-        } catch (error) {
-          console.error('Error refreshing user data on navigation:', error);
+    const fetchUserData = async () => {
+      try {
+        const { data } = await supabase.auth.getUser();
+        setUser(data.user);
+      } catch (error) {
+        console.error('Error refreshing user data on navigation:', error);
       }
     };
     fetchUserData();
@@ -104,11 +105,13 @@ export function ProjectProvider({ children }: ProjectProviderProps) {
 
         const monthStart = new Date(selectedYear, selectedMonth, 1);
         const monthEnd = new Date(selectedYear, selectedMonth + 1, 0);
+        const calendarStart = startOfWeek(monthStart, { weekStartsOn: 1 });
+        const calendarEnd = endOfWeek(monthEnd, { weekStartsOn: 1 });
 
         const timeEntriesData = await db.getTimeEntries(
           user.id,
-          monthStart,
-          monthEnd,
+          calendarStart,
+          calendarEnd,
         );
         setTimeEntries(timeEntriesData);
       } catch (error) {
