@@ -2,6 +2,7 @@ import { TimeEntry } from '../../lib/types';
 import { EditIcon, DeleteIcon } from '../icons';
 import { useClientTranslation } from '../../hooks/useClientTranslation';
 import Badge from '../Badge';
+import { useDeleteConfirmation } from '../ui/DeleteConfirmationProvider';
 
 interface TimeEntryItemProps {
   entry: TimeEntry;
@@ -19,6 +20,15 @@ const TimeEntryItem = ({
   onDelete,
 }: TimeEntryItemProps) => {
   const { t } = useClientTranslation();
+  const { showDeleteConfirmation } = useDeleteConfirmation();
+
+  const handleDeleteClick = () => {
+    showDeleteConfirmation({
+      title: t('timeEntries.deleteEntry'),
+      message: t('timeEntries.deleteEntryConfirmation'),
+      onConfirm: () => onDelete(entry.id),
+    });
+  };
 
   return (
     <div className="pl-6 py-4 relative min-h-24">
@@ -32,7 +42,7 @@ const TimeEntryItem = ({
           <EditIcon />
         </button>
         <button
-          onClick={() => onDelete(entry.id)}
+          onClick={handleDeleteClick}
           className="p-2 text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-full cursor-pointer transition-colors"
           aria-label="Delete entry"
           title="Delete entry"

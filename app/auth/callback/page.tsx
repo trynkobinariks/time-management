@@ -43,6 +43,10 @@ function AuthCallbackContent() {
         // Successfully authenticated, redirect to intended destination
         if (user) {
           console.log('User authenticated, redirecting to:', next);
+
+          // Store a flag in sessionStorage to indicate we need to scroll to top after redirect
+          sessionStorage.setItem('scrollToTop', 'true');
+
           const nextUrl = next || '/dashboard';
           router.replace(nextUrl);
           router.refresh();

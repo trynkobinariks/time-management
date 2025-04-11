@@ -69,7 +69,7 @@
     "addProject": "Додати проєкт",
     "allProjects": "Всі проєкти",
     "noProjects": "Проєктів ще немає. Додайте свій перший проєкт, щоб почати.",
-    "totalProjects": "Всього проєктів",
+    "totalProjects": "Всього",
     "project": "проєкт",
     "projects": "проєктів",
     "popup": {
@@ -166,7 +166,10 @@
     "week": "Тиждень",
     "month": "Місяць",
     "workingDays": "робочих днів",
-    "monthlyHours": "Місячні години"
+    "monthlyHours": "Місячні години",
+    "projectHoursDetails": "Деталі годин проєкту",
+    "used": "використано",
+    "projectBreakdown": "Розподіл годин по проєктах"
   },
   "voiceEntry": {
     "recording": "Запис...",
@@ -187,6 +190,10 @@
     "saving": "Збереження...",
     "cancel": "Скасувати",
     "hours": "год",
+    "delete": "Видалити",
+    "confirm": "Підтвердити",
+    "confirmation": "Підтвердження",
+    "confirmDelete": "Ви впевнені, що хочете видалити цей елемент? Ця дія незворотна.",
     "calendar": {
       "months": {
         "january": "Січень",
