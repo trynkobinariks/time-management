@@ -7,6 +7,8 @@ import { useVoiceTimeEntry } from '../../VoiceTimeEntry/useVoiceTimeEntry';
 import ProjectHoursWidget from '../../ProjectHoursWidget';
 import PeriodSwitcher, { PeriodType } from '../../PeriodSwitcher';
 import { useState, useEffect } from 'react';
+import RecordingOverlay from '../../VoiceTimeEntry/components/RecordingOverlay';
+import RecordingInstructions from '../../VoiceTimeEntry/components/RecordingInstructions';
 
 const Dashboard = () => {
   const { t } = useClientTranslation();
@@ -60,6 +62,10 @@ const Dashboard = () => {
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-7xl relative flex flex-col h-[calc(100vh-64px-54px)]">
+      {/* Recording UI components */}
+      <RecordingOverlay isListening={isListening} />
+      <RecordingInstructions isListening={isListening} />
+
       <div className="flex flex-col mb-6 space-y-3">
         <div className="flex flex-col gap-4">
           <div className="flex justify-between items-center sm:px-4">
@@ -83,7 +89,7 @@ const Dashboard = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 flex-grow pb-20 lg:pb-16">
         <div className="lg:col-span-5 order-1 lg:order-1">
-          <div className="grid grid-cols-1 gap-6">
+          <div className="grid grid-cols-1">
             <Datepicker
               t={t}
               getMonthTranslation={getMonthTranslation}
@@ -107,13 +113,23 @@ const Dashboard = () => {
         </div>
       </div>
 
-      <div className="fixed bottom-12 left-1/2 transform -translate-x-1/2 z-10">
-        <RecordButton
-          isListening={isListening}
-          isProcessing={isProcessing}
-          handleStartListening={handleStartListening}
-          handleStopListening={handleStopListening}
-        />
+      <div
+        className={`fixed left-1/2 transform -translate-x-1/2 z-20 transition-all duration-300 ease-in-out ${
+          isListening ? 'bottom-16' : 'bottom-12'
+        }`}
+      >
+        <div
+          className={`transform transition-all duration-300 ease-in-out ${
+            isListening ? 'scale-110' : 'scale-100'
+          }`}
+        >
+          <RecordButton
+            isListening={isListening}
+            isProcessing={isProcessing}
+            handleStartListening={handleStartListening}
+            handleStopListening={handleStopListening}
+          />
+        </div>
       </div>
     </div>
   );

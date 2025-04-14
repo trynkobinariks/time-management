@@ -191,7 +191,15 @@
       "example2": "Today I worked 3.5 hours on Project Y developing new features",
       "example3": "I spent 4 hours on Project Z on 03/15/2024 testing the system",
       "example4": "On 20th March I worked 5 hours on Project W"
-    }
+    },
+    "instructions": "Try saying something like:",
+    "instructionsExample": {
+      "example1": "I worked 2 hours on (project name) today (or yesterday, or last week, etc.)",
+      "example2": "I worked 3.5 hours on (project name) yesterday",
+      "example3": "I worked 4 hours on (project name) on 15th March",
+      "example4": "I worked 5 hours on (project name) on 20th March"
+    },
+    "imListening": "I'm listening..."
   },
   "common": {
     "today": "Today",
